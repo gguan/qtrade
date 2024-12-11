@@ -1,11 +1,11 @@
 from .actions import ActionScheme
 from .rewards import RewardScheme
-from .observers import Observer
+from .observers import ObserverScheme
 from .environment import TradingEnv
 
 __all__ = [
     'ActionScheme',
     'RewardScheme',
-    'Observer',
+    'ObserverScheme',
     'TradingEnv',
 ]

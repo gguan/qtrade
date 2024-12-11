@@ -17,7 +17,7 @@ from qtrade.core.broker import Broker
 # output_file('backtest.html')
 
 def _plot_account_value(broker: Broker):
-    account_value = broker.account_value_history.copy(deep=True)
+    account_value = broker.account_value_history.loc[:broker.current_time].copy(deep=True)
 
     datatime = account_value.index
 
@@ -97,8 +97,8 @@ def _plot_account_value(broker: Broker):
 def _plot_trades(broker: Broker, x_range):
     # 交易记录处理：在价格图中标记交易点（进入与退出），并用不同颜色表示盈亏
     trades = broker.trade_history
-    datatime = broker.account_value_history.index
-    index = np.arange(len(broker.account_value_history))
+    datatime = broker.account_value_history.loc[:broker.current_time].index
+    index = np.arange(len(broker.account_value_history.loc[:broker.current_time]))
     trade_source = ColumnDataSource(dict(
         index=np.array([datatime.get_loc(trade.exit_date) if trade.exit_date in datatime else np.nan for trade in trades ]),
         # index=index,
@@ -135,10 +135,10 @@ def _plot_trades(broker: Broker, x_range):
     return fig2
 
 def _plot_ohlc(broker: Broker, x_range):
-    source = ColumnDataSource(broker.data)
-    source.add((broker.data.close >= broker.data.open).values.astype(np.uint8).astype(str), 'inc')
-    source.data['index'] = np.arange(len(broker.data))
-    source.data['datetime'] = broker.data.index
+    source = ColumnDataSource(broker.data.loc[:broker.current_time])
+    source.add((broker.data.loc[:broker.current_time].close >= broker.data.loc[:broker.current_time].open).values.astype(np.uint8).astype(str), 'inc')
+    source.data['index'] = np.arange(len(broker.data.loc[:broker.current_time]))
+    source.data['datetime'] = broker.data.loc[:broker.current_time].index
 
     fig3 = figure(height=300, tools="xpan,xwheel_zoom,reset",
                        active_drag='xpan', active_scroll='xwheel_zoom',
@@ -146,11 +146,11 @@ def _plot_ohlc(broker: Broker, x_range):
                        )
     fig3.line('index', 'close', source=source, line_width=1.5, color='black')
 
-    y_min = broker.data['close'].min()
-    y_max = broker.data['close'].max()
+    y_min = broker.data['close'].loc[:broker.current_time].min()
+    y_max = broker.data['close'].loc[:broker.current_time].max()
     fig3.y_range = Range1d(start=y_min * 0.99, end=y_max * 1.01)
     # 设置额外的 Y 轴范围用于成交量
-    fig3.extra_y_ranges = {"volume": Range1d(start=0, end=broker.data.volume.max() * 8)}
+    fig3.extra_y_ranges = {"volume": Range1d(start=0, end=broker.data.volume.loc[:broker.current_time].mean() * 8)}
     
     # 添加第二个 Y 轴（右侧）用于成交量
     fig3.add_layout(
@@ -200,7 +200,7 @@ return this.labels[index] || "";
         ''')
     
     trades = broker.trade_history
-    datatime = broker.account_value_history.index
+    datatime = broker.account_value_history.loc[:broker.current_time].index
     trade_source = ColumnDataSource(dict(
         top=np.array([trade.exit_price for trade in trades]),
         bottom=np.array([trade.entry_price for trade in trades]),

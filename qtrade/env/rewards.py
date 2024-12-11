@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
-from datetime import timedelta
 import numpy as np
-import pandas as pd
 
 class RewardScheme(ABC):
+
     @abstractmethod
     def get_reward(self, env: 'TradingEnv') -> float:
         """Calculate the reward based on the current environment state."""
@@ -14,13 +13,16 @@ class RewardScheme(ABC):
         pass
 
 class DefaultReward(RewardScheme):
+
     def get_reward(self, env: 'TradingEnv') -> float:
         reward = 0
-        for trade in env.closed_trades:
-            cost = np.log(1-env.commission)
-            if trade.is_long:
-                reward += np.log(trade.exit_price / trade.entry_price) + cost
-            else:
-                reward += np.log(2 - trade.exit_price/ trade.entry_price) + cost
+        curr_price = env.data.close.iloc[-1]
+        prev_price = env.data.close.iloc[-2]
+
+        if env.position.size > 0:
+            reward += np.log(curr_price / prev_price)
+        if env.position.size < 0:
+            reward += np.log(2 - curr_price / prev_price) 
+
         return reward
     

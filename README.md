@@ -21,10 +21,17 @@ pip install -e .
 
 ### Run Example
 
+Run strategy backtest example
+
 ```bash
 python examples/simply_strategy.py
 ```
 
+Run reinforcement learning example
+
+```bash
+python examples/rl_example.py
+```
 
 ### Requirements
 

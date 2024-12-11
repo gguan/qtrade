@@ -13,13 +13,16 @@ setup(
     include_package_data=True,
     python_requires='>=3.7',
     install_requires=[
-        'numpy<=1.26.4',
-        'pandas>=2.2.3',
+        'numpy==1.26.4',
+        'pandas',
         'scipy>=1.6.0',
         'matplotlib>=3.3.0',
         'bokeh>=3.3.0',
         'pandas_ta>=0.3.14b0',
         'tqdm>=4.0.0',
+        'stable-baselines3>=2.3.2',
+        'scikit-learn>=1.5.2',
+        'mplfinance>=0.12.10b0',
     ],
     extras_require={
         'dev': [

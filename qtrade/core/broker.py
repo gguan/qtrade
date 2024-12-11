@@ -1,5 +1,6 @@
 # components/engine.py
 
+import logging
 from typing import List, Optional
 from .trade import Trade
 from .order import Order
@@ -54,13 +55,17 @@ class Broker:
         self._executing_orders: List[Order] = [] # 如果trade_on_close是false，正在执行的订单需要在下一个bar的open price成交
 
         self._order_history: List[Order] = []
-        self._account_value_history = pd.Series(data=self.cash, index=data.index)
+        self._account_value_history = pd.Series(data=self.cash, index=data.index).astype('float64') 
     
 
     @property
     def account_value(self) -> float:
         return self.cash +  self.unrealized_pnl
     
+    @property
+    def cummulative_returns(self) -> float:
+        return self.account_value / self._account_value_history.iloc[0]
+
     @property
     def required_margin(self) -> float:
         """
@@ -175,7 +180,7 @@ class Broker:
         if not self._is_margin_sufficient(order, fill_price):
             # 保证金不足，拒绝订单
             order.reject(reason="Insufficient margin")
-            print(f"Order rejected: {order._reject_reason}")
+            logging.info(f"Order rejected: {order._reject_reason}")
             self._order_history.append(order)
             return
 

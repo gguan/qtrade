@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import pandas_ta as ta
 from qtrade.backtest import Strategy, Backtest
 
@@ -80,7 +79,7 @@ def run_backtest(strategy_class, data, cash=10000):
         strategy_class=strategy_class,
         cash=cash,
         commission=None,
-        margin_ratio=1.0,
+        margin_ratio=0.1,
         trade_on_close=True,
         verbose=True,
     )
@@ -93,9 +92,7 @@ def run_backtest(strategy_class, data, cash=10000):
 
 if __name__ == "__main__":
     """加载并处理数据"""
-    df = pd.read_csv('examples/data/XAUUSD_15m.csv')
-    df['timestamp'] = pd.to_datetime(df['timestamp'], format='%Y-%m-%d %H:%M:%S')
-    df.set_index('timestamp', inplace=True)
+    df = pd.read_csv('examples/data/BTCUSD_15m.csv', parse_dates=True, index_col='timestamp')
 
     # 计算技术指标
     df['RSI'] = ta.rsi(df['close'], length=14)
@@ -113,5 +110,4 @@ if __name__ == "__main__":
     print("Running RSI Strategy...")
     run_backtest(SimpleRSIStrategy, df)
 
-    # print("\nRunning High Return Intraday Strategy...")
-    # run_backtest(HighReturnIntradayStrategy, test_df)
+    
