@@ -8,7 +8,7 @@ from qtrade.backtest.strategy import Strategy
 from tqdm import tqdm
 
 from qtrade.core import Order, Broker, Commission
-from qtrade.utils import calculate_stats, plot_with_bokeh, plot_with_plotly
+from qtrade.utils import calculate_stats, plot_with_bokeh
 
 
 # Backtest class

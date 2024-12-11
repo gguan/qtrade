@@ -13,11 +13,13 @@ setup(
     include_package_data=True,
     python_requires='>=3.7',
     install_requires=[
-        'numpy>=1.19.0',
-        'pandas>=1.2.0',
+        'numpy<=1.26.4',
+        'pandas>=2.2.3',
         'scipy>=1.6.0',
         'matplotlib>=3.3.0',
         'bokeh>=3.3.0',
+        'pandas_ta>=0.3.14b0',
+        'tqdm>=4.0.0',
     ],
     extras_require={
         'dev': [

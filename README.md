@@ -22,7 +22,7 @@ pip install -e .
 ### Run Example
 
 ```bash
-python examples/backtest/simply_strategy.py
+python examples/simply_strategy.py
 ```
 
 
