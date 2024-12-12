@@ -6,7 +6,10 @@ import mplfinance as mpf
 import logging
 from typing import Optional, List
 from qtrade.core import Broker, Commission
+from qtrade.core.commission import NoCommission
+from qtrade.core.order import Order
 from qtrade.core.position import Position
+from qtrade.core.trade import Trade
 from qtrade.env.actions import ActionScheme, DefaultAction
 from qtrade.env.rewards import RewardScheme, DefaultReward
 from qtrade.env.observers import ObserverScheme, DefaultObserver
@@ -44,6 +47,7 @@ class TradingEnv(gym.Env):
         self.action_scheme = action_scheme if action_scheme else DefaultAction()
         self.reward_scheme = reward_scheme if reward_scheme else DefaultReward()
         self.observer_scheme = observer_scheme if observer_scheme else DefaultObserver(window_size, features)
+        
 
         self.action_space = self.action_scheme.action_space
         self.observation_space = self.observer_scheme.observation_space
@@ -51,7 +55,7 @@ class TradingEnv(gym.Env):
         self._data = data.copy()
         self.cash = cash
         self.margin_ratio = margin_ratio
-        self.commission = commission
+        self.commission = commission if commission else NoCommission()
         self.trade_on_close = trade_on_close
 
         self.max_steps = max_steps
@@ -78,7 +82,7 @@ class TradingEnv(gym.Env):
 
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
         super().reset(seed=seed, options=options)
-        
+
         self.start_idx = self.window_size if not self.random_start else np.random.randint(self.window_size, len(self._data) - self.max_steps)
         self.current_step = self.start_idx
         self._broker = Broker(self._data.iloc[self.start_idx-self.window_size:], self.cash, self.commission, self.margin_ratio, self.trade_on_close)
@@ -86,8 +90,8 @@ class TradingEnv(gym.Env):
         self.terminated = False
 
         current_time = self._data.index[self.current_step]
-
         self._broker.process_bar(current_time)
+
         logging.info(f'Reset at {current_time}, price: {self._data["close"].loc[current_time]}')
 
         if self.reward_scheme:
@@ -128,10 +132,18 @@ class TradingEnv(gym.Env):
             'unrealized_pnl': self._broker.unrealized_pnl,
             'cumulative_return': self._broker.cummulative_returns,
             'position': self._broker.position.size,
+            'total_trades': len(self._broker.trade_history),
         }
 
         return obs, reward, self.terminated, self.truncated, info
 
+
+    @property
+    def current_time(self):
+        """
+        Get the current time.
+        """
+        return self._broker.current_time
 
     @property
     def position(self) -> Position:
@@ -147,17 +159,25 @@ class TradingEnv(gym.Env):
 
         """
         return self._data[ :self._broker.current_time]
+    
+    @property
+    def filled_orders(self)  -> List[Order]:
+        """
+        Get the filled orders.
+        """
+        return self._broker.order_history
+    
+    @property
+    def closed_trades(self) -> List[Trade]:
+        """
+        Get the closed trades.
+        """
+        return self._broker.trade_history
 
     def render(self, mode=None):
          # 获取要绘制的数据
-         # 提取从 episode 开始到当前步骤的数据
-        start = self.start_idx
-        end = self.current_step + 1  # 包含当前步骤
-        if end - start > 300:
-            start = end - 300
-
-        data = self._data.iloc[start:end].copy()
-        account_value = self._broker.account_value_history.iloc[start:end]
+        data = self._broker.data.loc[:self._broker.current_time].tail(300)
+        account_value = self._broker.account_value_history.loc[:self._broker.current_time].tail(300)
         
         if self.fig is None:
             # 初次绘制

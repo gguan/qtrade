@@ -89,6 +89,21 @@ class Order:
     def is_short(self) -> bool:
         """True if the order is a short position (size < 0)."""
         return self._size < 0
+    
+    @property
+    def is_filled(self) -> bool:
+        """True if the order is filled."""
+        return self._is_filled
+    
+    @property
+    def fill_price(self) -> Optional[float]:
+        """Return the fill price."""
+        return self._fill_price
+    
+    @property
+    def fill_date(self) -> Optional[pd.Timestamp]:
+        """Return the fill date."""
+        return self._fill_date
 
     def __repr__(self) -> str:
         """

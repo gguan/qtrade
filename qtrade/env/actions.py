@@ -26,7 +26,7 @@ class DefaultAction(ActionScheme):
     
     @property
     def action_space(self) -> Space:
-        # Action 0 = Long, 1 = Short, 2 = Hold
+        # Action 0 = Long, 1 = Short, 2 = Empty
         return gym.spaces.Discrete(3)
     
     def get_orders(self, action: int, env: 'TradingEnv') -> List[Order]: # type: ignore
@@ -45,5 +45,8 @@ class DefaultAction(ActionScheme):
             else:
                 return []
         else:
-            return []
+            if env.position.size != 0:
+                return [Order(size=-env.position.size)]
+            else:
+                return []
         

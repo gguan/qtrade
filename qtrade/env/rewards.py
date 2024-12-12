@@ -15,14 +15,16 @@ class RewardScheme(ABC):
 class DefaultReward(RewardScheme):
 
     def get_reward(self, env: 'TradingEnv') -> float:
-        reward = 0
-        curr_price = env.data.close.iloc[-1]
-        prev_price = env.data.close.iloc[-2]
+        step_reward = 0
+        for trade in env.closed_trades:
+            if trade.exit_date == env.current_time:
+                cost = np.log(1-env.commission.calculate_commission(trade.size, trade.entry_price)/trade.exit_price)
+                ratio = trade.exit_price / trade.entry_price
+                if trade.is_long:
+                    profit = np.log(ratio) 
+                else:    
+                    profit = np.log(2 - ratio)
+                step_reward += profit + cost
 
-        if env.position.size > 0:
-            reward += np.log(curr_price / prev_price)
-        if env.position.size < 0:
-            reward += np.log(2 - curr_price / prev_price) 
-
-        return reward
+        return step_reward
     

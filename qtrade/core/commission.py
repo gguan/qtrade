@@ -14,6 +14,10 @@ class Commission(ABC):
         """
         pass
 
+class NoCommission(Commission):
+    def calculate_commission(self, order_size: int, fill_price: float) -> float:
+        return 0.0
+
 class PercentageCommission(Commission):
     def __init__(self, percentage: float):
         """

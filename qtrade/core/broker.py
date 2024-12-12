@@ -55,8 +55,9 @@ class Broker:
         self._executing_orders: List[Order] = [] # 如果trade_on_close是false，正在执行的订单需要在下一个bar的open price成交
 
         self._order_history: List[Order] = []
+        self._rejected_orders: List[Order] = []
         self._account_value_history = pd.Series(data=self.cash, index=data.index).astype('float64') 
-    
+       
 
     @property
     def account_value(self) -> float:
@@ -181,7 +182,7 @@ class Broker:
             # 保证金不足，拒绝订单
             order.reject(reason="Insufficient margin")
             logging.info(f"Order rejected: {order._reject_reason}")
-            self._order_history.append(order)
+            self._rejected_orders.append(order)
             return
 
         remaining_order_size = order._size  # Size needed to fulfill the order
