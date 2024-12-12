@@ -17,7 +17,7 @@ class TradingEnv(gym.Env):
     """
     自定义的 Gymnasium 交易环境，使用 Position 类管理持仓
     """
-    metadata = {'render.modes': ['human']}
+    metadata = {'render_modes': ['human', 'rgb_array'], 'render_fps': 12}
 
     def __init__(self, data: pd.DataFrame, cash: float = 10000, 
                  commission: Optional[Commission] = None,
@@ -30,10 +30,14 @@ class TradingEnv(gym.Env):
                  action_scheme: Optional[ActionScheme] = None,
                  reward_scheme: Optional[RewardScheme] = None,
                  observer_scheme: Optional[ObserverScheme] = None,
+                 render_mode: Optional[str] = 'human',
                  verbose: bool = False
                  ):
         super(TradingEnv, self).__init__()
         
+        assert render_mode in self.metadata["render_modes"]
+        self.render_mode = render_mode
+
         if not features:
             features = data.columns.tolist()
 
@@ -144,7 +148,7 @@ class TradingEnv(gym.Env):
         """
         return self._data[ :self._broker.current_time]
 
-    def render(self, mode='human'):
+    def render(self, mode=None):
          # 获取要绘制的数据
          # 提取从 episode 开始到当前步骤的数据
         start = self.start_idx
@@ -156,9 +160,9 @@ class TradingEnv(gym.Env):
         account_value = self._broker.account_value_history.iloc[start:end]
         
         if self.fig is None:
+            # 初次绘制
             addplots = [
                 mpf.make_addplot(account_value,  color='orange', panel=1, label='Net Worth'),
-                # mpf.make_addplot(self.position_history, type='bar', width=0.7, color='deepskyblue', panel=1, label='Position', ylim=(-self.max_postion, self.max_postion)),
             ]
             self.fig, self.axes = mpf.plot(
                 data,
@@ -171,12 +175,12 @@ class TradingEnv(gym.Env):
                 style=self.style,
             )
         else:
+            # 清空并重绘
             for ax in self.axes:
                 ax.clear()
 
             addplots = [
-                mpf.make_addplot(account_value, color='orange', panel=1, label='Net Worth',ax=self.axes[2], secondary_y=False),
-                # mpf.make_addplot(self.position_history, type='bar', width=0.6, color='deepskyblue', panel=1, label='Position', ylim=(-self.max_postion, self.max_postion), ax=self.axes[3]),
+                mpf.make_addplot(account_value, color='orange', panel=1, label='Equity',ax=self.axes[2], secondary_y=False),
             ]
 
             # 提取在当前窗口内的买卖订单
@@ -226,7 +230,21 @@ class TradingEnv(gym.Env):
         # 设置标题显示当前净值
         self.fig.suptitle(display_title)
 
-        plt.pause(0.01)  # 模拟实时更新的延迟
+        render_mode = mode if mode else self.render_mode
+        if render_mode not in self.metadata['render_modes']:
+            raise ValueError(f"Unsupported render mode: {mode}")
+        
+        if render_mode == 'human':
+            plt.pause(0.01)  # 模拟实时更新的延迟
+        elif render_mode == 'rgb_array':
+            # 返回RGB array
+            # 将绘图渲染到canvas，然后转换为RGB数组
+            self.fig.canvas.draw()
+            actual_width = int(self.fig.get_size_inches()[0] * self.fig.dpi)
+            actual_height = int(self.fig.get_size_inches()[1] * self.fig.dpi)
+            img = np.frombuffer(self.fig.canvas.tostring_rgb(), dtype='uint8')
+            img = img.reshape((int(actual_height), int(actual_width), 3))
+            return img
         
 
     def save_rendering(self, filepath):
