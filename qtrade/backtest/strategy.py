@@ -1,7 +1,7 @@
 
 # Strategy base class
 from abc import ABC, abstractmethod
-from typing import Optional, Tuple
+from typing import Optional
 import pandas as pd
 
 from qtrade.core import Broker, Order, Trade, Position
@@ -105,7 +105,7 @@ class Strategy(ABC):
         return self._broker.unrealized_pnl
 
     @property
-    def active_trades(self) -> Tuple[Trade, ...]:
+    def active_trades(self) -> tuple[Trade, ...]:
         """
         Get the active trades.
 
@@ -113,7 +113,7 @@ class Strategy(ABC):
         return tuple(self._broker.position.active_trades())
     
     @property
-    def closed_trades(self) -> Tuple[Trade, ...]:
+    def closed_trades(self) -> tuple[Trade, ...]:
         """
         Get the closed trades.
 
@@ -121,7 +121,7 @@ class Strategy(ABC):
         return tuple(self._broker.position.closed_trades())
     
     @property
-    def pending_orders(self) -> Tuple[Order, ...]:
+    def pending_orders(self) -> tuple[Order, ...]:
         """
         Get the pending orders.
         """

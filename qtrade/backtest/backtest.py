@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
-from typing import Optional, List, Type
+from typing import Optional
 
 import logging
-from scipy.stats import gmean
 from qtrade.backtest.strategy import Strategy
 from tqdm import tqdm
 
@@ -15,7 +14,7 @@ from qtrade.utils import calculate_stats, plot_with_bokeh
 class Backtest:
     def __init__(self,
                  data: pd.DataFrame,
-                 strategy_class: Type[Strategy],
+                 strategy_class: type[Strategy],
                  cash: float = 10_000,
                  commission: Optional[Commission] = None,
                  margin_ratio: float = 1.0,
@@ -51,7 +50,7 @@ class Backtest:
         self.cash = cash
         self.commission = commission
 
-        self.order_history: List[Order] = []
+        self.order_history: list[Order] = []
         self.stats = None
 
         logging.basicConfig(level=logging.INFO if verbose else logging.WARNING)

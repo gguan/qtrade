@@ -4,7 +4,7 @@ import numpy as np
 class RewardScheme(ABC):
 
     @abstractmethod
-    def get_reward(self, env: 'TradingEnv') -> float:
+    def get_reward(self, env: 'TradingEnv') -> float: # type: ignore
         """Calculate the reward based on the current environment state."""
         pass
 
@@ -14,7 +14,7 @@ class RewardScheme(ABC):
 
 class DefaultReward(RewardScheme):
 
-    def get_reward(self, env: 'TradingEnv') -> float:
+    def get_reward(self, env: 'TradingEnv') -> float: # type: ignore
         step_reward = 0
         for trade in env.closed_trades:
             if trade.exit_date == env.current_time:

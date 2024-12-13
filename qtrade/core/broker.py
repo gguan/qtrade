@@ -1,7 +1,7 @@
 # components/broker.py
 
 import logging
-from typing import List, Optional, Union, Tuple
+from typing import Optional, Union
 
 import pandas as pd
 
@@ -20,7 +20,7 @@ class Broker:
         cash (float): Current cash balance in the account.
         commission (Optional[Commission]): Instance for calculating trade commissions. If None, no commission is applied.
         margin_ratio (float): Margin ratio (0 < margin_ratio ≤ 1).
-        trade_on_close (bool): If True, orders are executed at the current bar's close price. Otherwise, at the next bar's open price.
+        trade_on_close (bool): If True, orders are filled at the current close price. Otherwise, at the next open price.
         position (Position): Current position information.
         current_time (pd.Timestamp): Timestamp of the current bar.
         _new_orders (List[Order]): Orders submitted in the current bar.
@@ -78,12 +78,12 @@ class Broker:
 
         self.current_time = data.index[0]
 
-        self._new_orders: List[Order] = []
-        self._pending_orders: List[Order] = []
-        self._executing_orders: List[Order] = []
+        self._new_orders: list[Order] = []
+        self._pending_orders: list[Order] = []
+        self._executing_orders: list[Order] = []
 
-        self._filled_orders: List[Order] = []
-        self._closed_orders: List[Order] = []  # Rejected and canceled orders
+        self._filled_orders: list[Order] = []
+        self._closed_orders: list[Order] = []  # Rejected and canceled orders
 
         self._equity_history = pd.Series(data=self.cash, index=data.index).astype('float64')
 
@@ -136,7 +136,7 @@ class Broker:
         )
 
     @property
-    def closed_trades(self) -> Tuple[Trade, ...]:
+    def closed_trades(self) -> tuple[Trade, ...]:
         """
         Get a tuple of all closed trades.
 
@@ -146,7 +146,7 @@ class Broker:
         return self.position.closed_trades
 
     @property
-    def filled_orders(self) -> Tuple[Order, ...]:
+    def filled_orders(self) -> tuple[Order, ...]:
         """
         Get a tuple of all filled orders.
 
@@ -156,7 +156,7 @@ class Broker:
         return tuple(self._filled_orders)
 
     @property
-    def closed_orders(self) -> Tuple[Order, ...]:
+    def closed_orders(self) -> tuple[Order, ...]:
         """
         Get a tuple of all closed orders.
 
@@ -175,7 +175,7 @@ class Broker:
         """
         return self._equity_history.copy()
 
-    def place_orders(self, orders: Union[Order, List[Order]]) -> None:
+    def place_orders(self, orders: Union[Order, list[Order]]) -> None:
         """
         Submit one or multiple orders.
 
@@ -460,7 +460,15 @@ class Broker:
         ]
         self.__update_account_value_history()
         
-    def _open_trade(self, entry_price: float, entry_date: pd.Timestamp, size: int, sl: Optional[float] = None, tp: Optional[float] = None, tag: Optional[object] = None) -> None:
+    def _open_trade(
+            self, 
+            entry_price: float, 
+            entry_date: pd.Timestamp, 
+            size: int, 
+            sl: Optional[float] = None, 
+            tp: Optional[float] = None, 
+            tag: Optional[object] = None
+        ) -> None:
         """
         Open a new trade position with the specified parameters.
 
@@ -482,7 +490,14 @@ class Broker:
         )
         self.position._active_trades.append(new_trade)
 
-    def _close_trade(self, trade: Trade, exit_price: float, exit_date: pd.Timestamp, exit_reason: str, close_size: Optional[int] = None) -> Trade:
+    def _close_trade(
+            self, 
+            trade: Trade, 
+            exit_price: float, 
+            exit_date: pd.Timestamp, 
+            exit_reason: str, 
+            close_size: Optional[int] = None
+        ) -> Trade:
         """
         Close an active trade and move it to the closed trades list.
 

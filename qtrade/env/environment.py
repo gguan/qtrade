@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 import logging
-from typing import Optional, List
+from typing import Optional
 from qtrade.core import Broker, Commission
 from qtrade.core.commission import NoCommission
 from qtrade.core.order import Order
@@ -19,7 +19,7 @@ from qtrade.utils.stats import calculate_stats
 # 更新后的 TradingEnv 类
 class TradingEnv(gym.Env):
     """
-    自定义的 Gymnasium 交易环境，使用 Position 类管理持仓
+    自定义的 Gymnasium 交易环境, 使用 Position 类管理持仓
     """
     metadata = {'render_modes': ['human', 'rgb_array'], 'render_fps': 12}
 
@@ -28,7 +28,7 @@ class TradingEnv(gym.Env):
                  margin_ratio: float = 1.0,
                  trade_on_close: bool = True,
                  window_size: int = 1, 
-                 features: List = [], 
+                 features: list[str] = None, 
                  max_steps = 3000, 
                  random_start: bool = False,
                  action_scheme: Optional[ActionScheme] = None,
@@ -37,13 +37,12 @@ class TradingEnv(gym.Env):
                  render_mode: Optional[str] = 'human',
                  verbose: bool = False
                  ):
-        super(TradingEnv, self).__init__()
         
         assert render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
 
-        if not features:
-            features = data.columns.tolist()
+        if features is None:
+            features = ['close']
 
         self.action_scheme = action_scheme if action_scheme else DefaultAction()
         self.reward_scheme = reward_scheme if reward_scheme else DefaultReward()
@@ -84,9 +83,17 @@ class TradingEnv(gym.Env):
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
         super().reset(seed=seed, options=options)
 
-        self.start_idx = self.window_size if not self.random_start else np.random.randint(self.window_size, len(self._data) - self.max_steps)
+        self.start_idx = self.window_size if not self.random_start else np.random.randint(
+            self.window_size, len(self._data) - self.max_steps
+        )
         self.current_step = self.start_idx
-        self._broker = Broker(self._data.iloc[self.start_idx-self.window_size:], self.cash, self.commission, self.margin_ratio, self.trade_on_close)
+        self._broker = Broker(
+            data = self._data.iloc[self.start_idx - self.window_size:], 
+            cash = self.cash, 
+            commission = self.commission, 
+            margin_ratio = self.margin_ratio, 
+            trade_on_close = self.trade_on_close
+        )
         self.truncated = False
         self.terminated = False
         self.stats = None
@@ -160,14 +167,14 @@ class TradingEnv(gym.Env):
         return self._data[ :self._broker.current_time]
     
     @property
-    def filled_orders(self)  -> List[Order]:
+    def filled_orders(self)  -> tuple[Order, ...]:
         """
         Get the filled orders.
         """
         return self._broker.filled_orders
     
     @property
-    def closed_trades(self) -> List[Trade]:
+    def closed_trades(self) -> tuple[Trade, ...]:
         """
         Get the closed trades.
         """
@@ -216,16 +223,18 @@ class TradingEnv(gym.Env):
                             sell_df.index.get_loc(order._fill_date)
                             sell_df.loc[order._fill_date, 'price'] = order._fill_price + 10
                 except KeyError:
-                    # 如果 order['entry_date'] 不在 self.data.index 中，跳过
+                    # 如果 order['entry_date'] 不在 self.data.index 中, 跳过
                     continue
             
             # 定义标记样式
             if 'price' in buy_df.columns and not buy_df['price'].isna().all():
-                buy_plot = mpf.make_addplot(buy_df['price'], type='scatter', markersize=100, marker='^', color='g',ax=self.axes[0])
-                addplots.append(buy_plot)
+                addplots.append(
+                    mpf.make_addplot(buy_df['price'], type='scatter', markersize=50, marker='^', color='g',ax=self.axes[0])
+                )
             if 'price' in sell_df.columns and not sell_df['price'].isna().all():
-                sell_plot = mpf.make_addplot(sell_df['price'], type='scatter', markersize=100, marker='v', color='r',ax=self.axes[0])
-                addplots.append(sell_plot)
+                addplots.append(
+                    mpf.make_addplot(sell_df['price'], type='scatter', markersize=50, marker='v', color='r',ax=self.axes[0])
+                )
 
             # 准备蜡烛图数据
             mpf.plot(
@@ -244,8 +253,10 @@ class TradingEnv(gym.Env):
         success_trades = len([t for t in self._broker.closed_trades if t.profit > 0])
         failed_trades = total_trades - success_trades
         display_title = f'Trading Gym Env Step:{self.current_step - self.start_idx}' \
-                        f'\nEquity:{self._broker.equity:.2f} Position:{self.position.size} Unrealized Pnl:{self._broker.unrealized_pnl}' \
-                        f'\nTotal trades: {total_trades}, success trades: {success_trades}, failed trades: {failed_trades}, active trades: {len(self._broker.position.active_trades)}'
+                        f'\nEquity:{self._broker.equity:.2f} Position:{self.position.size} ' \
+                        f'Unrealized Pnl:{self._broker.unrealized_pnl}' \
+                        f'\nTotal trades: {total_trades}, success trades: {success_trades}, ' \
+                        f'failed trades: {failed_trades}, active trades: {len(self._broker.position.active_trades)}'
         # 设置标题显示当前净值
         self.fig.suptitle(display_title)
 
@@ -257,7 +268,7 @@ class TradingEnv(gym.Env):
             plt.pause(0.01)  # 模拟实时更新的延迟
         elif render_mode == 'rgb_array':
             # 返回RGB array
-            # 将绘图渲染到canvas，然后转换为RGB数组
+            # 将绘图渲染到canvas, 然后转换为RGB数组
             self.fig.canvas.draw()
             actual_width = int(self.fig.get_size_inches()[0] * self.fig.dpi)
             actual_height = int(self.fig.get_size_inches()[1] * self.fig.dpi)

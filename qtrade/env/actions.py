@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List
+from typing import Any
 
 import gymnasium as gym
 from gymnasium.spaces import Space
@@ -17,7 +17,7 @@ class ActionScheme(ABC):
 
 
     @abstractmethod
-    def get_orders(self, action: Any, env: 'TradingEnv') -> List[Order]: # type: ignore
+    def get_orders(self, action: Any, env: 'TradingEnv') -> list[Order]: # type: ignore
         """Returns a list of orders to be executed based on the action."""
         raise NotImplementedError()
     
@@ -29,7 +29,7 @@ class DefaultAction(ActionScheme):
         # Action 0 = Long, 1 = Short, 2 = Empty
         return gym.spaces.Discrete(3)
     
-    def get_orders(self, action: int, env: 'TradingEnv') -> List[Order]: # type: ignore
+    def get_orders(self, action: int, env: 'TradingEnv') -> list[Order]: # type: ignore
         if action == 0:
             if env.position.size == 0:
                 return [Order(size=1)]

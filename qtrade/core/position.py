@@ -1,6 +1,5 @@
 # components/position.py
 
-from typing import List, Tuple
 from .trade import Trade
 
 class Position:
@@ -10,11 +9,11 @@ class Position:
         """
         Initialize the Position with empty lists for active and closed trades.
         """
-        self._active_trades: List[Trade] = []
-        self._closed_trades: List[Trade] = []
+        self._active_trades: list[Trade] = []
+        self._closed_trades: list[Trade] = []
 
     @property
-    def active_trades(self) -> Tuple[Trade, ...]:
+    def active_trades(self) -> tuple[Trade, ...]:
         """
         Get a tuple of all active trades.
 
@@ -24,7 +23,7 @@ class Position:
         return tuple(self._active_trades)
 
     @property
-    def closed_trades(self) -> Tuple[Trade, ...]:
+    def closed_trades(self) -> tuple[Trade, ...]:
         """
         Get a tuple of all closed trades.
 

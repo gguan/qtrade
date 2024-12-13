@@ -5,7 +5,7 @@ from .environment import TradingEnv
 
 __all__ = [
     'ActionScheme',
-    'RewardScheme',
     'ObserverScheme',
+    'RewardScheme',
     'TradingEnv',
 ]

@@ -1,9 +1,8 @@
 from math import copysign
-import pandas as pd
 import numpy as np
 from bokeh.plotting import figure, show, output_notebook, output_file
 from bokeh.models import ColumnDataSource, HoverTool, Span, NumeralTickFormatter, DatetimeTickFormatter, Range1d,LinearAxis
-from bokeh.layouts import gridplot, layout
+from bokeh.layouts import gridplot
 from bokeh.io import curdoc
 from bokeh.models import LinearColorMapper
 from bokeh.models import CustomJSTickFormatter
@@ -12,7 +11,7 @@ from bokeh.colors.named import lime as BULL_COLOR, tomato as BEAR_COLOR
 
 from qtrade.core.broker import Broker
 
-# 假设在Jupyter中使用，如果在脚本中请使用 output_file 或其它方式
+# 假设在Jupyter中使用, 如果在脚本中请使用 output_file 或其它方式
 # output_notebook()
 # output_file('backtest.html')
 
@@ -23,7 +22,7 @@ def _plot_account_value(broker: Broker):
 
     account_value.reset_index(drop=True, inplace=True)
 
-    # 累计收益曲线（从初始值归一化）
+    # 累计收益曲线(从初始值归一化)
     cumulative_returns = account_value / account_value[0]
 
     # source = ColumnDataSource(pd.DataFrame({
@@ -52,15 +51,15 @@ def _plot_account_value(broker: Broker):
     
     drawdowns = (account_value - cumulative_max) / cumulative_max
     
-    # 识别峰值点（累计最大值更新的点）
+    # 识别峰值点(累计最大值更新的点)
     dd_max_time = drawdowns.idxmin()
     dd_max_val = cumulative_returns[dd_max_time]
     dd_max_drawdown = drawdowns.min() * 100
     fig1.scatter(dd_max_time, dd_max_val, color=BEAR_COLOR, size=8,
                       legend_label=f"Max Drawdown ({dd_max_drawdown:.1f}%)")
 
-    # 最大回撤持续时间（在图上用红色水平线段标记回撤开始结束）
-    # 假设回撤持续时间对应的起始与结束点与dd_max有关，这里简化为在peak与最大dd点之间画线
+    # 最大回撤持续时间(在图上用红色水平线段标记回撤开始结束)
+    # 假设回撤持续时间对应的起始与结束点与dd_max有关, 这里简化为在peak与最大dd点之间画线
     # 实际中可根据前面drawdown_periods细化处理
     # 标记回撤阶段
     drawdown_flag = drawdowns < 0
@@ -95,7 +94,7 @@ def _plot_account_value(broker: Broker):
     return fig1
 
 def _plot_trades(broker: Broker, x_range):
-    # 交易记录处理：在价格图中标记交易点（进入与退出），并用不同颜色表示盈亏
+    # 交易记录处理：在价格图中标记交易点(进入与退出), 并用不同颜色表示盈亏
     trades = broker.closed_trades
     datatime = broker.equity_history.loc[:broker.current_time].index
     index = np.arange(len(broker.equity_history.loc[:broker.current_time]))
@@ -152,7 +151,7 @@ def _plot_ohlc(broker: Broker, x_range):
     # 设置额外的 Y 轴范围用于成交量
     fig3.extra_y_ranges = {"volume": Range1d(start=0, end=broker.data.volume.loc[:broker.current_time].mean() * 8)}
     
-    # 添加第二个 Y 轴（右侧）用于成交量
+    # 添加第二个 Y 轴(右侧)用于成交量
     fig3.add_layout(
         LinearAxis(y_range_name="volume", axis_label="Volume"),
         'right'
@@ -161,7 +160,7 @@ def _plot_ohlc(broker: Broker, x_range):
     # 使用 factor_cmap 映射颜色
     color_mapper = factor_cmap('inc', palette=[BEAR_COLOR, BULL_COLOR], factors=['0', '1'])
 
-    # 绘制成交量柱状图，绑定到第二个 Y 轴
+    # 绘制成交量柱状图, 绑定到第二个 Y 轴
     volume_bars = fig3.vbar(
         x='index',
         top='volume',
@@ -234,29 +233,6 @@ return this.labels[index] || "";
 
 
 def plot_with_bokeh(broker: Broker):
-    """
-    根据broker数据绘制回测结果图，包括：
-    1. 权益曲线（含最大回撤、最大回撤持续时间）
-    2. 盈亏标记图
-    3. 价格主图（含交易进出场标记）
-    4. 成交量图
-    5. RSI指标图（示例）
-
-    参数：
-    broker: 已包含回测结果数据的对象
-    """
-    #=========================================================
-    # 数据准备
-    #=========================================================
-    # 假设 broker.account_value_history 是一个 pd.Series，索引为 DatetimeIndex
-    
-    # 假设 trade_history 包含交易记录：EntryTime, ExitTime, EntryPrice, ExitPrice, Size, ReturnPct
-
-
-    # 布局
-    # 上部：Equity, PL
-    # 中部：Price
-    # 下部：Volume, RSI
     fig1 = _plot_account_value(broker)
     fig2 = _plot_trades(broker, fig1.x_range)
     fig3 = _plot_ohlc(broker, fig1.x_range)
@@ -281,7 +257,7 @@ def plot_with_bokeh(broker: Broker):
         f.min_border_bottom = 6
         f.min_border_right = 10
         f.outline_line_color = '#666666'
-        # 可选：设置网格线样式
+        # 可选: 设置网格线样式
         f.xgrid.grid_line_dash = "dotted"  # 虚线样式
         f.ygrid.grid_line_dash = "dotted"   # 实线样式
 

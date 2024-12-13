@@ -27,8 +27,10 @@ setup(
             'pandas_ta>=0.3.14b0',
             'stable-baselines3>=2.4.0',
             'scikit-learn>=1.5.2',
-            'pytest>=8.0.2',
-            'coverage>=7.6.4'
+        ],
+        'test': [
+            'pytest',
+            'coverage'
         ],
     },
     entry_points={

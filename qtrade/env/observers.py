@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, List
+from typing import Any
 
 import gymnasium as gym
 from gymnasium.spaces import Space
@@ -19,7 +19,7 @@ class ObserverScheme(ABC):
 
 class DefaultObserver(ObserverScheme):
 
-    def __init__(self, window_size: int = 10, features: List[str] = ['close']):
+    def __init__(self, window_size: int, features: list[str]):
         super().__init__()
         self.window_size = window_size
         self.features = features
