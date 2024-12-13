@@ -17,7 +17,7 @@ from qtrade.core.broker import Broker
 # output_file('backtest.html')
 
 def _plot_account_value(broker: Broker):
-    account_value = broker.account_value_history.loc[:broker.current_time].copy(deep=True)
+    account_value = broker.equity_history.loc[:broker.current_time].copy(deep=True)
 
     datatime = account_value.index
 
@@ -96,9 +96,9 @@ def _plot_account_value(broker: Broker):
 
 def _plot_trades(broker: Broker, x_range):
     # 交易记录处理：在价格图中标记交易点（进入与退出），并用不同颜色表示盈亏
-    trades = broker.trade_history
-    datatime = broker.account_value_history.loc[:broker.current_time].index
-    index = np.arange(len(broker.account_value_history.loc[:broker.current_time]))
+    trades = broker.closed_trades
+    datatime = broker.equity_history.loc[:broker.current_time].index
+    index = np.arange(len(broker.equity_history.loc[:broker.current_time]))
     trade_source = ColumnDataSource(dict(
         index=np.array([datatime.get_loc(trade.exit_date) if trade.exit_date in datatime else np.nan for trade in trades ]),
         # index=index,
@@ -199,8 +199,8 @@ this.labels = this.labels || formatter.doFormat(ticks
 return this.labels[index] || "";
         ''')
     
-    trades = broker.trade_history
-    datatime = broker.account_value_history.loc[:broker.current_time].index
+    trades = broker.closed_trades
+    datatime = broker.equity_history.loc[:broker.current_time].index
     trade_source = ColumnDataSource(dict(
         top=np.array([trade.exit_price for trade in trades]),
         bottom=np.array([trade.entry_price for trade in trades]),
@@ -212,7 +212,7 @@ return this.labels[index] || "";
     fig3.quad(left='left', right='right', top='top', bottom='bottom', source=trade_source, color='color', alpha=0.2, legend_label=f'Trades({len(trades)})')
     
     # 绘制买卖点
-    orders = [order for order in broker.order_history if order._is_filled]
+    orders = [order for order in broker.filled_orders if order._is_filled]
     order_source = ColumnDataSource(dict(
         index=np.array([datatime.get_loc(order._fill_date) if order._fill_date in datatime else np.nan for order in orders ]),
         size=np.array([abs(order.size) for order in orders]),

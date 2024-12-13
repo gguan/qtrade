@@ -74,13 +74,9 @@ class Backtest:
 
             self.strategy.next()
 
-            self.broker.process_new_orders()
-
-            self.broker.update_account_value_history()
 
         # Close all positions at the end
         self.broker.close_all_positions()
-        self.broker.update_account_value_history()
 
 
     def show_stats(self):
@@ -96,7 +92,7 @@ class Backtest:
 
         :return: DataFrame with trade details
         """
-        trade_history = self.broker.trade_history
+        trade_history = self.broker.closed_trades
         return pd.DataFrame({
             'Type': ['Long' if trade.is_long else 'Short' for trade in trade_history],
             'Size': [trade.size for trade in trade_history],

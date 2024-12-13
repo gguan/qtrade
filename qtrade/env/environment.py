@@ -14,6 +14,7 @@ from qtrade.env.actions import ActionScheme, DefaultAction
 from qtrade.env.rewards import RewardScheme, DefaultReward
 from qtrade.env.observers import ObserverScheme, DefaultObserver
 from qtrade.utils.plot_bokeh import plot_with_bokeh
+from qtrade.utils.stats import calculate_stats
 
 # 更新后的 TradingEnv 类
 class TradingEnv(gym.Env):
@@ -88,6 +89,7 @@ class TradingEnv(gym.Env):
         self._broker = Broker(self._data.iloc[self.start_idx-self.window_size:], self.cash, self.commission, self.margin_ratio, self.trade_on_close)
         self.truncated = False
         self.terminated = False
+        self.stats = None
 
         current_time = self._data.index[self.current_step]
         self._broker.process_bar(current_time)
@@ -108,9 +110,7 @@ class TradingEnv(gym.Env):
         
         orders = self.action_scheme.get_orders(action, self)
 
-        self._broker.new_orders(orders)
-        self._broker.process_new_orders()
-        self._broker.update_account_value_history()
+        self._broker.place_orders(orders)
 
         # 计算奖励
         reward = self.reward_scheme.get_reward(self)
@@ -121,18 +121,17 @@ class TradingEnv(gym.Env):
 
         if self.terminated or self.truncated:
             self._broker.close_all_positions()
-            self._broker.update_account_value_history()
 
         # 构建下一个状态
         obs = self.observer_scheme.get_observation(self)
 
         # 附加信息
         info = {
-            'equity': self._broker.account_value,
+            'equity': self._broker.equity,
             'unrealized_pnl': self._broker.unrealized_pnl,
-            'cumulative_return': self._broker.cummulative_returns,
+            'cumulative_return': self._broker.cumulative_returns,
             'position': self._broker.position.size,
-            'total_trades': len(self._broker.trade_history),
+            'total_trades': len(self._broker.closed_trades),
         }
 
         return obs, reward, self.terminated, self.truncated, info
@@ -165,19 +164,19 @@ class TradingEnv(gym.Env):
         """
         Get the filled orders.
         """
-        return self._broker.order_history
+        return self._broker.filled_orders
     
     @property
     def closed_trades(self) -> List[Trade]:
         """
         Get the closed trades.
         """
-        return self._broker.trade_history
+        return self._broker.closed_trades
 
     def render(self, mode=None):
          # 获取要绘制的数据
         data = self._broker.data.loc[:self._broker.current_time].tail(300)
-        account_value = self._broker.account_value_history.loc[:self._broker.current_time].tail(300)
+        account_value = self._broker.equity_history.loc[:self._broker.current_time].tail(300)
         
         if self.fig is None:
             # 初次绘制
@@ -207,7 +206,7 @@ class TradingEnv(gym.Env):
             buy_df = pd.DataFrame(index=data.index, columns=['price'])
             sell_df = pd.DataFrame(index=data.index, columns=['price'])
 
-            for order in self._broker.order_history:
+            for order in self._broker.filled_orders:
                 try:
                     if order._is_filled:
                         if order.size > 0:
@@ -241,11 +240,11 @@ class TradingEnv(gym.Env):
             )
             self.axes[2].set_ylabel('Net Equity')
 
-        total_trades = len(self._broker.trade_history)
-        success_trades = len([t for t in self._broker.trade_history if t.profit > 0])
+        total_trades = len(self._broker.closed_trades)
+        success_trades = len([t for t in self._broker.closed_trades if t.profit > 0])
         failed_trades = total_trades - success_trades
         display_title = f'Trading Gym Env Step:{self.current_step - self.start_idx}' \
-                        f'\nEquity:{self._broker.account_value:.2f} Position:{self.position.size} Unrealized Pnl:{self._broker.unrealized_pnl}' \
+                        f'\nEquity:{self._broker.equity:.2f} Position:{self.position.size} Unrealized Pnl:{self._broker.unrealized_pnl}' \
                         f'\nTotal trades: {total_trades}, success trades: {success_trades}, failed trades: {failed_trades}, active trades: {len(self._broker.position.active_trades)}'
         # 设置标题显示当前净值
         self.fig.suptitle(display_title)
@@ -276,5 +275,32 @@ class TradingEnv(gym.Env):
     def close(self):
         plt.close()
 
+    def show_stats(self):
+        if not self.stats:
+            self.stats = calculate_stats(self._broker)
+        for key, value in self.stats.items():
+            print(f"{key:30}: {value}")
+
+  
+    def get_trade_history(self) -> pd.DataFrame:
+        """
+        Get detailed information about all trades.
+
+        :return: DataFrame with trade details
+        """
+        trade_history = self._broker.closed_trades
+        return pd.DataFrame({
+            'Type': ['Long' if trade.is_long else 'Short' for trade in trade_history],
+            'Size': [trade.size for trade in trade_history],
+            'Entry Price': [trade.entry_price for trade in trade_history],
+            'Exit Price': [trade.exit_price for trade in trade_history],
+            'Entry Time': [trade.entry_date for trade in trade_history],
+            'Exit Date': [trade.exit_date for trade in trade_history],
+            'Profit': [trade.profit for trade in trade_history],
+            'Tag': [trade.tag for trade in trade_history],
+            'Exit Reason': [trade.exit_reason for trade in trade_history],
+            'Duration': [trade.exit_date - trade.entry_date for trade in trade_history],
+        })
+    
     def plot(self):
         plot_with_bokeh(self._broker)

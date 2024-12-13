@@ -5,112 +5,158 @@ import pandas as pd
 
 
 class Order:
-    def __init__(self,
-                 size: int,
-                 limit: Optional[float] = None,
-                 stop: Optional[float] = None,
-                 sl: Optional[float] = None,
-                 tp: Optional[float] = None,
-                 tag: Optional[object] = None):
-        """
-        Initialize an order.
+    """
+    Represents a trading order with optional limit, stop, stop loss, and take profit prices.
 
-        :param size: Order size (positive for buy, negative for sell)
-        :param limit: Limit price for limit orders
-        :param stop: Stop price for stop orders
-        :param sl: Stop loss price
-        :param tp: Take profit price
-        :param tag: Order tag for identification
+    Attributes:
+        size (int): Order size (positive for buy, negative for sell).
+        limit (Optional[float]): Limit price for limit orders.
+        stop (Optional[float]): Stop price for stop orders.
+        sl (Optional[float]): Stop loss price.
+        tp (Optional[float]): Take profit price.
+        tag (Optional[object]): Tag for identifying the order.
+        is_filled (bool): Indicates if the order has been filled.
+        fill_price (Optional[float]): Price at which the order was filled.
+        fill_date (Optional[pd.Timestamp]): Date when the order was filled.
+        reject_reason (Optional[str]): Reason for order rejection, if any.
+    """
+
+    def __init__(
+        self,
+        size: int,
+        limit: Optional[float] = None,
+        stop: Optional[float] = None,
+        sl: Optional[float] = None,
+        tp: Optional[float] = None,
+        tag: Optional[object] = None
+    ):
         """
-        assert size != 0, 'Order size cannot be zero'
-        self._size = size
-        self._limit = limit
-        self._stop = stop
-        self._sl = sl
-        self._tp = tp
-        self._tag = tag
-        self._is_filled = False
+        Initialize an Order instance.
+
+        Args:
+            size (int): Order size (positive for buy, negative for sell).
+            limit (Optional[float], optional): Limit price for limit orders. Defaults to None.
+            stop (Optional[float], optional): Stop price for stop orders. Defaults to None.
+            sl (Optional[float], optional): Stop loss price. Defaults to None.
+            tp (Optional[float], optional): Take profit price. Defaults to None.
+            tag (Optional[object], optional): Tag for identification. Defaults to None.
+
+        Raises:
+            AssertionError: If the order size is zero.
+        """
+        assert size != 0, 'Order size cannot be zero.'
+
+        self._size: int = size
+        self._limit: Optional[float] = limit
+        self._stop: Optional[float] = stop
+        self._sl: Optional[float] = sl
+        self._tp: Optional[float] = tp
+        self._tag: Optional[object] = tag
+
+        self._is_filled: bool = False
         self._fill_price: Optional[float] = None
         self._fill_date: Optional[pd.Timestamp] = None
-        self._reject_reason: Optional[str] = None
+        self._close_reason: Optional[str] = None
 
-    def fill(self, fill_price: float, fill_date: pd.Timestamp):
+    def _fill(self, fill_price: float, fill_date: pd.Timestamp) -> None:
         """
-        Fill the order.
+        Mark the order as filled with the given price and date.
 
-        :param fill_price: Price at which the order is filled
-        :param fill_date: Date when the order is filled
+        Args:
+            fill_price (float): Price at which the order was filled.
+            fill_date (pd.Timestamp): Date when the order was filled.
+
+        Raises:
+            ValueError: If the order already filled.
         """
         if self._is_filled:
-            raise ValueError("Order is already filled.")
+            raise ValueError("Order already filled.")
+        
+        if self.is_closed:
+            raise ValueError("Order already closed.")
+
         self._is_filled = True
         self._fill_price = fill_price
         self._fill_date = fill_date
 
-    def reject(self, reason: str):
-        self._reject_reason = reason
+    def _close(self, reason: str) -> None:
+        """
+        Close the order with a given reason.
+
+        Args:
+            reason (str): Reason for rejection.
+        """
+        if self._is_filled:
+            raise ValueError("Order already filled.")
+        if self.is_closed:
+            raise ValueError("Order already closed.")
+        self._close_reason = reason
+
+    def cancel(self) -> None:
+        """Cancel the order."""
+        self._close("Order canceled.")
 
     @property
     def size(self) -> int:
-        """Return the order size."""
+        """int: Order size."""
         return self._size
 
     @property
     def limit(self) -> Optional[float]:
-        """Return the limit price."""
+        """Optional[float]: Limit price."""
         return self._limit
 
     @property
     def stop(self) -> Optional[float]:
-        """Return the stop price."""
+        """Optional[float]: Stop price."""
         return self._stop
 
     @property
     def sl(self) -> Optional[float]:
-        """Return the stop loss price."""
+        """Optional[float]: Stop loss price."""
         return self._sl
 
     @property
     def tp(self) -> Optional[float]:
-        """Return the take profit price."""
+        """Optional[float]: Take profit price."""
         return self._tp
 
     @property
     def tag(self) -> Optional[object]:
-        """Return the order tag."""
+        """Optional[object]: Order tag."""
         return self._tag
 
     @property
     def is_long(self) -> bool:
-        """True if the order is a long position (size > 0)."""
+        """bool: True if the order is a long position."""
         return self._size > 0
 
     @property
     def is_short(self) -> bool:
-        """True if the order is a short position (size < 0)."""
+        """bool: True if the order is a short position."""
         return self._size < 0
-    
+
     @property
     def is_filled(self) -> bool:
-        """True if the order is filled."""
+        """bool: Indicates if the order is filled."""
         return self._is_filled
-    
+
     @property
     def fill_price(self) -> Optional[float]:
-        """Return the fill price."""
+        """Optional[float]: Fill price."""
         return self._fill_price
-    
+
     @property
     def fill_date(self) -> Optional[pd.Timestamp]:
-        """Return the fill date."""
+        """Optional[pd.Timestamp]: Fill date."""
         return self._fill_date
+    
+    @property
+    def is_closed(self) -> bool:
+        """bool: Indicates if the order is canceled or rejected."""
+        return self._close_reason is not None
 
     def __repr__(self) -> str:
-        """
-        Return a string representation of the order.
-
-        :return: String representation of the order
-        """
         params = (
             ('Size', self._size),
             ('Limit', self._limit),
@@ -119,5 +165,5 @@ class Order:
             ('Tp', self._tp),
             ('Tag', self.tag),
         )
-        param_str = ', '.join(f'{param}={value}' for param, value in params if value is not None)
+        param_str = ', '.join(f'{name}={value}' for name, value in params if value is not None)
         return f'<Order {param_str}>'

@@ -49,7 +49,7 @@ class Strategy(ABC):
         :param tag: Order tag
         """
         order = Order(size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag)
-        self._broker.new_order(order)
+        self._broker.place_orders(order)
 
     def sell(self, *,
              size: int = 1,
@@ -69,7 +69,7 @@ class Strategy(ABC):
         :param tag: Order tag
         """
         order = Order(-size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag)
-        self._broker.new_order(order)
+        self._broker.place_orders(order)
 
     def close(self):
         """
@@ -89,12 +89,12 @@ class Strategy(ABC):
         return self.raw_data[:self._broker.current_time]
 
     @property
-    def account_value(self) -> float:
+    def equity(self) -> float:
         """
         Get the current account value.
 
         """
-        return self._broker.account_value
+        return self._broker.equity
     
     @property
     def unrealized_pnl(self) -> float:

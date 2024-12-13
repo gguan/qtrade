@@ -18,15 +18,17 @@ setup(
         'scipy>=1.6.0',
         'matplotlib>=3.3.0',
         'bokeh>=3.3.0',
-        'pandas_ta>=0.3.14b0',
         'tqdm>=4.0.0',
         'gymnasium>=1.0.0',
         'mplfinance>=0.12.10b0',
     ],
     extras_require={
         'dev': [
+            'pandas_ta>=0.3.14b0',
             'stable-baselines3>=2.4.0',
             'scikit-learn>=1.5.2',
+            'pytest>=8.0.2',
+            'coverage>=7.6.4'
         ],
     },
     entry_points={
@@ -38,10 +40,10 @@ setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Financial and Insurance Industry',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Topic :: Office/Business :: Financial :: Investment',
     ],
 )
