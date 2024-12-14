@@ -31,7 +31,7 @@ def _plot_account_value(broker: Broker):
     #     'cumulative_returns': cumulative_returns,
     # }))
     # source.data['index'] = np.arange(len(cumulative_returns))
-    # 创建顶部的权益曲线图（包含最大回撤与持续时间）
+    # 创建顶部的权益曲线图(包含最大回撤与持续时间)
     fig1 = figure(height=100, tools="xpan,xwheel_zoom,reset,save",
                         active_drag='xpan', active_scroll='xwheel_zoom')
     fig1.line(cumulative_returns.index, cumulative_returns, line_width=1.5, line_alpha=1)

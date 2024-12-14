@@ -13,7 +13,7 @@ setup(
     include_package_data=True,
     python_requires='>=3.9',
     install_requires=[
-        'numpy==1.26.4',
+        'numpy',
         'pandas',
         'scipy>=1.6.0',
         'matplotlib>=3.3.0',
