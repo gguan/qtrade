@@ -17,7 +17,7 @@ setup(
         'pandas',
         'scipy>=1.6.0',
         'matplotlib>=3.3.0',
-        'bokeh>=3.3.0',
+        'bokeh>=3.1.1',
         'tqdm>=4.0.0',
         'gymnasium>=1.0.0',
         'mplfinance>=0.12.10b0',
