@@ -1,6 +1,12 @@
+[![CI Status](https://github.com/gguan/qtrade/actions/workflows/ci.yml/badge.svg)](https://github.com/gguan/qtrade/actions)
+[![Python](https://img.shields.io/pypi/pyversions/qtrade.svg)](https://badge.fury.io/py/qtrade)
+[![PyPI version](https://badge.fury.io/py/qtrade.svg)](https://badge.fury.io/py/qtrade)
+![Coverage](https://img.shields.io/badge/coverage-97%25-green)
+[![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # QTrade
 
-A powerful quantitative trading framework for financial markets.
+A Python library for backtesting trading strategies and applying reinforcement learning to trading.
 
 ## Features
 
