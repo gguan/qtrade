@@ -1,5 +1,7 @@
 # components/position.py
 
+from __future__ import annotations
+
 from .trade import Trade
 
 class Position:
