@@ -11,7 +11,7 @@ setup(
     url='https://github.com/yourusername/qtrade',
     packages=find_packages(exclude=['tests*', 'examples*']),
     include_package_data=True,
-    python_requires='>=3.9',
+    python_requires='>=3.8',
     install_requires=[
         'numpy',
         'pandas',
