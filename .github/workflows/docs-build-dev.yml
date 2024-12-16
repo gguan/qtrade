@@ -28,6 +28,7 @@ jobs:
         run: |
           cd docs
           make html
+          cd ..
 
       - name: Remove .doctrees
         run: rm -r _build/.doctrees
