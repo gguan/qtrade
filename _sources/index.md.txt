@@ -70,7 +70,7 @@ Contribute to the Docs <https://github.com/gguan/qtrade/blob/main/docs/README.md
 QTrade can be installed with [pip](https://pip.pypa.io):
 
 ```bash
-$ pip install qtrade
+$ pip install qtrade-lib
 ```
 
 Alternatively, you can obtain the latest source code from [GitHub](https://github.com/gguan/qtrade):

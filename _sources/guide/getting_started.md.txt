@@ -19,8 +19,6 @@ class SMAStrategy(Strategy):
         if self.data.SMA10[-2] > self.data.SMA10[-2] and \
             self.data.SMA10[-1] < self.data.SMA10[-1]:
             self.close()
-
-
 ```
 
 ## Data
