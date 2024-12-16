@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='qtrade',
+    name='qtrade-lib',
     version='0.1.0',
     description='A Python library for backtesting trading strategies and applying reinforcement learning to trading.',
     long_description=open('README.md').read(),

@@ -1,90 +1,63 @@
 [![CI Status](https://github.com/gguan/qtrade/actions/workflows/ci.yml/badge.svg)](https://github.com/gguan/qtrade/actions)
-[![Python](https://img.shields.io/pypi/pyversions/qtrade.svg)](https://badge.fury.io/py/qtrade)
-[![PyPI version](https://badge.fury.io/py/qtrade.svg)](https://badge.fury.io/py/qtrade)
-![Coverage](https://img.shields.io/badge/coverage-97%25-green)
+[![Python](https://img.shields.io/pypi/pyversions/qtrade-lib.svg)](https://badge.fury.io/py/qtrade-lib)
+[![PyPI version](https://badge.fury.io/py/qtrade-lib.svg)](https://badge.fury.io/py/qtrade-lib)
+![Coverage](https://img.shields.io/badge/coverage-87%25-green)
 [![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 # QTrade
 
-A Python library for backtesting trading strategies and applying reinforcement learning to trading.
+QTrade is a simple, modular, and highly customizable trading interface capable of handling backtesting, reinforcement learning tasks.
 
 ## Features
 
 - Backtesting engine
-- Market data components
-- Trading environment simulation
-- Strategy development tools
+- Gym Trading environment simulation
 
 ## Installation
 
-### From Source
+QTrade can be installed with [pip](https://pip.pypa.io):
 
 ```bash
-git clone https://github.com/yourusername/qtrade.git
-cd qtrade
-pip install -e .
+$ pip install qtrade-lib
+```
+
+Alternatively, you can obtain the latest source code from [GitHub](https://github.com/gguan/qtrade):
+
+```bash
+$ git clone https://github.com/gguan/qtrade.git
+$ cd qtrade
+$ pip install .
 ```
 
 ### Run Example
 
-Run strategy backtest example
+To run the example code from repository:
 
 ```bash
-python examples/simply_strategy.py
-```
-
-Run reinforcement learning example
-
-```bash
-python examples/rl_example.py
+$ pip install -r examples/requirements.txt
+$ python examples/simple_strategy.py
 ```
 
 ### Requirements
 
-- Python >= 3.7
+- Python >= 3.8
 - Dependencies listed in requirements.txt
 
-## Project Structure
 
-```
-qtrade/
-├── qtrade/              # Main package
-│   ├── backtest/       # Backtesting engine
-│   ├── components/     # Trading components
-│   └── env/           # Trading environment
-├── tests/              # Unit tests
-├── examples/           # Example scripts
-└── docs/              # Documentation
-```
+### Usage
 
-## Usage
+The [User Guide](guide/getting_started.md) is the place to learn how to use the library and accomplish common tasks. For more advanced customization, refer to the [Customization Guide](customisation/index.md).
 
-Basic example:
+The [Reference Documentation](reference/index.md) provides API-level documentation.
 
-```python
-from qtrade import Backtest
-from qtrade.components import Strategy
 
-# Your trading logic here
-```
+## References
 
-## Development
+This project is inspired by following projects.
 
-1. Create virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+- https://github.com/tensortrade-org/tensortrade
+- https://github.com/kernc/backtesting.py
 
-2. Install development dependencies:
-```bash
-pip install -e ".[dev]"
-```
-
-3. Run tests:
-```bash
-pytest tests/
-```
 
 ## License
 
