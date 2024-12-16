@@ -86,9 +86,10 @@ class TradingEnv(gym.Env):
         self.start_idx = self.window_size if not self.random_start else np.random.randint(
             self.window_size, len(self._data) - self.max_steps
         )
+
         self.current_step = self.start_idx
         self._broker = Broker(
-            data = self._data.iloc[self.start_idx - self.window_size:], 
+            data = self._data.iloc[self.start_idx - self.window_size:].copy(), 
             cash = self.cash, 
             commission = self.commission, 
             margin_ratio = self.margin_ratio, 

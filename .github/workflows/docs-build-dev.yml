@@ -1,0 +1,40 @@
+name: Build main branch documentation website
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    name: Generate Website
+    runs-on: ubuntu-latest
+    env:
+      SPHINX_GITHUB_CHANGELOG_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+            python-version: '3.9'
+
+      - name: Install dependencies
+        run: pip install -r docs/requirements.txt
+
+      - name: Build Documentation
+        run: |
+          cd docs
+          make html
+
+      - name: Remove .doctrees
+        run: rm -r _build/.doctrees
+
+      - name: Upload to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: _build
+          target-folder: main
+          clean: false

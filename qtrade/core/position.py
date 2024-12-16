@@ -50,5 +50,8 @@ class Position:
     
     def __repr__(self):
         """Return a string representation of the Position object."""
-        return f'<Position Size={self.size} | Active Trades=({len(self.active_trades)} | Closed Trades=({len(self.closed_trades)})>'
+        return (
+            f'<Position Size={self.size} | Active Trades=({len(self.active_trades)}) | '
+            f'Closed Trades=({len(self.closed_trades)})>'
+        )
 

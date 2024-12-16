@@ -10,7 +10,7 @@ def __calculate_basic_metrics(metrics: dict, broker: Broker) -> dict:
     metrics['Start'] = data.index[0]
     metrics['End'] = broker.current_time
     metrics['Duration'] = broker.current_time - data.index[0]
-    metrics['Start Value'] = broker.equity_history[0]
+    metrics['Start Value'] = broker.equity_history.iloc[0]
     metrics['End Value'] = broker.equity_history.loc[broker.current_time]
 
 def __calculate_return_metrics(metrics: dict, broker: Broker) -> None:
@@ -19,16 +19,25 @@ def __calculate_return_metrics(metrics: dict, broker: Broker) -> None:
     total_return = (end_value - start_value) / start_value * 100
     metrics['Total Return [%]'] = total_return
 
+    total_commissions = 0 if broker.commission is None else sum(
+        [broker.commission.calculate_commission(o.size, o.fill_price) for o in broker.filled_orders]
+    )
+    metrics['Total Commission Cost[%]'] = total_commissions
+
     # Buy & Hold Return
-    buy_hold_return = (broker.data['close'][broker.current_time] - broker.data['close'][0]) / broker.data['close'][0] * 100
+    buy_hold_return = (
+        (broker.data['close'].loc[broker.current_time] - broker.data['close'].iloc[0])
+        / broker.data['close'].iloc[0] * 100
+    )
     metrics['Buy & Hold Return [%]'] = buy_hold_return
 
     # Annualized Return
-    day_returns = broker.equity_history.loc[:broker.current_time].resample('D').last().pct_change().dropna()
+    day_returns = broker.equity_history.loc[:broker.current_time].resample('D').last().pct_change(fill_method=None).dropna()
     gmean_day_return = gmean(1 + day_returns) - 1
     # For assets tradable on weekends (e.g., crypto), we assume 365 trading days; for stocks, 252 days
     annual_trading_days = float(
-        365 if broker.equity_history.loc[:broker.current_time].index.dayofweek.to_series().between(5, 6).mean() > 2/7 * 0.6 else
+        365 if broker.equity_history.loc[:broker.current_time]
+        .index.dayofweek.to_series().between(5, 6).mean() > 2/7 * 0.6 else
         252)
     annualized_return = (1 + gmean_day_return) ** annual_trading_days - 1
     metrics['Return (Ann.) [%]'] = annualized_return * 100
@@ -69,8 +78,14 @@ def __calculate_trade_metrics(metrics: dict, broker: Broker) -> None:
     worst_trade = min([t.profit for t in trades], default=0)
     avg_win = np.mean(wins) if wins else 0
     avg_loss = np.mean(losses) if losses else 0
-    avg_win_duration = (sum([t.exit_date - t.entry_date for t in trades if t.profit > 0], timedelta()) / len([t for t in trades if t.profit > 0])) if wins else timedelta()
-    avg_loss_duration = (sum([t.exit_date - t.entry_date for t in trades if t.profit <= 0], timedelta()) / len([t for t in trades if t.profit <= 0])) if losses else timedelta()
+    avg_win_duration = (
+        sum([t.exit_date - t.entry_date for t in trades if t.profit > 0], timedelta()) /
+        len([t for t in trades if t.profit > 0])
+    ) if wins else timedelta()
+    avg_loss_duration = (
+        sum([t.exit_date - t.entry_date for t in trades if t.profit <= 0], timedelta()) /
+        len([t for t in trades if t.profit <= 0])
+    ) if losses else timedelta()
 
     metrics['Total Trades'] = total_trades
     metrics['Win Rate [%]'] = win_rate
@@ -93,9 +108,11 @@ def __calculate_performance_ratios(metrics: dict, broker: Broker) -> None:
     metrics['Expectancy'] = expectancy if not np.isnan(expectancy) else np.nan
 
     # Sharpe Ratio
-    daily_returns = broker.equity_history.loc[:broker.current_time].resample('D').last().pct_change().dropna()
+    daily_returns = broker.equity_history.loc[:broker.current_time].resample('D').last().pct_change(fill_method=None).dropna()
     annual_trading_days = float(
-        365 if broker.equity_history.loc[:broker.current_time].index.dayofweek.to_series().between(5, 6).mean() > 2/7 * 0.6 else
+        365 if broker.equity_history.loc[:broker.current_time]
+        .index.dayofweek.to_series().between(5, 6).mean() > 2/7 * 0.6 
+        else
         252)
     risk_free_rate = 0.0  # Assume risk-free rate is 0; adjust as needed
     if daily_returns.std() != 0:

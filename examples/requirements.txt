@@ -1,0 +1,4 @@
+TA-Lib>=0.5.0
+scikit-learn>=1.5.2
+stable-baselines3>=2.4.0
+stable-baselines3[extra]

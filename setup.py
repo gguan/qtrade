@@ -23,11 +23,6 @@ setup(
         'mplfinance>=0.12.10b0',
     ],
     extras_require={
-        'dev': [
-            'pandas_ta>=0.3.14b0',
-            'stable-baselines3>=2.4.0',
-            'scikit-learn>=1.5.2',
-        ],
         'test': [
             'pytest',
             'coverage'

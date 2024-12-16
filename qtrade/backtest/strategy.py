@@ -35,7 +35,7 @@ class Strategy(ABC):
         pass
 
     def buy(self, *,
-            size: int = 1,
+            size: Optional[int] = None,
             limit: Optional[float] = None,
             stop: Optional[float] = None,
             sl: Optional[float] = None,
@@ -44,18 +44,22 @@ class Strategy(ABC):
         """
         Place a buy order.
 
-        :param size: Order size
+        :param size: Order size, if not set, the size will be calculated based on the available margin
         :param limit: Limit price
         :param stop: Stop price
         :param sl: Stop loss price
         :param tp: Take profit price
         :param tag: Order tag
         """
+        if size is None:
+            size = self._broker.available_margin // self.data['close'].iloc[-1]
+        if size == 0:
+            print(self._broker.available_margin)
         order = Order(size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag)
         self._broker.place_orders(order)
 
     def sell(self, *,
-             size: int = 1,
+             size: Optional[int] = None,
              limit: Optional[float] = None,
              stop: Optional[float] = None,
              sl: Optional[float] = None,
@@ -71,6 +75,8 @@ class Strategy(ABC):
         :param tp: Take profit price
         :param tag: Order tag
         """
+        if size is None:
+            size = self.position.size
         order = Order(-size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag)
         self._broker.place_orders(order)
 

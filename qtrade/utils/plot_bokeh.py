@@ -64,7 +64,7 @@ def _plot_equity(source, equity_history, cumulative_returns, buy_and_hold_return
     dd_max_time = drawdowns.idxmin()
     dd_max_val = cumulative_returns[dd_max_time]
     dd_max_drawdown = drawdowns.min() * 100
-    fig_equity.scatter(dd_max_time, dd_max_val, color=day_colors['drawdown'], size=7, line_color='black', line_width=0.5, 
+    fig_equity.scatter(dd_max_time, dd_max_val, color=day_colors['drawdown'], size=7, line_color='black', line_width=0.5,
                       legend_label=f"Max Drawdown ({dd_max_drawdown:.1f}%)")
 
     # Maximum drawdown duration (marked with red horizontal line segments on the chart)
