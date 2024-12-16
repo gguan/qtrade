@@ -30,9 +30,7 @@ jobs:
           make html
 
       - name: Remove .doctrees
-        run: |
-          ls
-          rm -r _build/doctrees
+        run: rm -r docs/_build/doctrees
 
       - name: Upload to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
