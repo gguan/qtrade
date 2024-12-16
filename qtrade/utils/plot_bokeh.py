@@ -36,6 +36,7 @@ def _plot_equity(source, equity_history, cumulative_returns, buy_and_hold_return
         formatters={
             '@datetime': 'datetime',  # Use datetime to format dates
         },
+        visible=False,
         mode='vline',  # Vertical line mode
         renderers=[r]
     )
@@ -134,8 +135,20 @@ def _plot_trade(trades, datetime, x_range):
         ("Return Pct", "@return_pct{0.00%}"),
         ("Profit", "@profit{0,0.00}")
     ]
-    fig_trade.add_tools(HoverTool(tooltips=tooltips, formatters={"@datetime": "datetime"}, mode='vline', renderers=[r1]))
-    fig_trade.add_tools(HoverTool(tooltips=tooltips, formatters={"@datetime": "datetime"}, mode='vline', renderers=[r2]))
+    fig_trade.add_tools(HoverTool(
+        tooltips=tooltips,
+        formatters={"@datetime": "datetime"},
+        visible=False,
+        mode='vline',
+        renderers=[r1]
+    ))
+    fig_trade.add_tools(HoverTool(
+        tooltips=tooltips,
+        formatters={"@datetime": "datetime"},
+        visible=False,
+        mode='vline',
+        renderers=[r2]
+    ))
     
     fig_trade.legend.title = 'Trades - Net Profit/Loss'
     fig_trade.yaxis.formatter = NumeralTickFormatter(format="0.[00]%")
@@ -194,6 +207,7 @@ def _plot_ohlc(source, datetime, trades, orders, plot_volume=True):
         formatters={
             '@datetime': 'datetime',  # Use datetime to format dates
         },
+        visible=False,
         mode='vline',  # Vertical line mode
         attachment='right',
         renderers=[r]
@@ -247,7 +261,7 @@ return this.labels[index] || "";
         ("Size", "@size{0,0}"),
         ("Fill Price", "@fill_price{0,0.00}")
     ]
-    fig_ohlc.add_tools(HoverTool(tooltips=order_tooltips, formatters={"@datetime": "datetime"}, mode='vline', 
+    fig_ohlc.add_tools(HoverTool(tooltips=order_tooltips, formatters={"@datetime": "datetime"}, toggleable=False, mode='vline',
                                  attachment='left', renderers=[r2]))
 
     fig_ohlc.legend.title = f'{datetime[0]} - {datetime[-1]} ({datetime[-1]-datetime[0]})'
