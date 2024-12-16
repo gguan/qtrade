@@ -32,9 +32,8 @@ jobs:
       - name: Remove .doctrees
         run: rm -r docs/_build/doctrees
 
-      - name: Upload to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          folder: _build
-          target-folder: main
-          clean: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build/html
