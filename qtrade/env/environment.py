@@ -133,6 +133,7 @@ class TradingEnv(gym.Env):
         # 构建下一个状态
         obs = self.observer_scheme.get_observation(self)
 
+        trades_profit =sum([t.profit for t in self._broker.closed_trades])
         # 附加信息
         info = {
             'equity': self._broker.equity,
@@ -140,6 +141,8 @@ class TradingEnv(gym.Env):
             'cumulative_return': self._broker.cumulative_returns,
             'position': self._broker.position.size,
             'total_trades': len(self._broker.closed_trades),
+            'trades_profit': trades_profit,
+            'is_success': trades_profit > 0,
         }
 
         return obs, reward, self.terminated, self.truncated, info
@@ -264,7 +267,7 @@ class TradingEnv(gym.Env):
         render_mode = mode if mode else self.render_mode
         if render_mode not in self.metadata['render_modes']:
             raise ValueError(f"Unsupported render mode: {mode}")
-        
+
         if render_mode == 'human':
             plt.pause(0.01)  # 模拟实时更新的延迟
         elif render_mode == 'rgb_array':
@@ -273,8 +276,15 @@ class TradingEnv(gym.Env):
             self.fig.canvas.draw()
             actual_width = int(self.fig.get_size_inches()[0] * self.fig.dpi)
             actual_height = int(self.fig.get_size_inches()[1] * self.fig.dpi)
-            img = np.frombuffer(self.fig.canvas.tostring_rgb(), dtype='uint8')
-            img = img.reshape((int(actual_height), int(actual_width), 3))
+            if hasattr(self.fig.canvas, 'tostring_rgb'):
+                img = np.frombuffer(self.fig.canvas.tostring_rgb(), dtype='uint8')
+                img = img.reshape((actual_height, actual_width, 3))  # RGB has 3 channels
+            elif hasattr(self.fig.canvas, 'tostring_argb'):
+                img = np.frombuffer(self.fig.canvas.tostring_argb(), dtype='uint8')
+                img = img.reshape((actual_height, actual_width, 4))  # ARGB has 4 channels
+                img = img[:, :, 1:]  # 去掉Alpha通道, 保留RGB通道
+            else:
+                raise RuntimeError("Canvas does not support tostring_rgb or tostring_argb")
             return img
         
 

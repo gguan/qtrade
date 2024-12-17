@@ -48,7 +48,7 @@ data['SMA3'] = data['Close'].rolling(3).mean()
 data['SMA10'] = data['Close'].rolling(10).mean()
 ```
 
-# Backtest
+## Backtest
 
 Now let's backtest our stratgy on prepared data.
 
@@ -67,7 +67,7 @@ bt.run()
 bt.show_stats()
 ```
 
-```plaintext
+```text
 Start                         : 2023-01-03 00:00:00
 End                           : 2023-12-29 00:00:00
 Duration                      : 360 days 00:00:00
@@ -96,7 +96,7 @@ Calmar Ratio                  : 4.733870299098423
 Omega Ratio                   : 1.7873724100138564
 ```
 
-# Plot
+## Plot
 
 Qtrade uses Bokeh to plot result charts. You can generate a plot of your backtest results with the following command:
 
@@ -108,7 +108,7 @@ bt.plot()
 <iframe src="../_static/demo.html" width="100%" height="600px" style="border:none;"></iframe>
 
 
-# Trades
+## Trades
 
 You can also check all trades by using the following commands:
 
@@ -117,7 +117,7 @@ trade_details = bt.get_trade_history()
 print(trade_details)
 ```
 
-```plaintext
+```text
     Type  Size  Entry Price   Exit Price Entry Time  Exit Date      Profit   Tag Exit Reason Duration
 0   Long   2.0  1833.500000  1812.699951 2023-03-02 2023-03-08  -41.600098  None      signal   6 days
 1   Long   2.0  1862.000000  2007.400024 2023-03-10 2023-04-18  290.800049  None      signal  39 days
