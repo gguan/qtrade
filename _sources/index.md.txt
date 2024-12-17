@@ -10,7 +10,7 @@ QTrade is a simple, modular, and highly customizable trading interface capable o
 
 With features ranging from traditional signal-based strategies to reinforcement learning-driven approaches, QTrade allows traders to focus on developing and testing strategies without the burden of implementation details.
 
-### Key Features
+## Key Features
 - **Backtesting**: Efficient simulation of trading strategies on historical data.
 - **Reinforcement Learning**: Provides a highly customizable Gym environment for training and testing AI-driven trading agents.
 
@@ -49,7 +49,7 @@ Contribute to the Docs <https://github.com/gguan/qtrade/blob/main/docs/README.md
 
 ---
 
-### How to Use
+## How to Use
 
 1. **Install QTrade**  
    Follow the instructions in the [Installation Guide](guide/installation.md) to set up QTrade in your Python environment.
@@ -65,7 +65,7 @@ Contribute to the Docs <https://github.com/gguan/qtrade/blob/main/docs/README.md
 
 ---
 
-### Installing
+## Installing
 
 QTrade can be installed with [pip](https://pip.pypa.io):
 
@@ -90,7 +90,7 @@ $ python examples/simple_strategy.py
 
 ---
 
-### Usage
+## Usage
 
 The [User Guide](guide/getting_started.md) is the place to learn how to use the library and accomplish common tasks. For more advanced customization, refer to the [Customization Guide](customisation/index.md).
 

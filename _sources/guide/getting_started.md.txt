@@ -25,7 +25,7 @@ class SMAStrategy(Strategy):
 
 ## Data
 
-For simplicity, the QTrade library does not provide a data processing component. Users need to prepare OHLC data as a `pandas.DataFrame` with the required columns: 'Open', 'High', 'Low', 'Close', and optionally 'Volume'. The data frame should also include any indicators that will be used.
+For simplicity, the QTrade library does not provide a data processing component. Users need to prepare OHLC data as a `pandas.DataFrame` with the required columns: `Open`, `High`, `Low`, `Close`, and optionally `Volume`. The dataframe should also include any indicators that will be used.
 
 In this guide, we'll use `yfinance` to obtain the data:
 
