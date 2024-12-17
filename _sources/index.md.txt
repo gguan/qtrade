@@ -16,15 +16,12 @@ With features ranging from traditional signal-based strategies to reinforcement 
 
 ```{toctree}
 :caption: User Guide
-:maxdepth: 2
+:maxdepth: 1
 :hidden:
 
 guide/getting_started
-guide/installation
-guide/tutorials
-customisation/index
-reference/index
-recommendations
+guide/trading_environment
+
 ```
 
 ```{toctree}
@@ -52,20 +49,20 @@ Contribute to the Docs <https://github.com/gguan/qtrade/blob/main/docs/README.md
 ## How to Use
 
 1. **Install QTrade**  
-   Follow the instructions in the [Installation Guide](guide/installation.md) to set up QTrade in your Python environment.
+   Follow the instructions in the [Installation Guide](#installing) to set up QTrade in your Python environment.
 
 2. **Explore Tutorials**  
-   Learn to create strategies, backtest them, and execute live trades by following the [Getting Started Guide](guide/getting_started.md) and the [Tutorials](guide/tutorials.md).
+   Learn to create strategies, backtest them, and use gym trading environment by following the [Getting Started](guide/getting_started.md) and the [Trading Environment](guide/trading_environment.md).
 
 3. **API Reference**  
-   Dive deeper into QTrade's core components with the [API Reference](reference/index.md).
+   Dive deeper into QTrade's core components with the [API Reference](api/core.md).
 
 4. **Get Involved**  
    Contribute to the development or documentation through the links in the [Development Section](#development).
 
 ---
 
-## Installing
+## <a id="installing"></a>Installing
 
 QTrade can be installed with [pip](https://pip.pypa.io):
 
