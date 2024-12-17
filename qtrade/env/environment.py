@@ -83,7 +83,7 @@ class TradingEnv(gym.Env):
     def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
         super().reset(seed=seed, options=options)
 
-        self.start_idx = self.window_size if not self.random_start else np.random.randint(
+        self.start_idx = self.window_size if not self.random_start else self.np_random.integers(
             self.window_size, len(self._data) - self.max_steps
         )
 
@@ -314,5 +314,5 @@ class TradingEnv(gym.Env):
             'Duration': [trade.exit_date - trade.entry_date for trade in trade_history],
         })
     
-    def plot(self):
-        plot_with_bokeh(self._broker)
+    def plot(self, filename=None):
+        plot_with_bokeh(self._broker, filename=filename)

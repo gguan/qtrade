@@ -8,7 +8,7 @@ setup(
     long_description_content_type='text/markdown',
     author='Guan Guan',
     author_email='guanguan1114@gmail.com',
-    url='https://github.com/yourusername/qtrade',
+    url='https://github.com/gguan/qtrade',
     packages=find_packages(exclude=['tests*', 'examples*']),
     include_package_data=True,
     python_requires='>=3.8',

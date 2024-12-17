@@ -110,7 +110,8 @@ def _plot_trade(trades, datetime, x_range):
         profit=np.array([trade.profit for trade in trades]),
     ))
     size = np.abs(trade_source.data['size'])
-    size = np.interp(size, (size.min(), size.max()), (5, 10))
+    if len(size) > 0:
+        size = np.interp(size, (size.min(), size.max()), (5, 10))
     trade_source.add(size, 'marker_size')
    
     returns_long = np.where(trade_source.data['size'] > 0, trade_source.data['return_pct'], np.nan)
@@ -251,7 +252,8 @@ return this.labels[index] || "";
         marker_shape=np.where(np.array([order.size for order in orders]) > 0, 'triangle', 'inverted_triangle'),
     ))
     size = np.abs(order_source.data['size'])
-    size = np.interp(size, (size.min(), size.max()), (8, 16))
+    if len(size) > 0:
+        size = np.interp(size, (size.min(), size.max()), (8, 16))
     order_source.add(size, 'marker_size')
     r2 = fig_ohlc.scatter('index', 'fill_price', source=order_source, 
                  color='color_mapper', size='marker_size', marker='marker_shape',
@@ -261,13 +263,13 @@ return this.labels[index] || "";
         ("Size", "@size{0,0}"),
         ("Fill Price", "@fill_price{0,0.00}")
     ]
-    fig_ohlc.add_tools(HoverTool(tooltips=order_tooltips, formatters={"@datetime": "datetime"}, toggleable=False, mode='vline',
+    fig_ohlc.add_tools(HoverTool(tooltips=order_tooltips, formatters={"@datetime": "datetime"}, visible=False, mode='vline',
                                  attachment='left', renderers=[r2]))
 
     fig_ohlc.legend.title = f'{datetime[0]} - {datetime[-1]} ({datetime[-1]-datetime[0]})'
     return fig_ohlc
 
-def plot_with_bokeh(broker: Broker):
+def plot_with_bokeh(broker: Broker, filename=None):
     plot_volume = True if 'volume' in broker.data.columns else False
     
     data = broker.data.loc[:broker.current_time].copy(deep=True)
@@ -435,3 +437,8 @@ def plot_with_bokeh(broker: Broker):
     toolbar_location='right')
 
     show(grid)
+
+    if filename:
+        from bokeh.io import output_file, save
+        output_file(filename)
+        save(grid)
