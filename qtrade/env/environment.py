@@ -28,7 +28,6 @@ class TradingEnv(gym.Env):
                  margin_ratio: float = 1.0,
                  trade_on_close: bool = True,
                  window_size: int = 1, 
-                 features: list[str] = None, 
                  max_steps = 3000, 
                  random_start: bool = False,
                  action_scheme: Optional[ActionScheme] = None,
@@ -41,12 +40,11 @@ class TradingEnv(gym.Env):
         assert render_mode in self.metadata["render_modes"]
         self.render_mode = render_mode
 
-        if features is None:
-            features = ['close']
-
         self.action_scheme = action_scheme if action_scheme else DefaultAction()
         self.reward_scheme = reward_scheme if reward_scheme else DefaultReward()
-        self.observer_scheme = observer_scheme if observer_scheme else DefaultObserver(window_size, features)
+        self.observer_scheme = observer_scheme if observer_scheme else DefaultObserver(
+            window_size, [col for col in data.columns if col not in ['Open', 'High', 'Low', 'Close', 'Volume']]
+        )
         
 
         self.action_space = self.action_scheme.action_space
@@ -61,7 +59,6 @@ class TradingEnv(gym.Env):
         self.max_steps = max_steps
         self.random_start = random_start
         self.window_size = window_size
-        self.features = features
 
         # 初始化图形
         self.fig, self.axes = None, None

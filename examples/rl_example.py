@@ -1,5 +1,5 @@
 import pandas as pd
-import pandas_ta as ta
+import talib as ta
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import EvalCallback
 from stable_baselines3.common.monitor import Monitor
@@ -9,22 +9,21 @@ from qtrade.env import TradingEnv
 
 
 if __name__ == "__main__":
-    """加载并处理数据"""
-    df = pd.read_csv('examples/data/XAUUSD_15m.csv', parse_dates=True, index_col='timestamp')
+    """Load and process data"""
+    df = pd.read_csv('examples/data/XAUUSD_15m.csv', parse_dates=True, index_col='Timestamp')
 
-    # 计算技术指标
-    df['rsi'] = ta.rsi(df['close'], length=14)
-    df['diff'] = df['close'].diff()
+    # Calculate technical indicators
+    df['Rsi'] = ta.RSI(df.close, timeperiod=14)
+    df['Diff'] = df['Close'].diff()
     df.dropna(inplace=True)
 
-    # 归一化技术指标
+    # Normalize technical indicators
     scaler = StandardScaler()
 
-    df[['rsi', 'diff', 'price']] = scaler.fit_transform(df[['rsi', 'diff', 'close']])
+    df[['Rsi', 'Diff', 'Price']] = scaler.fit_transform(df[['Rsi', 'Diff', 'Close']])
     
-    features = ['price', 'diff', 'rsi']
     commission = PercentageCommission(0.001)
-    env = TradingEnv(data=df, window_size=10, features=features, max_steps=550, verbose=False, 
+    env = TradingEnv(data=df, window_size=10, max_steps=550, verbose=False, 
                      cash=3000,
                      commission=commission, 
                      random_start=True,
@@ -32,39 +31,39 @@ if __name__ == "__main__":
     obs = env.reset()
 
 
-    # 初始化模型
-    monitor_env = Monitor(env, filename='monitor.csv',info_keywords=('equity', 'total_trades'))
+    # Initialize the model
+    monitor_env = Monitor(env, filename='monitor.csv', info_keywords=('equity', 'total_trades'))
     model = PPO("MlpPolicy", monitor_env, verbose=1)
 
-    # 创建评估回调，用于在训练期间评估模型并保存表现最好的模型
+    # Create evaluation callback to evaluate the model during training and save the best performing model
     eval_callback = EvalCallback(
         monitor_env,
         best_model_save_path='./logs/best_model/',
         log_path='./logs/',
-        eval_freq=50000,  # 每隔多少步进行一次评估
+        eval_freq=50000,  # Evaluate every 50000 steps
         deterministic=True,
         render=False,
         verbose=1
     )
 
-    # 加载表现最好的模型
+    # Load the best performing model
     # model = PPO.load("./logs/best_model/best_model.zip", env=env)
 
-    # 开始训练模型
+    # Start training the model
     model.learn(total_timesteps=500000, callback=eval_callback)
 
-    # 评估模型，在评估过程中每步调用 env.render()
+    # Evaluate the model and render at each step
     
     obs, _ = env.reset()
     for _ in range(400):
-        env.render('human')           # 每步渲染
+        env.render('human')  # Render at each step
         action, _states = model.predict(obs, deterministic=True)
         obs, reward, terminated, truncated, info = env.step(action)
         if terminated or truncated:
             break
 
     env.plot()
-    
-    
- 
+
+
+
 

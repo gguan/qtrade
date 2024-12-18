@@ -21,6 +21,7 @@ With features ranging from traditional signal-based strategies to reinforcement 
 
 guide/getting_started
 guide/trading_environment
+guide/customize_environment
 
 ```
 
