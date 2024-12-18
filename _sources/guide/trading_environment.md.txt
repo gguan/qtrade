@@ -2,9 +2,9 @@
 
 Qtrade provides a highly customizable Gym trading environment to facilitate research on reinforcement learning in trading.
 
-## Initializing the Gym Environment
+## Initialize Gym Environment
 
-In this example, we create a simple trading environment. For advanced usage, please refer to the guide on how to define custom Actions, Rewards, and Observers.
+The following example demonstrates how to create a basic trading environment. For advanced customization of Actions, Rewards, and Observers, please refer to [Customizing Trading Environment Guide](customize_environment.md).
 
 ```python
 import yfinance as yf
@@ -12,64 +12,70 @@ import talib as ta
 from qtrade.env import TradingEnv
 from qtrade.core.commission import PercentageCommission
 
-# Download daily gold data
+# Download historical gold futures data
 data = yf.download(
     "GC=F", 
     start="2023-01-01", 
     end="2024-01-01", 
-    interval="1d", 
+    interval="1d",
     multi_level_index=False
 )
 
-# Add indicators
-df['Rsi'] = ta.rsi(df['Close'], length=14)
-df['Diff'] = df['Close'].diff()
+# Calculate technical indicators
+df['Rsi'] = ta.rsi(df['Close'], length=14)  # 14-period RSI
+df['Diff'] = df['Close'].diff()             # Price difference
 df.dropna(inplace=True)
 
-features = ['Rsi', 'Diff', 'Close']
-commission = PercentageCommission(0.001)
+commission = PercentageCommission(0.001)     # 0.1% commission per trade
 
+# Initialize trading environment
 env = TradingEnv(
     data=df, 
-    cash=3000,
-    window_size=10, 
-    features=features, 
-    max_steps=550,  # Maximum steps per episode
-    commission=commission, 
+    cash=3000,                # Initial capital
+    window_size=10,          # Observation window size
+    max_steps=550,           # Maximum steps per episode
+    commission=commission,    # Commission scheme
 )
 ```
 
+The example above uses the `DefaultObserver`, which includes all columns except OHLCV by default.
+
 ## Training
 
-Here we use the popular stable-baselines3 library to train a policy. First, install the sb3 library:
+We'll use stable-baselines3 (sb3) for training our trading agent. First, install the library:
 
 ```bash
-pip install stable-baselines3
+$ pip install stable-baselines3
 ```
 
+Then train the model using PPO (Proximal Policy Optimization):
+
 ```python
+from stable_baselines3 import PPO
+
 model = PPO("MlpPolicy", env, verbose=1)
 model.learn(total_timesteps=500000)
 ```
 
 ## Evaluation
 
-Now let's evaluate our trained model.
+After training, evaluate the model's performance:
 
 ```python
 obs, _ = env.reset()
 for _ in range(400):
-    env.render('human')  # Render live trading
+    env.render('human')           # render live trading
     action, _states = model.predict(obs, deterministic=True)
     obs, reward, terminated, truncated, info = env.step(action)
-    if terminated or truncated, break
+    if terminated or truncated:
+        break
 
-# Display result statistics
+# print result stats
 env.show_stats()
-# Plot result chart
+# plot a result chart 
 env.plot()
 ```
 
-You can watch live trading by our model using `env.render('human')`. You can also save the renders to a video using the sb3 [VecVideoRecorder](https://stable-baselines3.readthedocs.io/en/master/guide/examples.html#record-a-video) wrapper.
+You can visualize the trading process using `env.render('human')`. For recording purposes, you can save the renders as a video using sb3's [VecVideoRecorder](https://stable-baselines3.readthedocs.io/en/master/guide/examples.html#record-a-video) wrapper.
 
 ![Trading Environment Render](../_static/render_rgb.gif)

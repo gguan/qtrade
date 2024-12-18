@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Core components" href="../api/core.html" /><link rel="prev" title="Getting Started" href="getting_started.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Customizing Trading Environment" href="customize_environment.html" /><link rel="prev" title="Getting Started" href="getting_started.html" />
 
     <!-- Generated with Sphinx 7.4.7 and Furo 2024.08.06 -->
         <title>Gym Trading Environment - QTrade</title>
@@ -203,6 +203,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Gym Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
@@ -255,70 +256,74 @@
           <section id="gym-trading-environment">
 <h1>Gym Trading Environment<a class="headerlink" href="#gym-trading-environment" title="Link to this heading">¶</a></h1>
 <p>Qtrade provides a highly customizable Gym trading environment to facilitate research on reinforcement learning in trading.</p>
-<section id="initializing-the-gym-environment">
-<h2>Initializing the Gym Environment<a class="headerlink" href="#initializing-the-gym-environment" title="Link to this heading">¶</a></h2>
-<p>In this example, we create a simple trading environment. For advanced usage, please refer to the guide on how to define custom Actions, Rewards, and Observers.</p>
+<section id="initialize-gym-environment">
+<h2>Initialize Gym Environment<a class="headerlink" href="#initialize-gym-environment" title="Link to this heading">¶</a></h2>
+<p>The following example demonstrates how to create a basic trading environment. For advanced customization of Actions, Rewards, and Observers, please refer to <a class="reference internal" href="customize_environment.html"><span class="std std-doc">Customizing Trading Environment Guide</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yfinance</span> <span class="k">as</span> <span class="nn">yf</span>
 <span class="kn">import</span> <span class="nn">talib</span> <span class="k">as</span> <span class="nn">ta</span>
 <span class="kn">from</span> <span class="nn">qtrade.env</span> <span class="kn">import</span> <span class="n">TradingEnv</span>
 <span class="kn">from</span> <span class="nn">qtrade.core.commission</span> <span class="kn">import</span> <span class="n">PercentageCommission</span>
 
-<span class="c1"># Download daily gold data</span>
+<span class="c1"># Download historical gold futures data</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">yf</span><span class="o">.</span><span class="n">download</span><span class="p">(</span>
     <span class="s2">&quot;GC=F&quot;</span><span class="p">,</span> 
     <span class="n">start</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span><span class="p">,</span> 
     <span class="n">end</span><span class="o">=</span><span class="s2">&quot;2024-01-01&quot;</span><span class="p">,</span> 
-    <span class="n">interval</span><span class="o">=</span><span class="s2">&quot;1d&quot;</span><span class="p">,</span> 
+    <span class="n">interval</span><span class="o">=</span><span class="s2">&quot;1d&quot;</span><span class="p">,</span>
     <span class="n">multi_level_index</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 
-<span class="c1"># Add indicators</span>
-<span class="n">df</span><span class="p">[</span><span class="s1">&#39;Rsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">rsi</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Close&#39;</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
-<span class="n">df</span><span class="p">[</span><span class="s1">&#39;Diff&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>
+<span class="c1"># Calculate technical indicators</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;Rsi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ta</span><span class="o">.</span><span class="n">rsi</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;Close&#39;</span><span class="p">],</span> <span class="n">length</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>  <span class="c1"># 14-period RSI</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;Diff&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;Close&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">diff</span><span class="p">()</span>             <span class="c1"># Price difference</span>
 <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">features</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Rsi&#39;</span><span class="p">,</span> <span class="s1">&#39;Diff&#39;</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
-<span class="n">commission</span> <span class="o">=</span> <span class="n">PercentageCommission</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="n">commission</span> <span class="o">=</span> <span class="n">PercentageCommission</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>     <span class="c1"># 0.1% commission per trade</span>
 
+<span class="c1"># Initialize trading environment</span>
 <span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnv</span><span class="p">(</span>
     <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> 
-    <span class="n">cash</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>
-    <span class="n">window_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
-    <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span> 
-    <span class="n">max_steps</span><span class="o">=</span><span class="mi">550</span><span class="p">,</span>  <span class="c1"># Maximum steps per episode</span>
-    <span class="n">commission</span><span class="o">=</span><span class="n">commission</span><span class="p">,</span> 
+    <span class="n">cash</span><span class="o">=</span><span class="mi">3000</span><span class="p">,</span>                <span class="c1"># Initial capital</span>
+    <span class="n">window_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>          <span class="c1"># Observation window size</span>
+    <span class="n">max_steps</span><span class="o">=</span><span class="mi">550</span><span class="p">,</span>           <span class="c1"># Maximum steps per episode</span>
+    <span class="n">commission</span><span class="o">=</span><span class="n">commission</span><span class="p">,</span>    <span class="c1"># Commission scheme</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<p>The example above uses the <code class="docutils literal notranslate"><span class="pre">DefaultObserver</span></code>, which includes all columns except OHLCV by default.</p>
 </section>
 <section id="training">
 <h2>Training<a class="headerlink" href="#training" title="Link to this heading">¶</a></h2>
-<p>Here we use the popular stable-baselines3 library to train a policy. First, install the sb3 library:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>stable-baselines3
+<p>We’ll use stable-baselines3 (sb3) for training our trading agent. First, install the library:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>stable-baselines3
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<p>Then train the model using PPO (Proximal Policy Optimization):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">model</span><span class="o">.</span><span class="n">learn</span><span class="p">(</span><span class="n">total_timesteps</span><span class="o">=</span><span class="mi">500000</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="evaluation">
 <h2>Evaluation<a class="headerlink" href="#evaluation" title="Link to this heading">¶</a></h2>
-<p>Now let’s evaluate our trained model.</p>
+<p>After training, evaluate the model’s performance:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">400</span><span class="p">):</span>
-    <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">&#39;human&#39;</span><span class="p">)</span>  <span class="c1"># Render live trading</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">&#39;human&#39;</span><span class="p">)</span>           <span class="c1"># render live trading</span>
     <span class="n">action</span><span class="p">,</span> <span class="n">_states</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">deterministic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span><span class="p">,</span> <span class="k">break</span>
+    <span class="k">if</span> <span class="n">terminated</span> <span class="ow">or</span> <span class="n">truncated</span><span class="p">:</span>
+        <span class="k">break</span>
 
-<span class="c1"># Display result statistics</span>
+<span class="c1"># print result stats</span>
 <span class="n">env</span><span class="o">.</span><span class="n">show_stats</span><span class="p">()</span>
-<span class="c1"># Plot result chart</span>
+<span class="c1"># plot a result chart </span>
 <span class="n">env</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>You can watch live trading by our model using <code class="docutils literal notranslate"><span class="pre">env.render('human')</span></code>. You can also save the renders to a video using the sb3 <a class="reference external" href="https://stable-baselines3.readthedocs.io/en/master/guide/examples.html#record-a-video">VecVideoRecorder</a> wrapper.</p>
+<p>You can visualize the trading process using <code class="docutils literal notranslate"><span class="pre">env.render('human')</span></code>. For recording purposes, you can save the renders as a video using sb3’s <a class="reference external" href="https://stable-baselines3.readthedocs.io/en/master/guide/examples.html#record-a-video">VecVideoRecorder</a> wrapper.</p>
 <p><img alt="Trading Environment Render" src="../_images/render_rgb.gif" /></p>
 </section>
 </section>
@@ -328,12 +333,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../api/core.html">
+          <a class="next-page" href="customize_environment.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Core components</div>
+                <div class="title">Customizing Trading Environment</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -379,7 +384,7 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Gym Trading Environment</a><ul>
-<li><a class="reference internal" href="#initializing-the-gym-environment">Initializing the Gym Environment</a></li>
+<li><a class="reference internal" href="#initialize-gym-environment">Initialize Gym Environment</a></li>
 <li><a class="reference internal" href="#training">Training</a></li>
 <li><a class="reference internal" href="#evaluation">Evaluation</a></li>
 </ul>
