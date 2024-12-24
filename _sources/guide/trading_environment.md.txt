@@ -32,6 +32,7 @@ commission = PercentageCommission(0.001)     # 0.1% commission per trade
 env = TradingEnv(
     data=df, 
     cash=3000,                # Initial capital
+    window_size=10,          # Observation window size
     max_steps=550,           # Maximum steps per episode
     commission=commission,    # Commission scheme
 )
