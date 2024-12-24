@@ -58,7 +58,7 @@ class DefaultObserver(ObserverScheme):
             dtype=np.float32
         )
 
-    def get_observation(self, env: 'TradingEnv') -> Any:
+    def get_observation(self, env: 'TradingEnv') -> Any: # type: ignore
         """Retrieves the observation from the environment data.
 
         Args:
@@ -69,3 +69,4 @@ class DefaultObserver(ObserverScheme):
         """
         obs = env.data[self.features].iloc[-self.window_size:].values.astype(np.float32)
         return obs
+

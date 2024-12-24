@@ -27,7 +27,6 @@ class TradingEnv(gym.Env):
                  commission: Optional[Commission] = None,
                  margin_ratio: float = 1.0,
                  trade_on_close: bool = True,
-                 window_size: int = 1, 
                  max_steps = 3000, 
                  random_start: bool = False,
                  action_scheme: Optional[ActionScheme] = None,
@@ -43,7 +42,7 @@ class TradingEnv(gym.Env):
         self.action_scheme = action_scheme if action_scheme else DefaultAction()
         self.reward_scheme = reward_scheme if reward_scheme else DefaultReward()
         self.observer_scheme = observer_scheme if observer_scheme else DefaultObserver(
-            window_size, [col for col in data.columns if col not in ['Open', 'High', 'Low', 'Close', 'Volume']]
+            10, [col for col in data.columns if col not in ['Open', 'High', 'Low', 'Close', 'Volume']]
         )
         
 
@@ -58,7 +57,6 @@ class TradingEnv(gym.Env):
 
         self.max_steps = max_steps
         self.random_start = random_start
-        self.window_size = window_size
 
         # 初始化图形
         self.fig, self.axes = None, None
@@ -99,7 +97,7 @@ class TradingEnv(gym.Env):
         current_time = self._data.index[self.current_step]
         self._broker.process_bar(current_time)
 
-        logging.info(f'Reset at {current_time}, price: {self._data["close"].loc[current_time]}')
+        logging.info(f'Reset at {current_time}, Price: {self._data["Close"].loc[current_time]}')
 
         if self.reward_scheme:
             self.reward_scheme.reset()

@@ -71,7 +71,7 @@ class Backtest:
 
             self.broker.process_bar(current_time)
 
-            self.strategy.next()
+            self.strategy.on_bar_close()
 
 
         # Close all positions at the end

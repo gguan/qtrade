@@ -151,7 +151,7 @@ def _plot_trade(trades, datetime, x_range):
         renderers=[r2]
     ))
     
-    fig_trade.legend.title = 'Trades - Net Profit/Loss'
+    fig_trade.legend.title = f'Trades ({len(trades)}) - Total Trade Profit/Loss ({sum(trade.profit for trade in trades):,.2f})'
     fig_trade.yaxis.formatter = NumeralTickFormatter(format="0.[00]%")
     fig_trade.xaxis.visible = False
 
@@ -229,18 +229,38 @@ return this.labels[index] || "";
         '''
         )
 
-    trade_source = ColumnDataSource(dict(
-        top=np.array([trade.exit_price for trade in trades]),
-        bottom=np.array([trade.entry_price for trade in trades]),
-        left=np.array([datetime.get_loc(trade.entry_date) if trade.entry_date in datetime else np.nan for trade in trades ]),
-        right=np.array([datetime.get_loc(trade.exit_date) if trade.exit_date in datetime else np.nan for trade in trades ]),
-        color=np.where(np.array([trade.profit for trade in trades]) > 0, day_colors['bull'], day_colors['bear']),
+    win_trades = [trade for trade in trades if trade.profit > 0]
+    lose_trades = [trade for trade in trades if trade.profit <= 0]
+
+    win_trade_source = ColumnDataSource(dict(
+        top=np.array([trade.exit_price for trade in win_trades]),
+        bottom=np.array([trade.entry_price for trade in win_trades]),
+        left=np.array([
+            datetime.get_loc(trade.entry_date) if trade.entry_date in datetime else np.nan 
+            for trade in win_trades 
+        ]),
+        right=np.array([
+            datetime.get_loc(trade.exit_date) if trade.exit_date in datetime else np.nan 
+            for trade in win_trades 
+        ]),
+    ))
+    lose_trade_source = ColumnDataSource(dict(
+        top=np.array([trade.exit_price for trade in lose_trades]),
+        bottom=np.array([trade.entry_price for trade in lose_trades]),
+        left=np.array([
+            datetime.get_loc(trade.entry_date) if trade.entry_date in datetime else np.nan 
+            for trade in lose_trades 
+        ]),
+        right=np.array([
+            datetime.get_loc(trade.exit_date) if trade.exit_date in datetime else np.nan 
+            for trade in lose_trades 
+        ]),
     ))
 
-    # Draw trade signals
-    fig_ohlc.quad(left='left', right='right', top='top', bottom='bottom', source=trade_source, color='color', alpha=0.2, 
-                  legend_label=f'Total Trades ({len(trades)})')
-   
+    fig_ohlc.quad(left='left', right='right', top='top', bottom='bottom', source=win_trade_source, color=day_colors['bull'], 
+                  alpha=0.2, legend_label=f'Win Trades ({len(win_trades)})')
+    fig_ohlc.quad(left='left', right='right', top='top', bottom='bottom', source=lose_trade_source, color=day_colors['bear'], 
+                  alpha=0.2, legend_label=f'Lose Trades ({len(lose_trades)})')
 
     # Draw buy and sell points
     order_source = ColumnDataSource(dict(
@@ -253,7 +273,7 @@ return this.labels[index] || "";
     ))
     size = np.abs(order_source.data['size'])
     if len(size) > 0:
-        size = np.interp(size, (size.min(), size.max()), (8, 16))
+        size = np.interp(size, (size.min(), size.max()), (6, 12))
     order_source.add(size, 'marker_size')
     r2 = fig_ohlc.scatter('index', 'fill_price', source=order_source, 
                  color='color_mapper', size='marker_size', marker='marker_shape',

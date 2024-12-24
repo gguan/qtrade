@@ -4,7 +4,7 @@ from qtrade.backtest import Strategy, Backtest
 class SMAStrategy(Strategy):
     def init(self):
         return super().init()
-    def next(self):
+    def on_bar_close(self):
         if self.data.SMA3[-2] < self.data.SMA10[-2] and \
             self.data.SMA3[-1] > self.data.SMA10[-1]:
             self.buy()

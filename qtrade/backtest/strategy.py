@@ -28,7 +28,7 @@ class Strategy(ABC):
         pass
 
     @abstractmethod
-    def next(self):
+    def on_bar_close(self):
         """
         Called on each bar (time step) to generate trading signals.
         """
