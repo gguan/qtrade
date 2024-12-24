@@ -15,7 +15,7 @@ def test_position_initialization():
 
 def test_position_add_trade():
     position = Position()
-    trade = Trade(100.0, pd.Timestamp('2024-01-01'), 10)
+    trade = Trade(100.0, pd.Timestamp('2024-01-01'), 0, 10)
     position._active_trades.append(trade)
     assert position.active_trades == (trade,)
     assert position.size == 10
@@ -24,8 +24,8 @@ def test_position_add_trade():
 
 def test_position_properties():
     position = Position()
-    trade1 = Trade(100.0, pd.Timestamp('2024-01-01'), 10)
-    trade2 = Trade(105.0, pd.Timestamp('2024-01-02'), -5)
+    trade1 = Trade(100.0, pd.Timestamp('2024-01-01'), 0, 10)
+    trade2 = Trade(105.0, pd.Timestamp('2024-01-02'), 1, -5)
     position._active_trades.append(trade1)
     position._active_trades.append(trade2)
 

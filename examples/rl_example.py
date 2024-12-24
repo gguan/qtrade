@@ -13,7 +13,7 @@ if __name__ == "__main__":
     df = pd.read_csv('examples/data/XAUUSD_15m.csv', parse_dates=True, index_col='Timestamp')
 
     # Calculate technical indicators
-    df['Rsi'] = ta.RSI(df.close, timeperiod=14)
+    df['Rsi'] = ta.RSI(df['Close'], timeperiod=14)
     df['Diff'] = df['Close'].diff()
     df.dropna(inplace=True)
 

@@ -70,7 +70,6 @@ class Broker:
             "Volume": "volume",
         }
         data.rename(columns=common_names, errors="ignore", inplace=True)
-
         self.data = data
         self.cash = cash
         self.commission = commission
@@ -136,6 +135,19 @@ class Broker:
         return sum(
             trade.size * (current_price - trade.entry_price) for trade in self.position.active_trades
         )
+    
+    @property
+    def unrealized_pnl_pct(self) -> float:
+        """
+        Calculate the unrealized profit and loss percentage.
+
+        Returns:
+            float: Unrealized P&L percentage.
+        """
+        total_initial_margin = sum(
+            abs(trade.size) * trade.entry_price * self.margin_ratio for trade in self.position.active_trades
+        )
+        return self.unrealized_pnl / total_initial_margin * 100 if total_initial_margin != 0 else 0
 
     @property
     def closed_trades(self) -> tuple[Trade, ...]:
@@ -485,6 +497,7 @@ class Broker:
         new_trade = Trade(
             entry_price=entry_price,
             entry_date=entry_date,
+            entry_index=self.data.index.get_loc(entry_date),
             size=size,
             sl=sl,
             tp=tp,
@@ -514,6 +527,7 @@ class Broker:
             size=close_size,
             exit_price=exit_price,
             exit_date=exit_date,
+            exit_index=self.data.index.get_loc(exit_date),
             exit_reason=exit_reason
         )
         self.position._closed_trades.append(closed_trade)

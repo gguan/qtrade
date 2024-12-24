@@ -25,6 +25,7 @@ class Trade:
         self,
         entry_price: float,
         entry_date: pd.Timestamp,
+        entry_index: int,
         size: int,
         sl: Optional[float] = None,
         tp: Optional[float] = None,
@@ -48,6 +49,7 @@ class Trade:
 
         self._entry_price: float = entry_price
         self._entry_date: pd.Timestamp = entry_date
+        self._entry_index: int = entry_index
         self._size: int = size
         self._sl: Optional[float] = sl
         self._tp: Optional[float] = tp
@@ -55,6 +57,7 @@ class Trade:
 
         self._exit_price: Optional[float] = None
         self._exit_date: Optional[pd.Timestamp] = None
+        self._exit_index: Optional[int] = None
         self._profit: Optional[float] = None
         self._exit_reason: Optional[str] = None  # 'signal', 'sl', 'tp', 'end'
 
@@ -63,6 +66,7 @@ class Trade:
         size: Optional[int],
         exit_price: float,
         exit_date: pd.Timestamp,
+        exit_index: int,
         exit_reason: str
     ) -> 'Trade':
         """
@@ -94,6 +98,7 @@ class Trade:
         closed_trade = Trade(
             entry_price=self._entry_price,
             entry_date=self._entry_date,
+            entry_index=self._entry_index,
             size=size_to_close,
             sl=self._sl,
             tp=self._tp,
@@ -101,6 +106,7 @@ class Trade:
         )
         closed_trade._exit_price = exit_price
         closed_trade._exit_date = exit_date
+        closed_trade._exit_index = exit_index
         closed_trade._profit = profit
         closed_trade._exit_reason = exit_reason
 
@@ -133,6 +139,11 @@ class Trade:
     def entry_date(self) -> pd.Timestamp:
         """pd.Timestamp: Date when the trade was entered."""
         return self._entry_date
+    
+    @property
+    def entry_index(self) -> int:
+        """int: Index when the trade was entered."""
+        return self._entry_index
 
     @property
     def sl(self) -> Optional[float]:
@@ -158,6 +169,11 @@ class Trade:
     def exit_date(self) -> Optional[pd.Timestamp]:
         """Optional[pd.Timestamp]: Date when the trade was exited."""
         return self._exit_date
+    
+    @property
+    def exit_index(self) -> Optional[int]:
+        """Optional[int]: Index when the trade was exited."""
+        return self._exit_index
 
     @property
     def profit(self) -> Optional[float]:

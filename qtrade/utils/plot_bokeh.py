@@ -102,7 +102,7 @@ def _plot_equity(source, equity_history, cumulative_returns, buy_and_hold_return
 def _plot_trade(trades, datetime, x_range):
     # Process trade records: mark entry and exit points on the price chart, using different colors for profit and loss
     trade_source = ColumnDataSource(dict(
-        index=np.array([datetime.get_loc(trade.exit_date) if trade.exit_date in datetime else np.nan for trade in trades ]),
+        index=np.array([trade.exit_index if trade.exit_index else np.nan for trade in trades]),
         datetime=np.array([trade.exit_date for trade in trades]),
         exit_price=np.array([trade.exit_price for trade in trades]),
         size=np.array([trade.size for trade in trades]),
@@ -236,11 +236,11 @@ return this.labels[index] || "";
         top=np.array([trade.exit_price for trade in win_trades]),
         bottom=np.array([trade.entry_price for trade in win_trades]),
         left=np.array([
-            datetime.get_loc(trade.entry_date) if trade.entry_date in datetime else np.nan 
+            trade.entry_index if trade.entry_index else np.nan 
             for trade in win_trades 
         ]),
         right=np.array([
-            datetime.get_loc(trade.exit_date) if trade.exit_date in datetime else np.nan 
+            trade.exit_index if trade.exit_index else np.nan 
             for trade in win_trades 
         ]),
     ))
@@ -248,11 +248,11 @@ return this.labels[index] || "";
         top=np.array([trade.exit_price for trade in lose_trades]),
         bottom=np.array([trade.entry_price for trade in lose_trades]),
         left=np.array([
-            datetime.get_loc(trade.entry_date) if trade.entry_date in datetime else np.nan 
+            trade.entry_index if trade.entry_index else np.nan 
             for trade in lose_trades 
         ]),
         right=np.array([
-            datetime.get_loc(trade.exit_date) if trade.exit_date in datetime else np.nan 
+            trade.exit_index if trade.exit_index else np.nan 
             for trade in lose_trades 
         ]),
     ))
