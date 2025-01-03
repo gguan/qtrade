@@ -159,25 +159,25 @@ def _plot_trade(trades, datetime, x_range):
 
 def _plot_ohlc(source, datetime, trades, orders, plot_volume=True):
     # Map colors for increasing and decreasing values
-    inc_values = (source.data['close'] >= source.data['open']).astype(np.uint8).astype(str)
+    inc_values = (source.data['Close'] >= source.data['Open']).astype(np.uint8).astype(str)
     source.add(inc_values, 'inc')
     
     index = source.data['index']
     x_pad = (index[-1] - index[0]) / 20
-    y_min = source.data['close'].min()
-    y_max = source.data['close'].max()
+    y_min = source.data['Close'].min()
+    y_max = source.data['Close'].max()
     range_pad = (y_max - y_min) * 0.05
     fig_ohlc = figure(
         height=300, x_axis_type='linear', tools="xpan,xwheel_zoom,reset",active_drag='xpan', active_scroll='xwheel_zoom',
         x_range=Range1d(index[0], index[-1], min_interval=10, bounds=(index[0] - x_pad, index[-1] + x_pad)),
         y_range=DataRange1d(start=y_min - range_pad, end=y_max + range_pad) if plot_volume else DataRange1d(),
     )
-    r = fig_ohlc.line('index', 'close', source=source, line_width=1.5, color='black')
+    r = fig_ohlc.line('index', 'Close', source=source, line_width=1.5, color='black')
     fig_ohlc.yaxis[0].formatter = NumeralTickFormatter(format="0.[00]")
 
     if plot_volume:
         # Set additional Y axis range for volume
-        fig_ohlc.extra_y_ranges = {"volume": Range1d(start=0, end=source.data['volume'].mean() * 8)}
+        fig_ohlc.extra_y_ranges = {"volume": Range1d(start=0, end=source.data['Volume'].mean() * 8)}
         fig_ohlc.add_layout(LinearAxis(y_range_name="volume", axis_label="Volume"), 'right')
         
         # Use factor_cmap to map colors
@@ -186,7 +186,7 @@ def _plot_ohlc(source, datetime, trades, orders, plot_volume=True):
         # Draw volume bars, bound to the second Y axis
         fig_ohlc.vbar(
             x='index',
-            top='volume',
+            top='Volume',
             width=0.8,
             source=source,
             color=color_mapper,
@@ -301,7 +301,7 @@ def plot_with_bokeh(broker: Broker, filename=None):
     equity_history = broker.equity_history.loc[:broker.current_time].copy(deep=True)
     equity_history.reset_index(drop=True, inplace=True)
     
-    buy_and_hold_col = 'adj_close' if 'adj_close' in broker.data.columns else 'close'
+    buy_and_hold_col = 'Adj_Close' if 'Adj_Close' in broker.data.columns else 'Close'
     buy_and_hold_history = broker.data[buy_and_hold_col].loc[:broker.current_time].copy(deep=True)
     buy_and_hold_history.reset_index(drop=True, inplace=True)
 

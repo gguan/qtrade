@@ -130,15 +130,18 @@ class TradingEnv(gym.Env):
         # 构建下一个状态
         obs = self.observer_scheme.get_observation(self)
 
-        trades_profit =sum([t.profit for t in self._broker.closed_trades])
+        trades_profit =sum([t.profit for t in self.closed_trades]) if self.closed_trades else 0
+        avg_trade_duration = np.mean([t.exit_index - t.entry_index for t in self.closed_trades]) if self.closed_trades else 0
+        
         # 附加信息
         info = {
             'equity': self._broker.equity,
             'unrealized_pnl': self._broker.unrealized_pnl,
             'cumulative_return': self._broker.cumulative_returns,
             'position': self._broker.position.size,
-            'total_trades': len(self._broker.closed_trades),
+            'total_trades': len(self.closed_trades),
             'trades_profit': trades_profit,
+            'avg_trade_duration': avg_trade_duration,
             'is_success': trades_profit > 0,
         }
 

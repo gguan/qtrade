@@ -2,14 +2,24 @@ import yfinance as yf
 from qtrade.backtest import Strategy, Backtest
 
 class SMAStrategy(Strategy):
-    def init(self):
-        return super().init()
+    n1 = 3
+    n2 = 10
+    def prepare(self):
+        self._data[f'SMA_{self.n1}'] = self._data['Close'].rolling(self.n1).mean()
+        self._data[f'SMA_{self.n2}'] = self._data['Close'].rolling(self.n2).mean()
+
     def on_bar_close(self):
-        if self.data.SMA3[-2] < self.data.SMA10[-2] and \
-            self.data.SMA3[-1] > self.data.SMA10[-1]:
+        sma_n1_prev = self.data[f'SMA_{self.n1}'].iloc[-2]
+        sma_n2_prev = self.data[f'SMA_{self.n2}'].iloc[-2]
+        sma_n1_last = self.data[f'SMA_{self.n1}'].iloc[-1]
+        sma_n2_last = self.data[f'SMA_{self.n2}'].iloc[-1]
+
+        # Golden Cross
+        if sma_n1_prev < sma_n2_prev and sma_n1_last > sma_n2_last:
             self.buy()
-        if self.data.SMA3[-2] > self.data.SMA10[-2] and \
-            self.data.SMA3[-1] < self.data.SMA10[-1]:
+        
+        # Dead Cross
+        elif sma_n1_prev > sma_n2_prev and sma_n1_last < sma_n2_last:
             self.close()
 
 if __name__ == "__main__":
@@ -25,8 +35,6 @@ if __name__ == "__main__":
 
     # data.reset_index(inplace=True)
     print(data.head())
-    data['SMA3'] = data['Close'].rolling(3).mean()
-    data['SMA10'] = data['Close'].rolling(10).mean()
 
     """Run backtest with SMAStrategy"""
     bt = Backtest(
@@ -44,4 +52,16 @@ if __name__ == "__main__":
     print(trade_details)
     bt.plot()
 
+    # best_params, best_stats, all_results = bt.optimize(
+    #     n1=[3, 5, 10, 15],
+    #     n2=[5, 10, 20, 30, 40],
+    #     maximize='Total Return [%]',
+    #     constraint=lambda p: p['n1'] < p['n2']
+    # )
+
+    # for result in all_results:
+    #     print(result['params'], result['stats']['Total Return [%]'])
     
+    # print("Optimal Parameters:", best_params)
+    # print("Optimal Results:", best_stats)
+

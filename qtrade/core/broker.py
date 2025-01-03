@@ -45,7 +45,7 @@ class Broker:
         Initialize the Broker with market data and account settings.
 
         Args:
-            data (pd.DataFrame): Market data with ['open', 'high', 'low', 'close'] columns.
+            data (pd.DataFrame): Market data with ['Open', 'High', 'Low', 'Close'] columns.
             cash (float): Initial cash balance. Must be positive.
             commission (Optional[Commission]): Commission calculator instance.
             margin_ratio (float): Margin ratio (0 < margin_ratio ≤ 1).
@@ -58,18 +58,18 @@ class Broker:
         assert 0 < margin_ratio <= 1, "Margin ratio must be between 0 and 1."
         
         common_names = {
-            "Date": "date",
-            "Time": "time",
-            "Timestamp": "timestamp",
-            "Datetime": "datetime",
-            "Open": "open",
-            "High": "high",
-            "Low": "low",
-            "Close": "close",
-            "Adj Close": "adj_close",
-            "Volume": "volume",
+            "date": "Date",
+            "time": "Time", 
+            "timestamp": "Timestamp",
+            "datetime": "Datetime",
+            "open": "Open",
+            "high": "High",
+            "low": "Low",
+            "close": "Close",
+            "adj_close": "Adj_Close",
+            "volume": "Volume",
         }
-        data.rename(columns=common_names, errors="ignore", inplace=True)
+        data.rename(columns=lambda x: common_names[x.lower()] if x.lower() in common_names else x, inplace=True)
         self.data = data
         self.cash = cash
         self.commission = commission
@@ -116,7 +116,7 @@ class Broker:
         Returns:
             float: Available margin, minimum 0.
         """
-        current_price = self.data.loc[self.current_time, 'close']
+        current_price = self.data.loc[self.current_time, 'Close']
         used_margin = sum(
             abs(trade.size) * current_price * self.margin_ratio
             for trade in self.position.active_trades
@@ -131,7 +131,7 @@ class Broker:
         Returns:
             float: Sum of unrealized P&L from all active trades.
         """
-        current_price = self.data.loc[self.current_time, 'close']
+        current_price = self.data.loc[self.current_time, 'Close']
         return sum(
             trade.size * (current_price - trade.entry_price) for trade in self.position.active_trades
         )
@@ -149,6 +149,16 @@ class Broker:
         )
         return self.unrealized_pnl / total_initial_margin * 100 if total_initial_margin != 0 else 0
 
+    @property
+    def realized_pnl(self) -> float:
+        """
+        Calculate the realized profit and loss.
+
+        Returns:
+            float: Sum of realized P&L from all closed trades.
+        """
+        return sum(trade.profit for trade in self.position.closed_trades) if self.position.closed_trades else 0
+    
     @property
     def closed_trades(self) -> tuple[Trade, ...]:
         """
@@ -214,7 +224,7 @@ class Broker:
             else:
                 if self.trade_on_close:
                     fill_date = self.current_time
-                    fill_price = self.data.loc[fill_date, 'close']
+                    fill_price = self.data.loc[fill_date, 'Close']
                     self.__process_order(order, fill_price, fill_date)
                 else:
                     self._executing_orders.append(order)
@@ -253,7 +263,7 @@ class Broker:
         """
         for order in self._executing_orders:
             fill_date = self.current_time
-            fill_price = self.data.loc[fill_date, 'open']
+            fill_price = self.data.loc[fill_date, 'Open']
             self.__process_order(order, fill_price, fill_date)
         self._executing_orders.clear()
 
@@ -261,8 +271,8 @@ class Broker:
         """
         Process pending orders, including stop and limit orders.
         """
-        high = self.data.loc[self.current_time, 'high']
-        low = self.data.loc[self.current_time, 'low']
+        high = self.data.loc[self.current_time, 'High']
+        low = self.data.loc[self.current_time, 'Low']
 
         orders_to_remove = []
         for order in self._pending_orders:
@@ -288,7 +298,7 @@ class Broker:
                 # Market order
                 if self.trade_on_close:
                     fill_date = self.current_time
-                    fill_price = self.data.loc[fill_date, 'close']
+                    fill_price = self.data.loc[fill_date, 'Close']
                     self.__process_order(order, fill_price, fill_date)
                     orders_to_remove.append(order)
                 else:
@@ -394,8 +404,8 @@ class Broker:
         """
         Check and apply stop loss (SL) and take profit (TP) conditions for all active trades.
         """
-        high = self.data.loc[self.current_time, 'high']
-        low = self.data.loc[self.current_time, 'low']
+        high = self.data.loc[self.current_time, 'High']
+        low = self.data.loc[self.current_time, 'Low']
 
         for trade in self.position.active_trades:
             if not trade.sl and not trade.tp:
@@ -453,7 +463,7 @@ class Broker:
         """
         Close all open positions at the end of the trading period.
         """
-        price = self.data.loc[self.current_time, 'close']
+        price = self.data.loc[self.current_time, 'Close']
         for trade in self.position.active_trades:
             commission_cost = self.commission.calculate_commission(
                 abs(trade.size), price

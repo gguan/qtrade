@@ -7,21 +7,24 @@ from abc import ABC, abstractmethod
 from typing import Optional
 import pandas as pd
 
-from qtrade.core import Broker, Order, Trade, Position
+from qtrade.core import Order, Trade, Position
 
 
 class Strategy(ABC):
-    def __init__(self, broker: Broker, data: pd.DataFrame):
+    def __init__(self, broker, data, params):
         """
         Initialize the strategy.
 
         :param data: DataFrame containing market data
         """
-        self.raw_data = data
+        self._data = data.copy(deep=True)
         self._broker = broker
+        self._params = params
+        for key, value in params.items():
+            setattr(self, key, value)
 
     @abstractmethod
-    def init(self):
+    def prepare(self):
         """
         Initialize the strategy (e.g., declare indicators).
         """
@@ -52,7 +55,7 @@ class Strategy(ABC):
         :param tag: Order tag
         """
         if size is None:
-            size = self._broker.available_margin // self.data['close'].iloc[-1]
+            size = self._broker.available_margin // self.data['Close'].iloc[-1]
         if size == 0:
             print(self._broker.available_margin)
         order = Order(size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag)
@@ -95,7 +98,7 @@ class Strategy(ABC):
         Get the market data, can only see data up to the current index.
 
         """
-        return self.raw_data[:self._broker.current_time]
+        return self._data[:self._broker.current_time]
 
     @property
     def equity(self) -> float:
@@ -142,3 +145,9 @@ class Strategy(ABC):
         Get the current position.
         """
         return self._broker.position
+    
+    def __str__(self):
+        if self._params:
+            params = ', '.join(f'{k}={v}' for k, v in self._params.items())
+            params = '(' + params + ')'
+        return f'{self.__class__.__name__}{params}'

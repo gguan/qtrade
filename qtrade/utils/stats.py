@@ -26,8 +26,8 @@ def __calculate_return_metrics(metrics: dict, broker: Broker) -> None:
 
     # Buy & Hold Return
     buy_hold_return = (
-        (broker.data['close'].loc[broker.current_time] - broker.data['close'].iloc[0])
-        / broker.data['close'].iloc[0] * 100
+        (broker.data['Close'].loc[broker.current_time] - broker.data['Close'].iloc[0])
+        / broker.data['Close'].iloc[0] * 100
     )
     metrics['Buy & Hold Return [%]'] = buy_hold_return
 
