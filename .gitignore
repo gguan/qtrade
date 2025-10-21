@@ -24,3 +24,17 @@ doc/build/*
 .venv/
 /logs
 .pypirc
+
+# Setuptools distribution and build folders.
+/dist/
+/build
+keys/
+
+# Virtualenv
+/env
+/venv
+
+# Poetry
+poetry.lock
+poetry.toml
+.poetry/
