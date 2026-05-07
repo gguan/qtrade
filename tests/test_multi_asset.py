@@ -247,3 +247,83 @@ def test_get_trade_history_includes_asset_column(two_asset_data):
     df = bt.get_trade_history()
     assert 'Asset' in df.columns
     assert set(df['Asset'].unique()) == {'AAPL', 'MSFT'}
+
+
+# ---------------------------------------------------------------------------
+# P3: Stats works on a multi-asset broker
+# ---------------------------------------------------------------------------
+
+from qtrade.utils.stats import calculate_stats, calculate_stats_per_asset  # noqa: E402
+
+
+def test_calculate_stats_works_for_multi_asset(two_asset_data):
+    bt = Backtest(two_asset_data, _PortfolioBuyHold, cash=100_000, trade_on_close=True)
+    bt.run()
+    stats = calculate_stats(bt.broker)
+    # Aggregate metrics — must not crash on dict-of-DataFrames data.
+    assert 'Total Return [%]' in stats
+    assert 'Buy & Hold Return [%]' in stats
+    assert 'Sharpe Ratio' in stats
+    assert stats['Total Trades'] >= 2  # at least one trade per asset
+
+
+def test_buy_and_hold_is_equal_weighted_average(two_asset_data):
+    bt = Backtest(two_asset_data, _PortfolioBuyHold, cash=100_000, trade_on_close=True)
+    bt.run()
+    stats = calculate_stats(bt.broker)
+    aapl_ret = (two_asset_data['AAPL']['Close'].iloc[-1] - two_asset_data['AAPL']['Close'].iloc[0]) \
+        / two_asset_data['AAPL']['Close'].iloc[0] * 100
+    msft_ret = (two_asset_data['MSFT']['Close'].iloc[-1] - two_asset_data['MSFT']['Close'].iloc[0]) \
+        / two_asset_data['MSFT']['Close'].iloc[0] * 100
+    expected = (aapl_ret + msft_ret) / 2
+    assert stats['Buy & Hold Return [%]'] == pytest.approx(expected)
+
+
+def test_calculate_stats_per_asset_breaks_down_trades(two_asset_data):
+    bt = Backtest(two_asset_data, _PortfolioBuyHold, cash=100_000, trade_on_close=True)
+    bt.run()
+    per = calculate_stats_per_asset(bt.broker)
+    assert set(per.keys()) == {'AAPL', 'MSFT'}
+    for asset in ('AAPL', 'MSFT'):
+        assert per[asset]['Asset'] == asset
+        assert per[asset]['Total Trades'] >= 1
+        assert 'Buy & Hold Return [%]' in per[asset]
+
+
+def test_per_asset_stats_independent_of_each_other(two_asset_data):
+    """Buy & hold return per asset should equal that asset's first→last return."""
+    bt = Backtest(two_asset_data, _PortfolioBuyHold, cash=100_000, trade_on_close=True)
+    bt.run()
+    per = calculate_stats_per_asset(bt.broker)
+    for asset, df in two_asset_data.items():
+        expected = (df['Close'].iloc[-1] - df['Close'].iloc[0]) / df['Close'].iloc[0] * 100
+        assert per[asset]['Buy & Hold Return [%]'] == pytest.approx(expected)
+
+
+# ---------------------------------------------------------------------------
+# P3: plot_with_bokeh works for multi-asset
+# ---------------------------------------------------------------------------
+
+from unittest.mock import patch  # noqa: E402
+
+from qtrade.utils.plot_bokeh import plot_with_bokeh  # noqa: E402
+
+
+def test_plot_with_bokeh_runs_on_multi_asset_broker(two_asset_data):
+    bt = Backtest(two_asset_data, _PortfolioBuyHold, cash=100_000, trade_on_close=True)
+    bt.run()
+    with patch('qtrade.utils.plot_bokeh.show'):
+        plot_with_bokeh(bt.broker)
+
+
+def test_plot_with_bokeh_writes_html_for_multi_asset(two_asset_data, tmp_path):
+    bt = Backtest(two_asset_data, _PortfolioBuyHold, cash=100_000, trade_on_close=True)
+    bt.run()
+    out = tmp_path / "multi.html"
+    with patch('qtrade.utils.plot_bokeh.show'):
+        plot_with_bokeh(bt.broker, filename=str(out))
+    text = out.read_text()
+    assert out.stat().st_size > 0
+    # Each asset gets its own OHLC panel; per-asset trade/order data shows up.
+    assert 'AAPL' in text
+    assert 'MSFT' in text

@@ -83,7 +83,7 @@ files = ["qtrade"]
 # Optional[float] properties (profit, exit_price, exit_date) being used as
 # non-Optional after a trade closes. Tracked as future work.
 [[tool.mypy.overrides]]
-module = ["qtrade.utils.stats", "qtrade.utils.evaluation", "qtrade.utils.plot_bokeh", "qtrade.core.broker"]
+module = ["qtrade.utils.evaluation", "qtrade.utils.plot_bokeh", "qtrade.core.broker"]
 ignore_errors = true
 
 [tool.coverage.run]
