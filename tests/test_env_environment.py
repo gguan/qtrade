@@ -86,3 +86,16 @@ def test_env_random_start_picks_within_bounds(ohlc_data_long):
     e.reset(seed=123)
     assert 5 <= e.start_idx <= len(ohlc_data_long) - 10
     e.close()
+
+
+def test_env_random_start_with_too_short_data_raises_clear_error(ohlc_data_long):
+    """Bug #15: previously failed inside np.random.integers with a cryptic message."""
+    with pytest.raises(ValueError, match=r"random_start requires len\(data\) > window_size \+ max_steps"):
+        TradingEnv(
+            data=ohlc_data_long,  # 40 rows
+            cash=10_000,
+            window_size=5,
+            max_steps=100,  # > 40 - 5
+            random_start=True,
+            render_mode='human',
+        )

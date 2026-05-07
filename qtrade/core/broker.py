@@ -58,9 +58,8 @@ class Broker:
         
         common_names = {
             "date": "Date",
-            "time": "Time", 
+            "time": "Time",
             "timestamp": "Timestamp",
-            "datetime": "Datetime",
             "open": "Open",
             "high": "High",
             "low": "Low",
@@ -251,10 +250,13 @@ class Broker:
 
     def __remove_closed_orders(self) -> None:
         """
-        Remove invalid orders (rejected and canceled) from the new orders list.
+        Drop canceled/rejected orders from the pending and executing queues
+        before they reach a fill attempt.
         """
         self._closed_orders.extend(order for order in self._pending_orders if order.is_closed)
         self._pending_orders = [order for order in self._pending_orders if not order.is_closed]
+        self._closed_orders.extend(order for order in self._executing_orders if order.is_closed)
+        self._executing_orders = [order for order in self._executing_orders if not order.is_closed]
 
     def __process_executing_orders(self) -> None:
         """

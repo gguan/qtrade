@@ -141,6 +141,22 @@ def test_strategy_closed_trades_returns_tuple_of_closed_trades(broker, data):
     assert len(trades) == 1
 
 
+def test_strategy_sell_with_negative_explicit_size_still_sells(broker, data):
+    """Bug #10: passing negative size to sell() used to silently flip to a buy."""
+    s = _DummyStrategy(broker, data, {})
+    s.sell(size=-5)  # user-friendly: magnitude regardless of sign
+    assert broker.filled_orders[0].size == -5  # actually a sell
+    assert broker.filled_orders[0].is_short is True
+
+
+def test_strategy_buy_with_negative_explicit_size_still_buys(broker, data):
+    """Bug #10 sibling: buy() with negative size should still be a buy."""
+    s = _DummyStrategy(broker, data, {})
+    s.buy(size=-7)
+    assert broker.filled_orders[0].size == 7
+    assert broker.filled_orders[0].is_long is True
+
+
 def test_strategy_buy_with_zero_default_size_does_not_print(data, capsys):
     """Bug #3: Strategy.buy() has a leftover debug print() when default size resolves to 0."""
     # cash=50 / close=100 → default size = 0

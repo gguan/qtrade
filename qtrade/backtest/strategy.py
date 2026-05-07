@@ -55,6 +55,8 @@ class Strategy(ABC):
         """
         if size is None:
             size = self._broker.available_margin // self.data['Close'].iloc[-1]
+        else:
+            size = abs(size)  # buy() always opens long, treat user-provided size as magnitude
         order = Order(size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag)
         self._broker.place_orders(order)
 
@@ -77,6 +79,8 @@ class Strategy(ABC):
         """
         if size is None:
             size = self.position.size
+        else:
+            size = abs(size)  # sell() always opens short, treat user-provided size as magnitude
         order = Order(-size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag)
         self._broker.place_orders(order)
 
