@@ -27,7 +27,8 @@ class Order:
         stop: float | None = None,
         sl: float | None = None,
         tp: float | None = None,
-        tag: object | None = None
+        tag: object | None = None,
+        asset: str = "default",
     ):
         """
         Initialize an Order instance.
@@ -39,6 +40,8 @@ class Order:
             sl (Optional[float], optional): Stop loss price. Defaults to None.
             tp (Optional[float], optional): Take profit price. Defaults to None.
             tag (Optional[object], optional): Tag for identification. Defaults to None.
+            asset (str, optional): Asset symbol this order targets. Defaults to "default" for
+                single-asset backtests. Multi-asset support is layered on this field.
 
         Raises:
             AssertionError: If the order size is zero.
@@ -51,6 +54,7 @@ class Order:
         self._sl: float | None = sl
         self._tp: float | None = tp
         self._tag: object | None = tag
+        self._asset: str = asset
 
         self._is_filled: bool = False
         self._fill_price: float | None = None
@@ -124,6 +128,11 @@ class Order:
     def tag(self) -> object | None:
         """Optional[object]: Order tag."""
         return self._tag
+
+    @property
+    def asset(self) -> str:
+        """str: Asset symbol this order targets."""
+        return self._asset
 
     @property
     def is_long(self) -> bool:
