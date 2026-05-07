@@ -8,6 +8,11 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 ## [Unreleased]
 
 ### Added
+- Automated PyPI releases via GitHub Actions trusted publishing
+  ([.github/workflows/release.yml](.github/workflows/release.yml)). Push
+  a `v*` tag and the workflow runs the test suite, builds, asserts the
+  tag matches `pyproject.toml`, publishes to PyPI, and creates a GitHub
+  Release. See `RELEASING.md` for one-time setup steps.
 - `tests/benchmarks/` — opt-in performance benchmarks via `pytest-benchmark`.
   Excluded from the default `pytest` run; invoke with
   `pytest tests/benchmarks/`. Baseline numbers and "where to optimize first
