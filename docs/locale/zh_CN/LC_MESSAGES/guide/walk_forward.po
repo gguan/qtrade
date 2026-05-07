@@ -1,18 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
+# Chinese translation of QTrade docs.
 # Copyright (C) 2026, Guan Guan
-# This file is distributed under the same license as the QTrade package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: QTrade \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-08 02:38+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2026-05-08 03:00+0800\n"
+"Last-Translator: \n"
 "Language: zh_CN\n"
-"Language-Team: zh_CN <LL@li.org>\n"
+"Language-Team: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,7 +18,7 @@ msgstr ""
 
 #: ../guide/walk_forward.md:1 073a348ad5614bcdb2b7d380ed965fb3
 msgid "Walk-forward optimization"
-msgstr ""
+msgstr "Walk-forward 优化"
 
 #: ../guide/walk_forward.md:3 10e8734da6ab4d708c05cd5acda21c46
 msgid ""
@@ -30,6 +27,8 @@ msgid ""
 "classic recipe for fitting noise. The \"best Sharpe 2.4\" you see almost "
 "never holds up live."
 msgstr ""
+"`Backtest.optimize()` 在*整个*数据集上挑选最佳参数组合 —— 然后汇报样本内表现。"
+"这是拟合噪声的经典配方。看到的「最优 Sharpe 2.4」实盘几乎从不成立。"
 
 #: ../guide/walk_forward.md:8 47bb4890fd3c442fa9132032f3ee6439
 msgid ""
@@ -37,6 +36,8 @@ msgid ""
 "rolling windows and reports performance on data the strategy was never "
 "tuned on:"
 msgstr ""
+"`Backtest.walk_forward_optimize()` 在滚动窗口内做同样的网格搜索，"
+"在策略从未调过参的数据上汇报表现："
 
 #: ../guide/walk_forward.md:20 89062e85e6124e63aeb3bf4639e1d98a
 msgid ""
@@ -45,24 +46,27 @@ msgid ""
 " of the test slices is your honest, out-of-sample (OoS) estimate of how "
 "the strategy actually performs."
 msgstr ""
+"每个窗口对里，QTrade 在训练片段挑选最佳参数，并在紧接的测试片段上评估。"
+"测试片段的聚合结果是策略真实表现的诚实样本外（OoS）估计。"
 
 #: ../guide/walk_forward.md:25 894beb82172a4992a9e076906ee55d40
 msgid "API"
-msgstr ""
+msgstr "API"
 
 #: ../guide/walk_forward.md:39 cc25375a4c684e64965caf4deea3522d
 msgid "Required:"
-msgstr ""
+msgstr "必填："
 
 #: ../guide/walk_forward.md:41 c5ceb8cc460547de9982b05a8ebec200
 msgid "**`train_window`**: bars per training slice."
-msgstr ""
+msgstr "**`train_window`**：每个训练片段的 bar 数。"
 
 #: ../guide/walk_forward.md:42 7e4bc2e57c4f4f24a61b84384dadb1d6
 msgid ""
 "**`test_window`**: bars per test slice (immediately follows the train "
 "slice)."
 msgstr ""
+"**`test_window`**：每个测试片段的 bar 数（紧跟训练片段之后）。"
 
 #: ../guide/walk_forward.md:43 b3def600d1c646709208a767bf253f22
 msgid ""
@@ -71,16 +75,20 @@ msgid ""
 "[%]`, `Calmar Ratio`. See the [stats glossary](stats_glossary.md) for "
 "what each means."
 msgstr ""
+"**`maximize`**：在每个训练片段内最大化的 `calculate_stats()` 指标名。"
+"常见选择：`Sharpe Ratio`、`Total Return [%]`、`Calmar Ratio`。"
+"含义详见 [统计指标词汇表](stats_glossary.md)。"
 
 #: ../guide/walk_forward.md:47 07ed5199fdc44b24bdc12c10be184a48
 msgid ""
 "**`**params_grid`**: same syntax as `optimize()` — keyword arguments "
 "whose values are iterables of candidates."
 msgstr ""
+"**`**params_grid`**：和 `optimize()` 同语法 —— 关键字参数，值是候选项的可迭代对象。"
 
 #: ../guide/walk_forward.md:50 7a09aaeaff2f410f8618e5dc0aec1ac3
 msgid "Optional:"
-msgstr ""
+msgstr "可选："
 
 #: ../guide/walk_forward.md:52 7ce19bbed8364437a00c7d2cba9a25cb
 msgid ""
@@ -88,6 +96,8 @@ msgid ""
 "Defaults to `test_window` (non-overlapping test windows). Smaller values "
 "give overlapping (correlated) test windows; larger values leave gaps."
 msgstr ""
+"**`step`**：相邻训练起点之间推进多少 bar。默认 `test_window`（测试窗口不重叠）。"
+"更小值产生重叠（相关）的测试窗口；更大值留下空隙。"
 
 #: ../guide/walk_forward.md:56 8394e356843f4e7c8f7abfc716fe1d24
 msgid ""
@@ -95,133 +105,136 @@ msgid ""
 "before evaluating. Use this to skip nonsensical combinations (e.g. fast "
 "SMA window > slow SMA window)."
 msgstr ""
+"**`constraint`**：评估前应用到每个参数字典的过滤器（`lambda p: bool`）。"
+"用于跳过无意义组合（如快线 SMA 窗口 > 慢线窗口）。"
 
 #: ../guide/walk_forward.md:60 a18f6295e057490ea1bf812687d9e759
 msgid "Reading the result"
-msgstr ""
+msgstr "解读结果"
 
 #: ../guide/walk_forward.md:62 6f8f08b970114954bde131ec0ca3af86
 msgid "`result` is a dict:"
-msgstr ""
+msgstr "`result` 是一个 dict："
 
 #: ../guide/walk_forward.md:69 f399dbdcb3ab4151913a14e11628c4b1
 msgid "Each window dict contains:"
-msgstr ""
+msgstr "每个 window dict 包含："
 
 #: ../guide/walk_forward.md 9dede8b9cf904c1190e2ef6f6e09fedf
 #: a1ded72a5d2d4efa9aea4605f61b96e5
 msgid "Key"
-msgstr ""
+msgstr "键"
 
 #: ../guide/walk_forward.md 1333b39ce78242c1a64412407b99d607
 msgid "Value"
-msgstr ""
+msgstr "值"
 
 #: ../guide/walk_forward.md f8a55069ed7e462dac9d66c2f228bc78
 msgid "`train_start`, `train_end`"
-msgstr ""
+msgstr "`train_start`, `train_end`"
 
 #: ../guide/walk_forward.md 40a245f1dcab44aa93de8a993d4192c9
 msgid "Timestamps of the train slice."
-msgstr ""
+msgstr "训练片段的时间戳。"
 
 #: ../guide/walk_forward.md 0bb82164040b4cf09b4de06c9d5dea90
 msgid "`test_start`, `test_end`"
-msgstr ""
+msgstr "`test_start`, `test_end`"
 
 #: ../guide/walk_forward.md 4e132b7f29b34c0d8fa98e95e5f0d486
 msgid "Timestamps of the test slice."
-msgstr ""
+msgstr "测试片段的时间戳。"
 
 #: ../guide/walk_forward.md 4207ce68c5fe401c9c4c0d721e0a9491
 msgid "`best_params`"
-msgstr ""
+msgstr "`best_params`"
 
 #: ../guide/walk_forward.md c52b7fd0f3f2409d9dd70884ff62a7a4
 msgid "The parameter combo that maximized `maximize` on the train slice."
-msgstr ""
+msgstr "在训练片段上最大化 `maximize` 的参数组合。"
 
 #: ../guide/walk_forward.md 2b75e39adc6140268e01710dd098a003
 msgid "`train_stats`"
-msgstr ""
+msgstr "`train_stats`"
 
 #: ../guide/walk_forward.md 00e5ea396dda4518b6f9010ee2f20b01
 msgid "Full stats dict from the train run with `best_params`."
-msgstr ""
+msgstr "用 `best_params` 跑训练片段得到的完整 stats dict。"
 
 #: ../guide/walk_forward.md a39e03933e6c4c209b3f03d576133436
 msgid "`test_stats`"
-msgstr ""
+msgstr "`test_stats`"
 
 #: ../guide/walk_forward.md d1d1f87491c34d1c9b73a3fc8c23ca55
 msgid "Full stats dict from the test run."
-msgstr ""
+msgstr "测试片段跑出来的完整 stats dict。"
 
 #: ../guide/walk_forward.md 711c526dea604561a9720a24997f58a2
 msgid "`test_equity`"
-msgstr ""
+msgstr "`test_equity`"
 
 #: ../guide/walk_forward.md a27a71563b5646abbbb1230c43a9a449
 msgid "The test slice's `equity_history` Series."
-msgstr ""
+msgstr "测试片段的 `equity_history` Series。"
 
 #: ../guide/walk_forward.md:80 e866de20aa644236ba2ec00d9917fcbf
 msgid "The summary:"
-msgstr ""
+msgstr "summary 包含："
 
 #: ../guide/walk_forward.md 590bfc0976ad45a8a8df4d75758c2e6c
 msgid "Meaning"
-msgstr ""
+msgstr "含义"
 
 #: ../guide/walk_forward.md 6f4f8b2990014669a567fe5d0616d69c
 msgid "`n_windows`"
-msgstr ""
+msgstr "`n_windows`"
 
 #: ../guide/walk_forward.md 69f3b0ebfe7144e39d0a8c927919f8bc
 msgid "Total number of train/test pairs evaluated."
-msgstr ""
+msgstr "评估的训练 / 测试对总数。"
 
 #: ../guide/walk_forward.md 85e76739f16a4c3d8467c1e321c8941c
 msgid "`mean_oos_return`"
-msgstr ""
+msgstr "`mean_oos_return`"
 
 #: ../guide/walk_forward.md 393fa7ec88374bc5b7666480103ae97e
 msgid "Average `Total Return [%]` across test windows."
-msgstr ""
+msgstr "测试窗口的 `Total Return [%]` 平均值。"
 
 #: ../guide/walk_forward.md 47d9f461f3554c51a13479efb565364b
 msgid "`hit_rate`"
-msgstr ""
+msgstr "`hit_rate`"
 
 #: ../guide/walk_forward.md 04458f47888c41739ba444c3524125e3
 msgid "Fraction of test windows with positive return."
-msgstr ""
+msgstr "正收益的测试窗口占比。"
 
 #: ../guide/walk_forward.md d80c7307cfe24c439aa1a97551a985b3
 msgid "`min_oos_return`, `max_oos_return`"
-msgstr ""
+msgstr "`min_oos_return`, `max_oos_return`"
 
 #: ../guide/walk_forward.md 92632b87d0f8462ba566aef880dd3971
 msgid "Best and worst test windows."
-msgstr ""
+msgstr "最差和最好的测试窗口。"
 
 #: ../guide/walk_forward.md:89 cf460ed7521549bfa0d638c8ce9e7716
 msgid "A typical workflow"
-msgstr ""
+msgstr "典型工作流"
 
 #: ../guide/walk_forward.md:125 38b88c403b154537a42fbd0bef01a85f
 msgid ""
 "If the in-sample Sharpe and OoS mean are wildly different, you've found "
 "your overfit. The OoS number is the one to trust."
 msgstr ""
+"如果样本内 Sharpe 和样本外均值差距悬殊，你已经找到了过拟合。要相信样本外的数字。"
 
 #: ../guide/walk_forward.md:128 48664a1f27124c30a7b650615055df1f
 msgid "Choosing the windows"
-msgstr ""
+msgstr "如何选择窗口"
 
 #: ../guide/walk_forward.md:130 cf4e8429a84a4d8ba4ef9be5296581e1
 msgid "The right `train_window` and `test_window` depend on:"
-msgstr ""
+msgstr "合适的 `train_window` 和 `test_window` 取决于："
 
 #: ../guide/walk_forward.md:132 98869032a26e4875ab525bdbaf27eb22
 msgid ""
@@ -229,6 +242,8 @@ msgid ""
 "parameter? A 20-bar SMA needs at least ~50 bars to give the system some "
 "room. A 200-bar lookback model needs a much larger train_window."
 msgstr ""
+"**策略「记忆长度」**：策略拟合一个参数需要多少 bar？20 bar 的 SMA "
+"至少需要 ~50 bar 给系统留余地。200 bar 回看的模型需要大得多的 train_window。"
 
 #: ../guide/walk_forward.md:135 f308095b0a984277904e550442477454
 msgid ""
@@ -236,6 +251,8 @@ msgid ""
 "regime; too large straddles multiple regimes (averaging conflicting "
 "optima). 6–12 months of daily bars is a typical starting point."
 msgstr ""
+"**市场 regime 长度**：训练窗口太小只能看到一个 regime；太大跨越多个 regime"
+"（不同 regime 的最优解相互抵消）。日 bar 数据的话，6–12 个月通常是合适起点。"
 
 #: ../guide/walk_forward.md:138 ac35969c2fe34cf9839ada2301625534
 msgid ""
@@ -244,44 +261,49 @@ msgid ""
 "Aim for **at least 5–10 windows** so the summary statistics are "
 "meaningful."
 msgstr ""
+"**你能支撑的窗口数量**：长窗口 = 窗口更少，但每次拟合数据更多；"
+"短窗口 = 窗口更多但每个噪声更大。**至少 5–10 个窗口**汇总统计才有意义。"
 
 #: ../guide/walk_forward.md:143 810f520229474ec890ca4bc727417157
 msgid "Rule of thumb: `train_window ≈ 4–10 × test_window` is a common ratio."
-msgstr ""
+msgstr "经验法则：`train_window ≈ 4–10 × test_window` 是常见比例。"
 
 #: ../guide/walk_forward.md:145 5e74dc9672824d23b3669f7e6b621fe4
 msgid "Common pitfalls"
-msgstr ""
+msgstr "常见坑"
 
 #: ../guide/walk_forward.md:147 1516f12bc6c4402fb056f3eac993b01b
 msgid "\"OoS hit rate is 0.5\""
-msgstr ""
+msgstr "「OoS 命中率是 0.5」"
 
 #: ../guide/walk_forward.md:149 e22bc53ba0b242b585a8a0b35ae6ac24
 msgid ""
 "Coin flip. Either the strategy genuinely doesn't have edge, or your "
 "parameter grid doesn't cover the meaningful space. Try:"
 msgstr ""
+"和抛硬币没区别。要么策略真的没有 edge，要么你的参数网格没覆盖有意义的空间。试试："
 
 #: ../guide/walk_forward.md:152 4c0e1b53c5d84a278a4cc0f3407e1540
 msgid ""
 "Look at *which* params win in each window — if they're wildly different "
 "across windows, the strategy isn't stable."
 msgstr ""
+"看*哪些*参数在每个窗口胜出 —— 如果窗口之间的最优参数差异巨大，策略不稳定。"
 
 #: ../guide/walk_forward.md:154 298f42ef73df44d3a3a2e3d68bd1173a
 msgid ""
 "Widen the grid. If the optimum keeps landing at the edge, you're not "
 "exploring far enough."
 msgstr ""
+"扩大网格。如果最优值老是落在网格边缘，说明你探索的范围不够远。"
 
 #: ../guide/walk_forward.md:156 74cf87d2aa99418491939ee1cc29bfac
 msgid "Try a longer `train_window`."
-msgstr ""
+msgstr "试更长的 `train_window`。"
 
 #: ../guide/walk_forward.md:158 53ae793c7614425a883dd086d3a1ed07
 msgid "\"Mean OoS return is positive but min is catastrophic\""
-msgstr ""
+msgstr "「OoS 均值是正的但最差窗口惨不忍睹」"
 
 #: ../guide/walk_forward.md:160 e1d20e71c38846c6a1bdf937f9f372bf
 msgid ""
@@ -289,14 +311,16 @@ msgid ""
 "periodically (e.g. martingale-like betting, undefended short vol). The "
 "mean hides the tail."
 msgstr ""
+"这是「大部分时间 work 但偶尔爆仓」类策略的典型特征（如马丁格尔式加仓、"
+"裸卖空波动率）。均值掩盖了尾部风险。"
 
 #: ../guide/walk_forward.md:164 5924011ea84c44dd869042afbe533d99
 msgid "Always look at the per-window list, not just the summary."
-msgstr ""
+msgstr "永远要看每个窗口的明细，不要只看 summary。"
 
 #: ../guide/walk_forward.md:166 44dfe04fc90548f8bbf6c1434d6745a6
 msgid "\"Walk-forward Sharpe is much lower than in-sample Sharpe\""
-msgstr ""
+msgstr "「Walk-forward Sharpe 比样本内 Sharpe 低很多」"
 
 #: ../guide/walk_forward.md:168 6187fe03261a447f80ddf4f4b76fb514
 msgid ""
@@ -305,10 +329,13 @@ msgid ""
 "freedom (smaller grid) or extend the strategy's inductive bias (use a "
 "constraint, share parameters across assets, etc.)."
 msgstr ""
+"正常现象。差距就是过拟合的程度。2:1 的比例（样本内 2.0 → OoS 1.0）尚可；"
+"5:1 说明你在拟合噪声。降低参数自由度（缩小网格），或者增加策略的归纳偏置"
+"（用 constraint、跨资产共享参数等）。"
 
 #: ../guide/walk_forward.md:173 a39bb5f583b7444ca7daa94577d65289
 msgid "\"Step smaller than test_window\""
-msgstr ""
+msgstr "「Step 小于 test_window」"
 
 #: ../guide/walk_forward.md:175 f2fca09fbb55417f82dcd004686ec6b6
 msgid ""
@@ -317,22 +344,26 @@ msgid ""
 "adaptive walk-forward that retrains weekly), but understand that the "
 "windows aren't statistically independent."
 msgstr ""
+"这会产生*重叠的*测试窗口。summary 指标会重复计算 bar 并夸大 `n_windows`。"
+"有时这是有意为之（如每周重训的自适应 walk-forward），但需要明白窗口"
+"在统计上不独立。"
 
 #: ../guide/walk_forward.md:180 a00f273afeaf43cd8f1211e4c43b289c
 msgid "See also"
-msgstr ""
+msgstr "另请参考"
 
 #: ../guide/walk_forward.md:182 993d676e7be44a1c90aa3aa58383e466
 msgid "[Stats glossary](stats_glossary.md) — pick the right `maximize` metric."
-msgstr ""
+msgstr "[统计指标词汇表](stats_glossary.md) —— 选择合适的 `maximize` 指标。"
 
 #: ../guide/walk_forward.md:183 0b3e1ba6ec49478eb493725de949bd21
 msgid "[Getting Started](getting_started.md) — basic Backtest workflow."
-msgstr ""
+msgstr "[快速开始](getting_started.md) —— 基础 Backtest 工作流。"
 
 #: ../guide/walk_forward.md:184 5ec1c952c15e4fa2a46b02284af06eef
 msgid ""
 "[`examples/portfolio_strategy.py`](https://github.com/gguan/qtrade/blob/main/examples/portfolio_strategy.py)"
 " — multi-asset walk-forward in a runnable file."
 msgstr ""
-
+"[`examples/portfolio_strategy.py`](https://github.com/gguan/qtrade/blob/main/examples/portfolio_strategy.py)"
+" —— 可运行的多资产 walk-forward 示例。"

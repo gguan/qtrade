@@ -1,18 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
+# Chinese translation of QTrade docs.
 # Copyright (C) 2026, Guan Guan
-# This file is distributed under the same license as the QTrade package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: QTrade \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-08 02:38+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2026-05-08 03:00+0800\n"
+"Last-Translator: \n"
 "Language: zh_CN\n"
-"Language-Team: zh_CN <LL@li.org>\n"
+"Language-Team: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,21 +18,22 @@ msgstr ""
 
 #: ../guide/faq.md:1 e9737771aa2544d398f48aa83041dd9b
 msgid "FAQ"
-msgstr ""
+msgstr "FAQ"
 
 #: ../guide/faq.md:3 c457e7bdb9e54bf3928e4b80aca42f72
 msgid ""
 "Common questions and pitfalls. If you hit something not covered here, "
 "[open an issue](https://github.com/gguan/qtrade/issues)."
 msgstr ""
+"常见问题和坑。如果碰到本页没覆盖的，[开个 issue](https://github.com/gguan/qtrade/issues)。"
 
 #: ../guide/faq.md:6 5936fbf9ac214bd3b7e9c309ac242906
 msgid "Backtesting"
-msgstr ""
+msgstr "回测"
 
 #: ../guide/faq.md:8 f86c04540f3948f1a340efc595d7b3cd
 msgid "Why does my strategy underperform Buy & Hold?"
-msgstr ""
+msgstr "为什么我的策略跑不过 Buy & Hold？"
 
 #: ../guide/faq.md:10 e6fbfa44f0954c02b97ac7653d126b7d
 msgid ""
@@ -43,34 +41,39 @@ msgid ""
 "trend with zero commission and zero timing risk. To beat it your strategy"
 " needs to either:"
 msgstr ""
+"大多数简单策略都跑不过。Buy & Hold 以零佣金、零择时风险捕获标的的趋势。"
+"要击败它，你的策略需要满足以下之一："
 
 #: ../guide/faq.md:14 07d3074d1ca94ab6a64211cdd25a14e4
 msgid "**Avoid drawdowns** — sit out the worst periods (timing)."
-msgstr ""
+msgstr "**避开回撤** —— 在最差的时段空仓（择时）。"
 
 #: ../guide/faq.md:15 bd6d73130dac4cc2b52c39d3f790c2ad
 msgid ""
 "**Add diversification** — multi-asset reduces variance even with B&H-like"
 " returns per asset."
 msgstr ""
+"**增加分散** —— 即便每个资产收益和 B&H 接近，多资产也能降低方差。"
 
 #: ../guide/faq.md:17 503c0eae7baf48b2bdc71c9a1631e4cc
 msgid "**Use leverage** — explicit via `margin_ratio` or position sizing."
-msgstr ""
+msgstr "**使用杠杆** —— 通过 `margin_ratio` 或仓位规模显式实现。"
 
 #: ../guide/faq.md:18 88d06cf4c3784a279677c172049cdaa7
 msgid "**Trade with edge** — short-side gains, mean reversion, etc."
-msgstr ""
+msgstr "**有真正 edge** —— 做空收益、均值回归等。"
 
 #: ../guide/faq.md:20 256ba0dba3ec4ee28ed6beb06bec5ea5
 msgid ""
 "If your strategy has a positive Sharpe but loses to B&H, it might still "
 "be valuable as a portfolio component (uncorrelated with passive long)."
 msgstr ""
+"如果你的策略 Sharpe 为正但跑不过 B&H，作为组合的一个分量仍可能有价值"
+"（和被动多头不相关）。"
 
 #: ../guide/faq.md:23 fbc77316a36b4f6f848aa19508e82ef6
 msgid "How do I avoid look-ahead bias?"
-msgstr ""
+msgstr "怎么避免未来函数？"
 
 #: ../guide/faq.md:25 483a0b5854b74b6da0bd64f0fc0ce485
 msgid ""
@@ -78,10 +81,12 @@ msgid ""
 "`self.data_by_asset[asset]`) is sliced to `[:current_time]`, so you "
 "*cannot* read future bars from inside `on_bar_close`."
 msgstr ""
+"QTrade 在结构上阻断最常见的一种：`self.data`（和 `self.data_by_asset[asset]`）"
+"被切到 `[:current_time]`，所以你在 `on_bar_close` 里*根本读不到*未来的 bar。"
 
 #: ../guide/faq.md:29 20d2620bbc51425ebdf8acb76aa2f54a
 msgid "Where look-ahead can still creep in:"
-msgstr ""
+msgstr "未来函数仍可能从这些地方溜进来："
 
 #: ../guide/faq.md:31 3df6508a902b4fb5b28afcfb0b249b2b
 msgid ""
@@ -89,6 +94,8 @@ msgid ""
 " an indicator that uses future information (e.g. "
 "`df['Close'].shift(-1)`), `on_bar_close` will read it."
 msgstr ""
+"**在 `prepare()` 里**你能访问完整 DataFrame。如果你用了未来信息计算指标"
+"（比如 `df['Close'].shift(-1)`），`on_bar_close` 会读到它。"
 
 #: ../guide/faq.md:34 cb71e89dc31945e4a7896625be10dc54
 msgid ""
@@ -96,6 +103,8 @@ msgid ""
 "inside the bar. For thinly-traded assets this overstates fill "
 "probability."
 msgstr ""
+"**Limit / stop 成交**假设价格在 bar 内确实触及你的价位。对流动性差的资产，"
+"这高估了成交概率。"
 
 #: ../guide/faq.md:37 dc51bf7343c94806a791e779a435b699
 msgid ""
@@ -105,34 +114,37 @@ msgid ""
 "cheating. If unsure, set `trade_on_close=False` and fills happen at the "
 "next bar's open."
 msgstr ""
+"**`trade_on_close=True`** 让市价单在当前 bar 的收盘价成交 —— 也就是你计算信号"
+"使用的那根 bar。对收盘类信号是合理的，对其他信号实际上等于作弊。不确定的话"
+"设 `trade_on_close=False`，让成交发生在下一根 bar 的开盘。"
 
 #: ../guide/faq.md:43 f8602971ca60401d9c7c56ed5b7c4dd0
 msgid "What's the difference between `trade_on_close=True` and `False`?"
-msgstr ""
+msgstr "`trade_on_close=True` 和 `False` 有什么区别?"
 
 #: ../guide/faq.md 5e47d6ed7eff4b9e91115e66f32e923d
 msgid "Setting"
-msgstr ""
+msgstr "设置"
 
 #: ../guide/faq.md c6fecacc52a646f39f6052e5204c43ee
 msgid "Market order placed in `on_bar_close()` for bar N fills at..."
-msgstr ""
+msgstr "在第 N 根 bar 的 `on_bar_close()` 里下的市价单成交价..."
 
 #: ../guide/faq.md 880326f52bd34817b95b8047f0de5b88
 msgid "`True`"
-msgstr ""
+msgstr "`True`"
 
 #: ../guide/faq.md 4716c82f201744dbbad4555ce272611d
 msgid "Bar N's **close** (same bar)"
-msgstr ""
+msgstr "第 N 根 bar 的**收盘价**（同一根 bar）"
 
 #: ../guide/faq.md 175eac5be9244634a4ee46d6d9b913ae
 msgid "`False`"
-msgstr ""
+msgstr "`False`"
 
 #: ../guide/faq.md 44ae38d9757149a78e003c396b126309
 msgid "Bar N+1's **open**"
-msgstr ""
+msgstr "第 N+1 根 bar 的**开盘价**"
 
 #: ../guide/faq.md:50 ee0d2ee4481b405ea6d333b3dfa5e05f
 msgid ""
@@ -141,14 +153,17 @@ msgid ""
 "setting if your signal could in practice take a tick to act on — slightly"
 " conservative, recommended unless you have a reason."
 msgstr ""
+"`True` 适合信号确实在收盘时到达的回测（比如你用收盘价计算）。"
+"`False` 更接近现实，因为信号在实盘中通常需要一个 tick 才能行动 —— 偏保守，"
+"没特别理由就用这个。"
 
 #: ../guide/faq.md:55 601850194de04008a741135266775796
 msgid "My strategy fires no trades. Why?"
-msgstr ""
+msgstr "我的策略一笔交易都没下，为什么？"
 
 #: ../guide/faq.md:57 7414211f8a074685b340529bf222e362
 msgid "A few common causes:"
-msgstr ""
+msgstr "几个常见原因："
 
 #: ../guide/faq.md:59 df9070c34be343cf84bb1dcb04a14a9a
 msgid ""
@@ -156,6 +171,8 @@ msgid ""
 "warmup. `Backtest._start_idx` skips them automatically; if your data is "
 "shorter than the warmup, you get zero trades."
 msgstr ""
+"**开头的指标是 NaN** —— 前 `window_size` 根 bar 是热身。"
+"`Backtest._start_idx` 自动跳过它们；如果数据比热身期还短，就一笔交易都没有。"
 
 #: ../guide/faq.md:62 aaf7ec6305c44c0182031c02819b237c
 msgid ""
@@ -163,6 +180,8 @@ msgid ""
 "positions, but `available_margin` shrinks fast as you stack trades. Lower"
 " the size or raise the ratio."
 msgstr ""
+"**`available_margin` 是 0** —— `margin_ratio < 1` 允许你加杠杆，但堆叠交易后"
+"`available_margin` 缩水很快。降低 size 或调高 margin_ratio。"
 
 #: ../guide/faq.md:65 829e68516c1546bca4f928fac30d1b96
 msgid ""
@@ -171,10 +190,13 @@ msgid ""
 "cash, default `Strategy.buy()` resolves to size 0 and Order construction "
 "errors."
 msgstr ""
+"**`size=0` 静默无效** —— `Order(size=0)` 现在会抛错（好事！），"
+"但如果你用 `size = available_margin // close` 算出来 size=0（现金太少），"
+"默认的 `Strategy.buy()` 会触发 Order 构造时报错。"
 
 #: ../guide/faq.md:70 2212e401032b4b81a53bc9251e265e4c
 msgid "Why does my SL/TP fire at a price different from what I set?"
-msgstr ""
+msgstr "为什么 SL/TP 触发的价格和我设的不一样？"
 
 #: ../guide/faq.md:72 2ae5e522769b4a28bfadf77de1f39727
 msgid ""
@@ -184,6 +206,9 @@ msgid ""
 "bar dips to low=98, your fill is recorded at 99, even though the bar "
 "closed at 102."
 msgstr ""
+"SL/TP 在 bar 的 `low`（多头止损）或 `high`（多头止盈）触及你设置的价位时触发。"
+"成交价记录的是*你设置的 SL/TP 价位*，不是 bar 的收盘价。所以你设 sl=99、"
+"bar 跌到 low=98，成交价被记录为 99，哪怕这根 bar 收盘在 102。"
 
 #: ../guide/faq.md:78 d867799c28534f818bd8a371c9eee567
 msgid ""
@@ -191,14 +216,17 @@ msgid ""
 "fill at the bar's close, not the trigger price — a known fidelity gap "
 "tracked as a future fix. SL/TP attached to a Trade work as described."
 msgstr ""
+"注意：通过 `Order(stop=...)` 下的普通 stop *订单*目前在 bar 收盘价成交，"
+"而不是触发价 —— 这是已知的真实度差距，留作未来修复。挂在 Trade 上的 SL/TP "
+"按上面描述工作。"
 
 #: ../guide/faq.md:82 3ff5486eaba248b1bcf7080d99311cb0
 msgid "Optimization"
-msgstr ""
+msgstr "参数优化"
 
 #: ../guide/faq.md:84 fb7904cecd4a4e6695abb77972febdf9
 msgid "Why does my strategy look great in `optimize()` but bad live?"
-msgstr ""
+msgstr "为什么 `optimize()` 里看起来很美的策略实盘很差？"
 
 #: ../guide/faq.md:86 2d739b4cc60047bfb74810e8ab078bc9
 msgid ""
@@ -206,6 +234,8 @@ msgid ""
 "the same data they're tested on — which is a textbook recipe for fitting "
 "noise."
 msgstr ""
+"样本内过拟合。`optimize()` 在同一份数据上既挑参又测试 —— "
+"这是教科书级别的「拟合噪声」配方。"
 
 #: ../guide/faq.md:90 01fed5c983c44075a9609d6fea339b43
 msgid ""
@@ -213,6 +243,8 @@ msgid ""
 "optimization](walk_forward.md). Each parameter set is evaluated only on "
 "data the strategy was never tuned on."
 msgstr ""
+"改用 `walk_forward_optimize` —— 详见 [Walk-forward 优化](walk_forward.md)。"
+"每组参数只在策略从未调过参的数据上评估。"
 
 #: ../guide/faq.md:94 791c9f4dd38d42f7aeb6ac504313230c
 msgid ""
@@ -220,46 +252,52 @@ msgid ""
 "your overfit. Common; expected; treat the walk-forward number as the "
 "realistic one."
 msgstr ""
+"如果 walk-forward 的 Sharpe 远低于 `optimize` 的 Sharpe，差距就是你的过拟合程度。"
+"很常见、很正常 —— 把 walk-forward 数字当成实际表现。"
 
 #: ../guide/faq.md:98 e1328d90e8b64bbe895d39b87cff0f18
 msgid "How do I pick the `maximize` metric?"
-msgstr ""
+msgstr "怎么选择 `maximize` 指标？"
 
 #: ../guide/faq.md:100 ed03b0a0a8b94893999d0f60ecd44521
 msgid ""
 "**Total Return [%]**: simple, but punishes nothing for risk. Strategies "
 "with huge drawdowns can win."
 msgstr ""
+"**Total Return [%]**：简单，但完全不惩罚风险。回撤巨大的策略可能胜出。"
 
 #: ../guide/faq.md:102 c32ce36fece643bd82ed8aeb629bcf5e
 msgid ""
 "**Sharpe Ratio**: most common default. Good for normal-ish return "
 "distributions."
 msgstr ""
+"**Sharpe Ratio**：最常见的默认选择。适合接近正态的收益分布。"
 
 #: ../guide/faq.md:104 fe4bc1eeeeed4fb4b3ffc035f39291ce
 msgid ""
 "**Sortino Ratio**: better for asymmetric / fat-tailed returns (trend-"
 "followers)."
 msgstr ""
+"**Sortino Ratio**：适合非对称 / 厚尾收益（趋势跟随）。"
 
 #: ../guide/faq.md:106 555c343a8d4b49898ca5a0249b61e01e
 msgid ""
 "**Calmar Ratio**: rewards smooth equity curves; good if you care about "
 "drawdown experience."
 msgstr ""
+"**Calmar Ratio**：奖励平滑的净值曲线；适合关心回撤体验的场景。"
 
 #: ../guide/faq.md:109 d2210eeaa7f246358331803061359bad
 msgid "Start with Sharpe unless you have a specific reason."
-msgstr ""
+msgstr "没有特殊理由就从 Sharpe 开始。"
 
 #: ../guide/faq.md:111 2ed41e956c934effa8ed53abebfcfe34
 msgid "My grid search is too slow."
-msgstr ""
+msgstr "我的网格搜索太慢了。"
 
 #: ../guide/faq.md:113 39579cfb58574b2290bf5e7558be497a
 msgid "Two paths:"
-msgstr ""
+msgstr "两条路："
 
 #: ../guide/faq.md:115 83c4ebcda9f2431193945c8124c3ede1
 msgid ""
@@ -267,6 +305,8 @@ msgid ""
 "parameters; ranges of 4–6 values per param are usually enough. Don't "
 "sweep everything at fine resolution."
 msgstr ""
+"**缩小网格** —— 多数策略只有一两个真正重要的参数；每个参数 4–6 个候选值通常够。"
+"不要把所有东西都细粒度扫一遍。"
 
 #: ../guide/faq.md:118 d5c73270640348ad8b7aa732e39f847a
 msgid ""
@@ -274,20 +314,24 @@ msgid ""
 "event loop is the wrong tool. See "
 "[COMPARISON.md](https://github.com/gguan/qtrade/blob/main/COMPARISON.md)."
 msgstr ""
+"**改用 vectorbt** —— 上千参数组合时，QTrade 的事件循环不是合适工具。"
+"详见 [COMPARISON.md](https://github.com/gguan/qtrade/blob/main/COMPARISON.md)。"
 
 #: ../guide/faq.md:122 636db1af43aa44bf9bd5d0e2877a293c
 msgid "Multi-asset"
-msgstr ""
+msgstr "多资产"
 
 #: ../guide/faq.md:124 890eebf37997461588508eb23724b2a9
 msgid "How do I align data from different sources?"
-msgstr ""
+msgstr "怎么对齐不同来源的数据？"
 
 #: ../guide/faq.md:126 2cf0b254d3384e539d0cc3ef8c0ffd77
 msgid ""
 "QTrade requires every asset's DataFrame to share an identical "
 "`DatetimeIndex`. Use a pandas join on the indexes before passing in:"
 msgstr ""
+"QTrade 要求每个资产的 DataFrame 共享完全一致的 `DatetimeIndex`。"
+"传入前用 pandas 在索引上做 join："
 
 #: ../guide/faq.md:134 5e106dadd5a446b993bd06033ff85581
 msgid ""
@@ -295,10 +339,12 @@ msgid ""
 "union + forward-fill — but **be careful**: forward-filled bars give the "
 "impression of liquidity that wasn't there."
 msgstr ""
+"对于有缺口的数据（公司行为、流动性差的日子），你可能更想要 union + 前向填充 —— "
+"但**小心**：前向填充的 bar 会让没有的流动性看起来像有。"
 
 #: ../guide/faq.md:138 0f09835851f94c5b81524ed9136bb7ee
 msgid "Can I have different commission per asset?"
-msgstr ""
+msgstr "可以为每个资产设置不同佣金吗？"
 
 #: ../guide/faq.md:140 524823c3c6584c81a2f7928ca98e5435
 msgid ""
@@ -306,10 +352,12 @@ msgid ""
 "broker. To approximate per-asset cost, wrap your strategy logic to add "
 "asset-specific slippage manually before placing orders."
 msgstr ""
+"暂不支持。`Commission` 是 broker 共享的单一实例。如要近似按资产收费，"
+"在下单前手动在策略逻辑里加上资产特定的滑点。"
 
 #: ../guide/faq.md:144 8446440ef85d4d6da8dcfd96612aeb59
 msgid "Why does `self.position` raise in multi-asset mode?"
-msgstr ""
+msgstr "为什么多资产模式下 `self.position` 会抛错？"
 
 #: ../guide/faq.md:146 37d98d23eed14459a9261761c2403e3b
 msgid ""
@@ -317,14 +365,16 @@ msgid ""
 "Use `self.positions[\"AAPL\"]` (dict access) instead. Same for "
 "`self.data` → `self.data_by_asset[\"AAPL\"]`."
 msgstr ""
+"因为没有单一 Position 可返回 —— 每个资产一个。改用 `self.positions[\"AAPL\"]`"
+"（dict 访问）。`self.data` 同理 → `self.data_by_asset[\"AAPL\"]`。"
 
 #: ../guide/faq.md:150 fd46ee41728746a2aa6c266fac66ca07
 msgid "Reinforcement Learning"
-msgstr ""
+msgstr "强化学习"
 
 #: ../guide/faq.md:152 4100c1e2fffe482ebf30eece2ca13136
 msgid "My agent learns to do nothing (reward = 0)."
-msgstr ""
+msgstr "我的 agent 学会了什么都不做（reward = 0）。"
 
 #: ../guide/faq.md:154 113ed0de9b4b4d6b9f3dd9ed1d62419b
 msgid ""
@@ -332,114 +382,118 @@ msgid ""
 "trade closed. If your agent never closes trades, reward stays 0 and the "
 "gradient signal is too sparse."
 msgstr ""
+"默认的 `RewardScheme` 只在有交易平仓的 bar 给已实现盈亏的奖励。"
+"如果 agent 从不平仓，reward 一直是 0，梯度信号过于稀疏。"
 
 #: ../guide/faq.md:158 a3db18c5645f432b8fbacc0e702b1a14
 msgid "Try one of:"
-msgstr ""
+msgstr "试试以下方案之一："
 
 #: ../guide/faq.md:160 cfbc42a4114b4d448b7fde878b5efa84
 msgid ""
 "An equity-based reward that fires every bar (see [Customizing Trading "
 "Environment](customize_environment.md))."
 msgstr ""
+"基于权益的奖励，每根 bar 都触发（详见[自定义交易环境](customize_environment.md)）。"
 
 #: ../guide/faq.md:162 bd3b9ad439af40b5ad1a50f634cede51
 msgid ""
 "An action scheme that forces flat at episode end (so trades close for "
 "sure)."
 msgstr ""
+"在 episode 结束时强制平仓的 action scheme（保证交易最终都关闭）。"
 
 #: ../guide/faq.md:164 648376f1de7b48d98cbca627d7af30eb
 msgid "A higher episode count — sparse reward + long episodes is hard."
-msgstr ""
+msgstr "增加 episode 数量 —— 稀疏奖励 + 长 episode 很难学。"
 
 #: ../guide/faq.md:166 6c2c1443983046218fce59c3a60f361f
 msgid "What does `info` contain in `env.step()` returns?"
-msgstr ""
+msgstr "`env.step()` 返回的 `info` 里有什么？"
 
 #: ../guide/faq.md:168 17cf13fe2ee94c148405cf5441a07af3
 msgid "Per-step dict from `TradingEnv.step()`:"
-msgstr ""
+msgstr "`TradingEnv.step()` 的每步 dict："
 
 #: ../guide/faq.md 3beb58d2a57a4272807a7556e8c6aecd
 msgid "Key"
-msgstr ""
+msgstr "键"
 
 #: ../guide/faq.md 24f4bd56dcbf4305afecb2e0d9f2fc89
 msgid "Meaning"
-msgstr ""
+msgstr "含义"
 
 #: ../guide/faq.md 3e9e396eefce470a958b0b5a5faac90d
 msgid "`equity`"
-msgstr ""
+msgstr "`equity`"
 
 #: ../guide/faq.md a1bf6559c3944a8098bd9563145b5ec3
 msgid "`broker.equity`"
-msgstr ""
+msgstr "`broker.equity`"
 
 #: ../guide/faq.md d960ce2620544b268f4e6b0cc206c2a4
 msgid "`unrealized_pnl`"
-msgstr ""
+msgstr "`unrealized_pnl`"
 
 #: ../guide/faq.md 3cb03e181e404ab4a06237a3014d54de
 msgid "`broker.unrealized_pnl`"
-msgstr ""
+msgstr "`broker.unrealized_pnl`"
 
 #: ../guide/faq.md ebbd21f8a8c04280a0f73c05689f0e1e
 msgid "`cumulative_return`"
-msgstr ""
+msgstr "`cumulative_return`"
 
 #: ../guide/faq.md 6312021847b244f09af0ebe7eb36c951
 msgid "`broker.cumulative_returns` (multiplicative since start)"
-msgstr ""
+msgstr "`broker.cumulative_returns`（自起点的乘性增长）"
 
 #: ../guide/faq.md 74d022c29813442fa6f2c7009676757b
 msgid "`position`"
-msgstr ""
+msgstr "`position`"
 
 #: ../guide/faq.md f740e52bd6ee486fb60e0aaa5ec14f08
 msgid "`broker.position.size` (signed)"
-msgstr ""
+msgstr "`broker.position.size`（带符号）"
 
 #: ../guide/faq.md 12b012652c2e43569c4d3c5645329b70
 msgid "`total_trades`"
-msgstr ""
+msgstr "`total_trades`"
 
 #: ../guide/faq.md 341896edc7b54409abacdbdde0142f48
 msgid "`len(broker.closed_trades)`"
-msgstr ""
+msgstr "`len(broker.closed_trades)`"
 
 #: ../guide/faq.md a0913c1dd6a94a86a7529025a280b913
 msgid "`trades_profit`"
-msgstr ""
+msgstr "`trades_profit`"
 
 #: ../guide/faq.md 030853cc89ac41dea8a4e608140dad65
 msgid "Sum of all closed trade profits"
-msgstr ""
+msgstr "所有已平仓交易盈亏之和"
 
 #: ../guide/faq.md 765ac3cad70e42628c6a4e92865702e8
 msgid "`avg_trade_duration`"
-msgstr ""
+msgstr "`avg_trade_duration`"
 
 #: ../guide/faq.md 553cad2148e743e99a766743d0f3b2a8
 msgid "Mean exit_index − entry_index in bars"
-msgstr ""
+msgstr "平均 exit_index − entry_index（按 bar 数）"
 
 #: ../guide/faq.md aaa5c1f383554fa3a1671ae61d3db2da
 msgid "`is_success`"
-msgstr ""
+msgstr "`is_success`"
 
 #: ../guide/faq.md b1cd0b1ae1d0459b9740c93fe5001559
 msgid "`trades_profit > 0`"
-msgstr ""
+msgstr "`trades_profit > 0`"
 
 #: ../guide/faq.md:181 121145c5a8e541c4a391afb550942af9
 msgid "`is_success` is intended for SB3's success-rate logging in `EvalCallback`."
-msgstr ""
+msgstr "`is_success` 是给 SB3 `EvalCallback` 的成功率日志用的。"
 
 #: ../guide/faq.md:184 8ced373a81284b42bb3bf3d43ab80186
 msgid "`random_start=True` errors with a cryptic message."
-msgstr ""
+msgstr "`random_start=True` 报了一条看不懂的错误。"
 
 #: ../guide/faq.md:186 d3d09207c2f142929fbd0297c2e3b327
 msgid ""
@@ -447,20 +501,23 @@ msgid ""
 "max_steps`. The default `max_steps=3000` needs at least ~3000 bars of "
 "data; lower it for shorter datasets."
 msgstr ""
+"v0.3.0 已修复 —— 现在 `len(data) <= window_size + max_steps` 时抛 `ValueError`。"
+"默认 `max_steps=3000` 需要至少 ~3000 根 bar；数据较短就调小这个值。"
 
 #: ../guide/faq.md:190 679867c4ae994c3eaf96aac78867789c
 msgid "Misc"
-msgstr ""
+msgstr "杂项"
 
 #: ../guide/faq.md:192 0458eed7c6344e9f84dc22f9cc60b07c
 msgid "How do I save the backtest result for later?"
-msgstr ""
+msgstr "怎么把回测结果保存起来稍后用？"
 
 #: ../guide/faq.md:194 64624210c1804c908677069d62287df0
 msgid ""
 "There's no built-in serializer, but the broker holds everything. Pickle "
 "works as a quick-and-dirty save:"
 msgstr ""
+"没有内置序列化，但 broker 持有一切。Pickle 是简单粗暴的保存方式："
 
 #: ../guide/faq.md:203 04190cdc29b94070b9187196f5744ef6
 msgid ""
@@ -468,10 +525,12 @@ msgid ""
 "DataFrames first: `bt.broker.equity_history`, `bt.get_trade_history()`, "
 "`calculate_stats(bt.broker)`."
 msgstr ""
+"如果想要更稳健（跨版本安全），先把需要的内容拉成 DataFrame："
+"`bt.broker.equity_history`、`bt.get_trade_history()`、`calculate_stats(bt.broker)`。"
 
 #: ../guide/faq.md:207 9a913bdf8c7e4a34935972ebcfaa722e
 msgid "Where do I report bugs?"
-msgstr ""
+msgstr "怎么提 bug？"
 
 #: ../guide/faq.md:209 e21c9cd35ef448318138e60b70db8d28
 msgid ""
@@ -479,4 +538,6 @@ msgid ""
 " Minimal repro + the QTrade version (`qtrade-lib --version` doesn't "
 "exist; use `pip show qtrade-lib`) helps a lot."
 msgstr ""
-
+"[https://github.com/gguan/qtrade/issues](https://github.com/gguan/qtrade/issues)。"
+"最小复现 + QTrade 版本号（`qtrade-lib --version` 不存在；用 `pip show qtrade-lib`）"
+"会帮上大忙。"

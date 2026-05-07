@@ -1,18 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
+# Chinese translation of QTrade docs.
 # Copyright (C) 2026, Guan Guan
-# This file is distributed under the same license as the QTrade package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: QTrade \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-08 02:38+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2026-05-08 03:00+0800\n"
+"Last-Translator: \n"
 "Language: zh_CN\n"
-"Language-Team: zh_CN <LL@li.org>\n"
+"Language-Team: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,7 +18,7 @@ msgstr ""
 
 #: ../guide/trading_environment.md:1 6ec76a49d59e45fbbf702f5561466868
 msgid "Gym Trading Environment"
-msgstr ""
+msgstr "Gym 交易环境"
 
 #: ../guide/trading_environment.md:3 21b03473eaed4aa38ee6156f6a932b81
 msgid ""
@@ -30,16 +27,21 @@ msgid ""
 " agent steps through bars one at a time; same accounting, fill semantics,"
 " SL/TP behavior — just driven by `step()` instead of a Python loop."
 msgstr ""
+"QTrade 提供一个 [Gymnasium](https://gymnasium.farama.org/) 环境"
+"（`qtrade.env.TradingEnv`），它包装的是和 `Backtest` 同一个 `Broker`。"
+"agent 一次推进一根 bar；账户逻辑、成交语义、SL/TP 行为完全一致 —— "
+"只是用 `step()` 驱动而不是 Python 循环。"
 
 #: ../guide/trading_environment.md:9 98561b040366444c8894812943e70036
 msgid ""
 "For customizing the action / observation / reward, see [Customizing "
 "Trading Environment](customize_environment.md)."
 msgstr ""
+"自定义 action / observation / reward 见[自定义交易环境](customize_environment.md)。"
 
 #: ../guide/trading_environment.md:12 f4c7b53f1beb4a298924137112612b32
 msgid "Initializing"
-msgstr ""
+msgstr "初始化"
 
 #: ../guide/trading_environment.md:43 ddedbd1d6c1c435c9c6e059a05c05bcd
 msgid ""
@@ -47,69 +49,74 @@ msgid ""
 " of every column except OHLCV. So the indicators you add to the DataFrame"
 " become the observation features automatically."
 msgstr ""
+"默认的 `ObserverScheme` 返回除 OHLCV 之外所有列的 `(window_size, n_features)` 窗口。"
+"所以你加到 DataFrame 上的指标会自动变成观测特征。"
 
 #: ../guide/trading_environment.md:47 8a93e6e26e804eadb4f8cfd2098e2e52
 msgid "The step API"
-msgstr ""
+msgstr "step API"
 
 #: ../guide/trading_environment.md:49 1fd387b1f5b0406bac70428531f49879
 msgid "`env.step(action)` returns the standard 5-tuple:"
-msgstr ""
+msgstr "`env.step(action)` 返回标准 5 元组："
 
 #: ../guide/trading_environment.md 636335f1fe6f41a4a5dba3896f85817f
 msgid "Field"
-msgstr ""
+msgstr "字段"
 
 #: ../guide/trading_environment.md 8aa627a14854412d9838e78a4ec88fa1
 #: cf1a9b3526fe4c70872db9fe8c18e62b
 msgid "Meaning"
-msgstr ""
+msgstr "含义"
 
 #: ../guide/trading_environment.md 93f4dc8235264d869de9090b74f40777
 msgid "`obs`"
-msgstr ""
+msgstr "`obs`"
 
 #: ../guide/trading_environment.md d088bdd3ab9d4fe39a45f59b0cb85d1a
 msgid ""
 "Whatever the `ObserverScheme` produces. Default: `np.ndarray` of shape "
 "`(window_size, n_features)`."
 msgstr ""
+"`ObserverScheme` 产生的内容。默认：形状 `(window_size, n_features)` 的 `np.ndarray`。"
 
 #: ../guide/trading_environment.md 5d2617397be8440593b613379e678c2b
 msgid "`reward`"
-msgstr ""
+msgstr "`reward`"
 
 #: ../guide/trading_environment.md 7464ea24cee54f54b49a7e6b0c83819a
 msgid ""
 "`RewardScheme.get_reward(env)`. Default: log-return of trades closed this"
 " step minus commission."
 msgstr ""
+"`RewardScheme.get_reward(env)`。默认：本步关闭交易的对数收益减去佣金。"
 
 #: ../guide/trading_environment.md 8b00ae0e786c410598a12e9b89fb7eca
 msgid "`terminated`"
-msgstr ""
+msgstr "`terminated`"
 
 #: ../guide/trading_environment.md a01e0bd37cbb464191541ced84f6b498
 msgid "`True` iff `current_step >= len(data) - 1` — the data ran out."
-msgstr ""
+msgstr "当且仅当 `current_step >= len(data) - 1` 时为 `True` —— 数据用完了。"
 
 #: ../guide/trading_environment.md 25893bf688e5428eae28c8a5d35d6500
 msgid "`truncated`"
-msgstr ""
+msgstr "`truncated`"
 
 #: ../guide/trading_environment.md a930071e8dc941a29cdf21d5f43fd7ea
 msgid ""
 "`True` iff `current_step - start_idx >= max_steps` — the episode hit its "
 "time limit."
 msgstr ""
+"当且仅当 `current_step - start_idx >= max_steps` 时为 `True` —— episode 到时间限制。"
 
 #: ../guide/trading_environment.md 3fed357ba7854f9da1e44e7318a59735
 msgid "`info`"
-msgstr ""
+msgstr "`info`"
 
 #: ../guide/trading_environment.md 7d83a4b366cb41ceb2faa4f1123fb082
 msgid "Dict (see below)."
-msgstr ""
+msgstr "字典（见下文）。"
 
 #: ../guide/trading_environment.md:63 9243887d64ac4eb09bdfb0a85a6f6eef
 msgid ""
@@ -117,84 +124,87 @@ msgid ""
 "`close_all_positions()` automatically — the episode is \"settled\" before"
 " returning."
 msgstr ""
+"`terminated` 或 `truncated` 变 True 时，broker 自动调用 `close_all_positions()` —— "
+"episode 在返回前已「结算」。"
 
 #: ../guide/trading_environment.md:67 59cbbf1ad3cb4c169b0a7f069886795b
 msgid "What's in `info`?"
-msgstr ""
+msgstr "`info` 里有什么？"
 
 #: ../guide/trading_environment.md:69 cd7478a90980461d9b7385a2a39ad8da
 msgid "Every step:"
-msgstr ""
+msgstr "每一步包含："
 
 #: ../guide/trading_environment.md 99ca13da75f045f6b3d44c75fb415729
 msgid "Key"
-msgstr ""
+msgstr "键"
 
 #: ../guide/trading_environment.md a3bc6a9a132942cbbe55302445199735
 msgid "`equity`"
-msgstr ""
+msgstr "`equity`"
 
 #: ../guide/trading_environment.md c58009bdb98d4fba8497b3b81d156b50
 msgid "`broker.equity` (cash + unrealized PnL)."
-msgstr ""
+msgstr "`broker.equity`（现金 + 浮动盈亏）。"
 
 #: ../guide/trading_environment.md 68303c60014e4005b736ebc7fa429f9d
 msgid "`unrealized_pnl`"
-msgstr ""
+msgstr "`unrealized_pnl`"
 
 #: ../guide/trading_environment.md cbc9a6b5c0d3486abaa6dee6a6d725d8
 msgid "`broker.unrealized_pnl`."
-msgstr ""
+msgstr "`broker.unrealized_pnl`。"
 
 #: ../guide/trading_environment.md 887af900c5ec48a3a22b118bbb3d77fc
 msgid "`cumulative_return`"
-msgstr ""
+msgstr "`cumulative_return`"
 
 #: ../guide/trading_environment.md a3bfcaa33a134199b0ed44d9174fa483
 msgid ""
 "`broker.cumulative_returns` — multiplicative growth since the episode "
 "start."
 msgstr ""
+"`broker.cumulative_returns` —— 自 episode 开始的乘性增长。"
 
 #: ../guide/trading_environment.md d9da77d2d30943a5817dfee3976b017d
 msgid "`position`"
-msgstr ""
+msgstr "`position`"
 
 #: ../guide/trading_environment.md d8757d6d549645d09f2bb5d717306583
 msgid "Net signed `position.size`."
-msgstr ""
+msgstr "带符号的 `position.size` 净值。"
 
 #: ../guide/trading_environment.md 168393e7cbcf45f0a1f40c5caed8cbbc
 msgid "`total_trades`"
-msgstr ""
+msgstr "`total_trades`"
 
 #: ../guide/trading_environment.md c5c131cecbab4a3582e92eabc4797546
 msgid "Count of closed trades so far this episode."
-msgstr ""
+msgstr "本 episode 至今已平仓交易数。"
 
 #: ../guide/trading_environment.md c16852378a264cf7a53b6492fc9ede16
 msgid "`trades_profit`"
-msgstr ""
+msgstr "`trades_profit`"
 
 #: ../guide/trading_environment.md 69fc6e6059b843099458103bb96af0eb
 msgid "Sum of `profit` across all closed trades."
-msgstr ""
+msgstr "所有已平仓交易 `profit` 之和。"
 
 #: ../guide/trading_environment.md 6c0d53609def4bfd8c5093ff1d0f85e2
 msgid "`avg_trade_duration`"
-msgstr ""
+msgstr "`avg_trade_duration`"
 
 #: ../guide/trading_environment.md 9877ecc4825543a2ba41be618ef349c6
 msgid "Mean `exit_index − entry_index` in bars (0 if no trades)."
-msgstr ""
+msgstr "平均 `exit_index − entry_index`（按 bar 计；无交易时为 0）。"
 
 #: ../guide/trading_environment.md e5f1412ecba9486baf3991659d796e1b
 msgid "`is_success`"
-msgstr ""
+msgstr "`is_success`"
 
 #: ../guide/trading_environment.md 99bf7a41f435432e91448940109d4922
 msgid "`trades_profit > 0`. Useful for SB3's `EvalCallback` success-rate logging."
-msgstr ""
+msgstr "`trades_profit > 0`。便于 SB3 `EvalCallback` 记录成功率。"
 
 #: ../guide/trading_environment.md:82 a9002a07c94c49dd8d7c32ea134ea5c1
 msgid ""
@@ -202,40 +212,45 @@ msgid ""
 "specific trade properties), subclass `TradingEnv` and override `step` to "
 "extend the dict."
 msgstr ""
+"如需额外字段（持仓中交易数、当前回撤、特定交易属性），继承 `TradingEnv` "
+"并重写 `step` 来扩展这个 dict。"
 
 #: ../guide/trading_environment.md:86 c21f3ea9ff4a4524b7f23f87bdee0bc8
 msgid "Episodes: terminated vs truncated"
-msgstr ""
+msgstr "Episode：terminated vs truncated"
 
 #: ../guide/trading_environment.md:88 a0e051248f3d40c687bb53a183ba2621
 msgid "The Gymnasium convention is:"
-msgstr ""
+msgstr "Gymnasium 的约定是："
 
 #: ../guide/trading_environment.md:90 c79e26b7d2ed40ad9ca1109c943d157e
 msgid ""
 "**`terminated`**: the episode reached a *natural* end (won, lost, or ran "
 "out of valid states)."
 msgstr ""
+"**`terminated`**：episode 到达*自然*终点（胜、负或可用状态耗尽）。"
 
 #: ../guide/trading_environment.md:92 65f20a7905cc49d4bc02d037a5a5a5bc
 msgid "**`truncated`**: the episode was *cut* by an artificial time limit."
-msgstr ""
+msgstr "**`truncated`**：episode 被人为时间限制*截断*。"
 
 #: ../guide/trading_environment.md:94 1c95fb5bface42f4ae7f1af1b6916d1b
 msgid "In `TradingEnv`:"
-msgstr ""
+msgstr "在 `TradingEnv` 里："
 
 #: ../guide/trading_environment.md:96 f2c901fa80844088a05d5b6276eef7d9
 msgid ""
 "`terminated` fires when there's no more data (`current_step == len(data) "
 "- 1`). The episode is \"complete.\""
 msgstr ""
+"`terminated` 在数据用完时触发（`current_step == len(data) - 1`）。Episode 「完整结束」。"
 
 #: ../guide/trading_environment.md:98 7770aa5ba828480d95690db3385c4d3d
 msgid ""
 "`truncated` fires when `max_steps` is reached. The episode could have "
 "continued but you set a budget."
 msgstr ""
+"`truncated` 在达到 `max_steps` 时触发。Episode 本可以继续，但你设置了预算。"
 
 #: ../guide/trading_environment.md:101 5c053610252c4efcbd52a2ff77155d94
 msgid ""
@@ -244,10 +259,13 @@ msgid ""
 " agent learns from many short episodes), but not so short that the "
 "strategy never has time to play out."
 msgstr ""
+"`stable-baselines3` 的值函数 bootstrap 对二者处理不同 —— "
+"把 `max_steps` 设得短到大多数 episode 是 truncate（让 agent 从多个短 episode 学），"
+"但不能短到策略没机会展开。"
 
 #: ../guide/trading_environment.md:106 c5e963418aef4aa3bbc07e37f9562618
 msgid "`random_start` for episode diversity"
-msgstr ""
+msgstr "`random_start` 增加 episode 多样性"
 
 #: ../guide/trading_environment.md:108 849690a069a74283abc220c3797e8ab5
 msgid ""
@@ -256,6 +274,9 @@ msgid ""
 "start in `[window_size, len(data) - max_steps)`, so episodes sample "
 "different market regimes."
 msgstr ""
+"默认 `random_start=False`：每个 episode 都从 bar 索引 `window_size` 开始。"
+"`random_start=True` 时，每次 `reset()` 在 `[window_size, len(data) - max_steps)` "
+"范围随机选起点，让 episode 采样不同的市场 regime。"
 
 #: ../guide/trading_environment.md:113 f7e9967be0dd4c9290afabc341933eb9
 msgid ""
@@ -263,10 +284,12 @@ msgid ""
 " clear `ValueError` if not — keep `max_steps` < `len(data) - window_size`"
 " to leave room."
 msgstr ""
+"前置条件：`len(data) > window_size + max_steps`。不满足时构造函数抛出清晰的 "
+"`ValueError` —— 保持 `max_steps` < `len(data) - window_size` 留余地。"
 
 #: ../guide/trading_environment.md:117 0f91bcb91b964f4394c63b2d2ff607bd
 msgid "A typical training loop"
-msgstr ""
+msgstr "典型训练循环"
 
 #: ../guide/trading_environment.md:136 c7fbe46fd5d24ae393b676628fbbc99a
 msgid ""
@@ -274,28 +297,31 @@ msgid ""
 "instance — same metrics, same multi-panel Bokeh report — because they "
 "both delegate to the underlying `Broker`."
 msgstr ""
+"`env.show_stats()` 和 `env.plot()` 行为和 `Backtest` 实例完全一致 —— "
+"相同指标、相同的多面板 Bokeh 报告 —— 因为底层都委托给同一个 `Broker`。"
 
 #: ../guide/trading_environment.md:140 7e6ca5610b3f4654b8d3137385acdb2c
 msgid "Rendering"
-msgstr ""
+msgstr "渲染"
 
 #: ../guide/trading_environment.md:142 32c129e78f6144ff9291668e2b738f12
 msgid ""
 "`env.render('human')` opens a live mplfinance candle chart updating every"
 " step:"
 msgstr ""
+"`env.render('human')` 打开一个 mplfinance 实时蜡烛图，每步更新："
 
 #: ../guide/trading_environment.md:145 4ddd30a224874cc2bde7b7ee0c47e691
 msgid "![Trading Environment Render](../_static/render_rgb.gif)"
-msgstr ""
+msgstr "![Trading Environment Render](../_static/render_rgb.gif)"
 
 #: ../guide/trading_environment.md:145 ce9c1da7e48c4b9680355e237b2b013b
 msgid "Trading Environment Render"
-msgstr ""
+msgstr "交易环境渲染"
 
 #: ../guide/trading_environment.md:147 f1c89e9c163540149f1fb8bb9bb0de1e
 msgid "For RGB array output (e.g. SB3's `VecVideoRecorder`):"
-msgstr ""
+msgstr "RGB 数组输出（用于 SB3 的 `VecVideoRecorder` 等）："
 
 #: ../guide/trading_environment.md:154 6bb969e06a594fe386ed022bfc9a4950
 msgid ""
@@ -303,10 +329,12 @@ msgid ""
 "(`render_mode='human'` is the default but you don't have to *call* "
 "`render()`) and only render during evaluation."
 msgstr ""
+"注意：渲染很慢。训练时关闭它（`render_mode='human'` 是默认值，但你不必*调用* `render()`），"
+"只在评估时渲染。"
 
 #: ../guide/trading_environment.md:158 787896a9154343879b075f5dc88b20c3
 msgid "Common pitfalls"
-msgstr ""
+msgstr "常见坑"
 
 #: ../guide/trading_environment.md:160 6cb3baa834c042d09754e2baab61247f
 msgid ""
@@ -316,6 +344,9 @@ msgid ""
 "Environment](customize_environment.md)) or shorten episodes so end-of-"
 "episode auto-closure provides regular signal."
 msgstr ""
+"**稀疏奖励**：默认奖励只在有交易平仓的 bar 触发。长 episode 没有平仓很难训练。"
+"要么用基于权益的奖励（见[自定义交易环境](customize_environment.md)），"
+"要么缩短 episode 让结尾的自动平仓提供规律信号。"
 
 #: ../guide/trading_environment.md:165 f51b3e9653274c139bd6b27eefb4ee26
 msgid ""
@@ -323,6 +354,8 @@ msgid ""
 "observed as-is. NaN in the observation crashes most policies. Drop the "
 "warmup rows with `data.dropna(inplace=True)` after computing indicators."
 msgstr ""
+"**指标开头有 NaN**：你加到 `data` 上的列会被原样观测。"
+"观测里出现 NaN 会让大多数策略崩溃。计算指标后用 `data.dropna(inplace=True)` 丢掉热身行。"
 
 #: ../guide/trading_environment.md:169 b1b99fdc095a491387800c1009571bcf
 msgid ""
@@ -330,4 +363,5 @@ msgid ""
 "load an old model, you'll get shape mismatches. Save model and scheme "
 "together when you're going to load."
 msgstr ""
-
+"**Action / observation 漂移**：实验中途换 scheme 后加载旧模型会形状不匹配。"
+"打算后续加载的模型和对应的 scheme 一起保存。"
