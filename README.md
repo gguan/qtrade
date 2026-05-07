@@ -1,72 +1,111 @@
-[![CI Status](https://github.com/gguan/qtrade/actions/workflows/ci.yml/badge.svg)](https://github.com/gguan/qtrade/actions)
-[![Python](https://img.shields.io/pypi/pyversions/qtrade-lib.svg)](https://badge.fury.io/py/qtrade-lib)
-[![PyPI version](https://badge.fury.io/py/qtrade-lib.svg)](https://badge.fury.io/py/qtrade-lib)
-![Coverage](https://img.shields.io/badge/coverage-87%25-green)
-[![codestyle](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PyPI version](https://img.shields.io/pypi/v/qtrade-lib.svg)](https://pypi.org/project/qtrade-lib/)
+[![Python versions](https://img.shields.io/pypi/pyversions/qtrade-lib.svg)](https://pypi.org/project/qtrade-lib/)
+[![CI](https://github.com/gguan/qtrade/actions/workflows/ci.yml/badge.svg)](https://github.com/gguan/qtrade/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-gh--pages-blue.svg)](https://gguan.github.io/qtrade/)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 # QTrade
 
-QTrade is a simple, modular, and highly customizable trading interface capable of handling backtesting, reinforcement learning tasks.
+QTrade is a small, modular Python library for backtesting trading
+strategies and training reinforcement learning agents on financial data.
 
 ## Features
 
-- Backtesting engine
-- Gym Trading environment simulation
+- **Single-asset and portfolio backtesting**: pass one DataFrame for
+  single-asset, or a `dict[str, DataFrame]` for multi-asset / portfolio
+  strategies sharing one cash pool.
+- **Walk-forward optimization**: rolling-window training + immediate
+  out-of-sample test, the standard antidote to in-sample overfitting.
+- **RL trading environment**: a [Gymnasium](https://gymnasium.farama.org/)
+  `TradingEnv` with pluggable Action / Observation / Reward schemes,
+  ready to drop into `stable-baselines3` and friends.
+- **Bokeh reports**: equity, drawdown, per-asset OHLC panels, trade
+  scatter — saved as a single self-contained HTML.
+- **Curated metrics**: Sharpe, Sortino, Calmar, Omega, max drawdown
+  duration, win rate, profit factor, etc.
+
+See [COMPARISON.md](COMPARISON.md) for an honest take on where QTrade
+fits next to backtrader / vectorbt / Backtesting.py.
 
 ## Installation
 
-QTrade can be installed with [pip](https://pip.pypa.io):
-
 ```bash
-$ pip install qtrade-lib
+pip install qtrade-lib
 ```
 
-Alternatively, you can obtain the latest source code from [GitHub](https://github.com/gguan/qtrade):
+Optional extras:
 
 ```bash
-$ git clone https://github.com/gguan/qtrade.git
-$ cd qtrade
-$ pip install .
+pip install "qtrade-lib[rl]"   # adds stable-baselines3 for RL evaluation utils
 ```
 
-### Run Example
-
-To run the example code from repository:
+To work from source:
 
 ```bash
-$ pip install -r examples/requirements.txt
-$ python examples/simple_strategy.py
+git clone https://github.com/gguan/qtrade.git
+cd qtrade
+pip install -e ".[dev]"
+pre-commit install
+pytest
 ```
 
-### Requirements
+## Quickstart
 
-- Python >= 3.10
-- Dependencies declared in `pyproject.toml`
+```python
+import yfinance as yf
+from qtrade.backtest import Strategy, Backtest
 
-### Development
+class SmaCrossover(Strategy):
+    n1 = 5
+    n2 = 20
 
-```bash
-$ pip install -e ".[dev]"
-$ pre-commit install   # auto-runs ruff + mypy on each commit
-$ pytest               # run the test suite
+    def prepare(self):
+        for df in self._data.values():
+            df['sma1'] = df['Close'].rolling(self.n1).mean()
+            df['sma2'] = df['Close'].rolling(self.n2).mean()
+
+    def on_bar_close(self):
+        s1, s2 = self.data['sma1'], self.data['sma2']
+        if s1.iloc[-2] < s2.iloc[-2] and s1.iloc[-1] > s2.iloc[-1]:
+            self.buy()
+        elif s1.iloc[-2] > s2.iloc[-2] and s1.iloc[-1] < s2.iloc[-1]:
+            self.close()
+
+data = yf.download("GC=F", start="2023-01-01", end="2024-01-01",
+                   interval="1d", multi_level_index=False)
+
+bt = Backtest(data, SmaCrossover, cash=10_000, trade_on_close=True)
+bt.run()
+bt.show_stats()
+bt.plot()
 ```
 
+For a multi-asset / walk-forward example, see
+[`examples/portfolio_strategy.py`](examples/portfolio_strategy.py).
 
-### Usage
+## Documentation
 
-The [User Guide](guide/getting_started.md) is the place to learn how to use the library and accomplish common tasks. For more advanced customization, refer to the [Customization Guide](customisation/index.md).
+- [User Guide](https://gguan.github.io/qtrade/guide/getting_started.html)
+- [Multi-asset / portfolio backtests](https://gguan.github.io/qtrade/guide/multi_asset.html)
+- [RL trading environment](https://gguan.github.io/qtrade/guide/trading_environment.html)
+- [API reference](https://gguan.github.io/qtrade/api/core.html)
+- [Releasing](RELEASING.md)
+- [Changelog](CHANGELOG.md)
 
-The [Reference Documentation](reference/index.md) provides API-level documentation.
+## Requirements
 
+- Python ≥ 3.10
+- Runtime dependencies declared in `pyproject.toml` (numpy, pandas, scipy,
+  matplotlib, bokeh, gymnasium, mplfinance, tqdm).
 
 ## References
 
-This project is inspired by following projects.
+This project is inspired by:
 
-- https://github.com/tensortrade-org/tensortrade
-- https://github.com/kernc/backtesting.py
-
+- [backtesting.py](https://github.com/kernc/backtesting.py) — single-asset backtest API design
+- [tensortrade](https://github.com/tensortrade-org/tensortrade) — RL trading framework
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT — see [LICENSE](LICENSE).
