@@ -1,6 +1,5 @@
 """Tests for qtrade.utils.stats."""
 
-import pandas as pd
 import pytest
 
 from qtrade.core import Broker, NoCommission, PercentageCommission
