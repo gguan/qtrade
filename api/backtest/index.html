@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Environment (RL)" href="../env.html"><link rel="prev" title="Backtest" href="index.html">
+<link rel="index" title="Index" href="../../genindex.html"><link rel="search" title="Search" href="../../search.html"><link rel="next" title="Strategy" href="Strategy.html"><link rel="prev" title="Core components" href="../core.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Strategy - QTrade</title>
+        <title>Backtest - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -200,8 +200,8 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../core.html">Core components</a></li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">Backtest</a><input aria-label="Toggle navigation of Backtest" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Strategy</a></li>
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Backtest</a><input aria-label="Toggle navigation of Backtest" checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="Strategy.html">Strategy</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../env.html">Environment (RL)</a></li>
@@ -229,7 +229,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../../_sources/api/backtest/Strategy.md.txt" title="View this page">
+  <a class="muted-link" href="../../_sources/api/backtest/index.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -247,72 +247,77 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="strategy">
-<h1>Strategy<a class="headerlink" href="#strategy" title="Link to this heading">¶</a></h1>
+          <section id="backtest">
+<h1>Backtest<a class="headerlink" href="#backtest" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Strategy.html">Strategy</a></li>
+</ul>
+</div>
+<section id="id1">
+<h2>Backtest<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="qtrade.backtest.Strategy">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.backtest.</span></span><span class="sig-name descname"><span class="pre">Strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">broker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/strategy.html#Strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Strategy" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> – DataFrame containing market data</p>
-</dd>
-</dl>
-</dd></dl>
-
-<section id="methods">
-<h2>Methods<a class="headerlink" href="#methods" title="Link to this heading">¶</a></h2>
-<dl class="py method">
-<dt class="sig sig-object py" id="qtrade.backtest.Strategy.prepare">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Strategy.</span></span><span class="sig-name descname"><span class="pre">prepare</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/strategy.html#Strategy.prepare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Strategy.prepare" title="Link to this definition">¶</a></dt>
-<dd><p>Initialize the strategy (e.g., declare indicators).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="qtrade.backtest.Strategy.on_bar_close">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Strategy.</span></span><span class="sig-name descname"><span class="pre">on_bar_close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/strategy.html#Strategy.on_bar_close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Strategy.on_bar_close" title="Link to this definition">¶</a></dt>
-<dd><p>Called on each bar (time step) to generate trading signals.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="qtrade.backtest.Strategy.buy">
-<span class="sig-prename descclassname"><span class="pre">Strategy.</span></span><span class="sig-name descname"><span class="pre">buy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/strategy.html#Strategy.buy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Strategy.buy" title="Link to this definition">¶</a></dt>
-<dd><p>Place a buy order.</p>
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.backtest.</span></span><span class="sig-name descname"><span class="pre">Backtest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="Strategy.html#qtrade.backtest.Strategy" title="qtrade.backtest.strategy.Strategy"><span class="pre">Strategy</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10_000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commission</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core.html#qtrade.core.Commission" title="qtrade.core.commission.Commission"><span class="pre">Commission</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin_ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trade_on_close</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> – Order size, if not set, the size will be calculated based on the available margin</p></li>
-<li><p><strong>limit</strong> – Limit price</p></li>
-<li><p><strong>stop</strong> – Stop price</p></li>
-<li><p><strong>sl</strong> – Stop loss price</p></li>
-<li><p><strong>tp</strong> – Take profit price</p></li>
-<li><p><strong>tag</strong> – Order tag</p></li>
+<li><p><strong>data</strong> – DataFrame containing market data</p></li>
+<li><p><strong>strategy_class</strong> – Strategy class to use</p></li>
+<li><p><strong>cash</strong> – Starting cash</p></li>
+<li><p><strong>commission</strong> – Commission per trade</p></li>
+<li><p><strong>margin_ratio</strong> – Margin requirements</p></li>
+<li><p><strong>trade_on_close</strong> – If True, trades are filled on close price</p></li>
+<li><p><strong>verbose</strong> – If True, enables verbose logging</p></li>
 </ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest.get_trade_history">
+<span class="sig-name descname"><span class="pre">get_trade_history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.get_trade_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.get_trade_history" title="Link to this definition">¶</a></dt>
+<dd><p>Get detailed information about all trades.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame with trade details</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="qtrade.backtest.Strategy.sell">
-<span class="sig-prename descclassname"><span class="pre">Strategy.</span></span><span class="sig-name descname"><span class="pre">sell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/strategy.html#Strategy.sell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Strategy.sell" title="Link to this definition">¶</a></dt>
-<dd><p>Place a sell order.</p>
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest.optimize">
+<span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params_grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.optimize" title="Link to this definition">¶</a></dt>
+<dd><p>Optimize strategy parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>size</strong> – Order size</p></li>
-<li><p><strong>limit</strong> – Limit price</p></li>
-<li><p><strong>stop</strong> – Stop price</p></li>
-<li><p><strong>sl</strong> – Stop loss price</p></li>
-<li><p><strong>tp</strong> – Take profit price</p></li>
-<li><p><strong>tag</strong> – Order tag</p></li>
+<li><p><strong>maximize</strong> – The metric name to compare, e.g., ‘Equity Final [$]’</p></li>
+<li><p><strong>constraint</strong> – Optional constraint function, e.g., lambda p: p.n1 &lt; p.n2</p></li>
+<li><p><strong>params_grid</strong> – Parameter ranges, e.g., n1=range(5, 30, 5), n2=range(10, 70, 5)</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(best_params, best_stats, all_results)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="qtrade.backtest.Strategy.close">
-<span class="sig-prename descclassname"><span class="pre">Strategy.</span></span><span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/strategy.html#Strategy.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Strategy.close" title="Link to this definition">¶</a></dt>
-<dd><p>Close all open positions.</p>
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.plot" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">strategy_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.run" title="Link to this definition">¶</a></dt>
+<dd><p>Run the backtest.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest.show_stats">
+<span class="sig-name descname"><span class="pre">show_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.show_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.show_stats" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </section>
@@ -323,23 +328,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../env.html">
+          <a class="next-page" href="Strategy.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Environment (RL)</div>
+                <div class="title">Strategy</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="index.html">
+          <a class="prev-page" href="../core.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Backtest</div>
+                <div class="title">Core components</div>
                 
               </div>
             </a>
@@ -373,14 +378,16 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Strategy</a><ul>
-<li><a class="reference internal" href="#qtrade.backtest.Strategy"><code class="docutils literal notranslate"><span class="pre">Strategy</span></code></a></li>
-<li><a class="reference internal" href="#methods">Methods</a><ul>
-<li><a class="reference internal" href="#qtrade.backtest.Strategy.prepare"><code class="docutils literal notranslate"><span class="pre">Strategy.prepare()</span></code></a></li>
-<li><a class="reference internal" href="#qtrade.backtest.Strategy.on_bar_close"><code class="docutils literal notranslate"><span class="pre">Strategy.on_bar_close()</span></code></a></li>
-<li><a class="reference internal" href="#qtrade.backtest.Strategy.buy"><code class="docutils literal notranslate"><span class="pre">Strategy.buy()</span></code></a></li>
-<li><a class="reference internal" href="#qtrade.backtest.Strategy.sell"><code class="docutils literal notranslate"><span class="pre">Strategy.sell()</span></code></a></li>
-<li><a class="reference internal" href="#qtrade.backtest.Strategy.close"><code class="docutils literal notranslate"><span class="pre">Strategy.close()</span></code></a></li>
+<li><a class="reference internal" href="#">Backtest</a><ul>
+<li><a class="reference internal" href="#id1">Backtest</a><ul>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest"><code class="docutils literal notranslate"><span class="pre">Backtest</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest.get_trade_history"><code class="docutils literal notranslate"><span class="pre">Backtest.get_trade_history()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest.optimize"><code class="docutils literal notranslate"><span class="pre">Backtest.optimize()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest.plot"><code class="docutils literal notranslate"><span class="pre">Backtest.plot()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest.run"><code class="docutils literal notranslate"><span class="pre">Backtest.run()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest.show_stats"><code class="docutils literal notranslate"><span class="pre">Backtest.show_stats()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

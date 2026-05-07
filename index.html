@@ -200,11 +200,15 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/core.html">Core components</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/backtest/index.html">Backtest</a><input aria-label="Toggle navigation of Backtest" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/backtest/Strategy.html">Strategy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/env.html">Environment (RL)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gguan/qtrade">GitHub</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gguan/qtrade/blob/main/docs/README.md">Contribute to the Docs</a></li>
 </ul>
 
 </div>
@@ -264,21 +268,23 @@
 <section id="how-to-use">
 <h2>How to Use<a class="headerlink" href="#how-to-use" title="Link to this heading">¶</a></h2>
 <ol class="arabic simple">
-<li><p><strong>Install QTrade</strong><br />
-Follow the instructions in the <a class="reference internal" href="#installing"><span class="xref myst">Installation Guide</span></a> to set up QTrade in your Python environment.</p></li>
-<li><p><strong>Explore Tutorials</strong><br />
+<li><p><strong>Install QTrade</strong>
+Follow the instructions in the <a class="reference internal" href="#installation">Installation Guide</a> to set up QTrade in your Python environment.</p></li>
+<li><p><strong>Explore Tutorials</strong>
 Learn to create strategies, backtest them, and use gym trading environment by following the <a class="reference internal" href="guide/getting_started.html"><span class="std std-doc">Getting Started</span></a> and the <a class="reference internal" href="guide/trading_environment.html"><span class="std std-doc">Trading Environment</span></a>.</p></li>
-<li><p><strong>API Reference</strong><br />
+<li><p><strong>API Reference</strong>
 Dive deeper into QTrade’s core components with the <a class="reference internal" href="api/core.html"><span class="std std-doc">API Reference</span></a>.</p></li>
-<li><p><strong>Get Involved</strong><br />
-Contribute to the development or documentation through the links in the <a class="reference internal" href="#development"><span class="xref myst">Development Section</span></a>.</p></li>
 </ol>
-</section>
 <hr class="docutils" />
-<section id="installing">
-<h2><a id="installing"></a>Installing<a class="headerlink" href="#installing" title="Link to this heading">¶</a></h2>
+</section>
+<section id="installation">
+<span id="id1"></span><h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <p>QTrade can be installed with <a class="reference external" href="https://pip.pypa.io">pip</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>qtrade-lib
+</pre></div>
+</div>
+<p>For RL evaluation utilities, install the optional <code class="docutils literal notranslate"><span class="pre">rl</span></code> extra (pulls in stable-baselines3):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;qtrade-lib[rl]&quot;</span>
 </pre></div>
 </div>
 <p>Alternatively, you can obtain the latest source code from <a class="reference external" href="https://github.com/gguan/qtrade">GitHub</a>:</p>
@@ -288,16 +294,15 @@ $<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </sp
 </pre></div>
 </div>
 <p>To run the example code:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>examples/requirements.txt
-$<span class="w"> </span>python<span class="w"> </span>examples/simple_strategy.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>examples/simple_strategy.py
 </pre></div>
 </div>
 </section>
 <hr class="docutils" />
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference internal" href="guide/getting_started.html"><span class="std std-doc">User Guide</span></a> is the place to learn how to use the library and accomplish common tasks. For more advanced customization, refer to the <a class="reference internal" href="#customisation/index.md"><span class="xref myst">Customization Guide</span></a>.</p>
-<p>The <a class="reference internal" href="#reference/index.md"><span class="xref myst">Reference Documentation</span></a> provides API-level documentation.</p>
+<p>The <a class="reference internal" href="guide/getting_started.html"><span class="std std-doc">User Guide</span></a> is the place to learn how to use the library and accomplish common tasks.</p>
+<p>The API Reference covers the <a class="reference internal" href="api/core.html"><span class="std std-doc">core</span></a>, <a class="reference internal" href="api/backtest/index.html"><span class="std std-doc">backtest</span></a>, and <a class="reference internal" href="api/env.html"><span class="std std-doc">environment</span></a> modules.</p>
 </section>
 </section>
 
@@ -340,7 +345,7 @@ $<span class="w"> </span>python<span class="w"> </span>examples/simple_strategy.
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=01f34227"></script>
+</div><script src="_static/documentation_options.js?v=938c9ccc"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="prev" title="Customizing Trading Environment" href="../guide/customize_environment.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Backtest" href="backtest/index.html"><link rel="prev" title="Customizing Trading Environment" href="../guide/customize_environment.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
         <title>Core components - QTrade</title>
@@ -173,7 +173,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
       </label>
     </div>
@@ -200,11 +200,15 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul class="current">
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Core components</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="backtest/index.html">Backtest</a><input aria-label="Toggle navigation of Backtest" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="backtest/Strategy.html">Strategy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="env.html">Environment (RL)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gguan/qtrade">GitHub</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gguan/qtrade/blob/main/docs/README.md">Contribute to the Docs</a></li>
 </ul>
 
 </div>
@@ -238,13 +242,775 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="core-components">
-<h1>Core components<a class="headerlink" href="#core-components" title="Link to this heading">¶</a></h1>
+          <section id="module-qtrade.core">
+<span id="core-components"></span><h1>Core components<a class="headerlink" href="#module-qtrade.core" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.Broker">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Broker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commission</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#qtrade.core.Commission" title="qtrade.core.commission.Commission"><span class="pre">Commission</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin_ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trade_on_close</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/broker.html#Broker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Broker" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The Broker class is responsible for executing orders and managing positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – DataFrame containing market data with columns [‘Open’, ‘High’, ‘Low’, ‘Close’].</p></li>
+<li><p><strong>cash</strong> (<em>float</em>) – Current cash balance in the account.</p></li>
+<li><p><strong>commission</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#qtrade.core.Commission" title="qtrade.core.Commission"><em>Commission</em></a><em>]</em>) – Instance for calculating trade commissions. If None, no commission is applied.</p></li>
+<li><p><strong>margin_ratio</strong> (<em>float</em>) – Margin ratio (0 &lt; margin_ratio ≤ 1).</p></li>
+<li><p><strong>trade_on_close</strong> (<em>bool</em>) – If True, orders are filled at the current close price. Otherwise, at the next open price.</p></li>
+<li><p><strong>position</strong> (<a class="reference internal" href="#qtrade.core.Position" title="qtrade.core.Position"><em>Position</em></a>) – Current position information.</p></li>
+<li><p><strong>current_time</strong> (<em>pd.Timestamp</em>) – Timestamp of the current bar.</p></li>
+<li><p><strong>_new_orders</strong> (<em>List</em><em>[</em><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.Order"><em>Order</em></a><em>]</em>) – Orders submitted in the current bar.</p></li>
+<li><p><strong>_pending_orders</strong> (<em>List</em><em>[</em><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.Order"><em>Order</em></a><em>]</em>) – Pending orders (e.g., stop/limit orders) awaiting execution.</p></li>
+<li><p><strong>_executing_orders</strong> (<em>List</em><em>[</em><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.Order"><em>Order</em></a><em>]</em>) – Orders to be executed at the next bar’s open price if trade_on_close is False.</p></li>
+<li><p><strong>_filled_orders</strong> (<em>List</em><em>[</em><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.Order"><em>Order</em></a><em>]</em>) – List of filled orders.</p></li>
+<li><p><strong>_rejected_orders</strong> (<em>List</em><em>[</em><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.Order"><em>Order</em></a><em>]</em>) – List of rejected orders.</p></li>
+<li><p><strong>_equity_history</strong> (<em>pd.Series</em>) – Historical record of account equity.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – Market data with [‘Open’, ‘High’, ‘Low’, ‘Close’] columns.</p></li>
+<li><p><strong>cash</strong> (<em>float</em>) – Initial cash balance. Must be positive.</p></li>
+<li><p><strong>commission</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="#qtrade.core.Commission" title="qtrade.core.Commission"><em>Commission</em></a><em>]</em>) – Commission calculator instance.</p></li>
+<li><p><strong>margin_ratio</strong> (<em>float</em>) – Margin ratio (0 &lt; margin_ratio ≤ 1).</p></li>
+<li><p><strong>trade_on_close</strong> (<em>bool</em>) – Execution mode for orders.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AssertionError</strong> – If cash is not positive or margin_ratio is out of bounds.</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.available_margin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">available_margin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#qtrade.core.Broker.available_margin" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the available margin for new trades.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>float</strong> – Available margin, minimum 0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.Broker.close_all_positions">
+<span class="sig-name descname"><span class="pre">close_all_positions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/qtrade/core/broker.html#Broker.close_all_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Broker.close_all_positions" title="Link to this definition">¶</a></dt>
+<dd><p>Close all open positions at the end of the trading period.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.closed_orders">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">closed_orders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.order.Order"><span class="pre">Order</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qtrade.core.Broker.closed_orders" title="Link to this definition">¶</a></dt>
+<dd><p>Get a tuple of all closed orders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Tuple[Order, …]</strong> – Closed orders.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.closed_trades">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">closed_trades</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#qtrade.core.Trade" title="qtrade.core.trade.Trade"><span class="pre">Trade</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qtrade.core.Broker.closed_trades" title="Link to this definition">¶</a></dt>
+<dd><p>Get a tuple of all closed trades.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Tuple[Trade, …]</strong> – Closed trades.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.cumulative_returns">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cumulative_returns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#qtrade.core.Broker.cumulative_returns" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the cumulative returns of the account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>float</strong> – Cumulative returns (equity / initial equity).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.equity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">equity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#qtrade.core.Broker.equity" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the current equity of the account.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>float</strong> – Current equity (cash + unrealized P&amp;L).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.equity_history">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">equity_history</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Series</span></em><a class="headerlink" href="#qtrade.core.Broker.equity_history" title="Link to this definition">¶</a></dt>
+<dd><p>Get a copy of the equity history.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pd.Series</strong> – Historical equity values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.filled_orders">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filled_orders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.order.Order"><span class="pre">Order</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qtrade.core.Broker.filled_orders" title="Link to this definition">¶</a></dt>
+<dd><p>Get a tuple of all filled orders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Tuple[Order, …]</strong> – Filled orders.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.Broker.place_orders">
+<span class="sig-name descname"><span class="pre">place_orders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.order.Order"><span class="pre">Order</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.order.Order"><span class="pre">Order</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/qtrade/core/broker.html#Broker.place_orders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Broker.place_orders" title="Link to this definition">¶</a></dt>
+<dd><p>Submit one or multiple orders.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>orders</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.Order"><em>Order</em></a><em>, </em><em>List</em><em>[</em><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.Order"><em>Order</em></a><em>]</em><em>]</em>) – A single order or a list of orders.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If orders is neither an Order instance nor a list of Orders.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.Broker.process_bar">
+<span class="sig-name descname"><span class="pre">process_bar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">current_time</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Timestamp</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/qtrade/core/broker.html#Broker.process_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Broker.process_bar" title="Link to this definition">¶</a></dt>
+<dd><p>Process the trading logic for the current bar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>current_time</strong> (<em>pd.Timestamp</em>) – Timestamp of the current bar.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.realized_pnl">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">realized_pnl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#qtrade.core.Broker.realized_pnl" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the realized profit and loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>float</strong> – Sum of realized P&amp;L from all closed trades.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.unrealized_pnl">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unrealized_pnl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#qtrade.core.Broker.unrealized_pnl" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the unrealized profit and loss.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>float</strong> – Sum of unrealized P&amp;L from all active trades.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Broker.unrealized_pnl_pct">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unrealized_pnl_pct</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#qtrade.core.Broker.unrealized_pnl_pct" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the unrealized profit and loss percentage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>float</strong> – Unrealized P&amp;L percentage.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.Commission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Commission</span></span><a class="reference internal" href="../_modules/qtrade/core/commission.html#Commission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Commission" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Abstract base class for different commission schemes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.Commission.calculate_commission">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_commission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/qtrade/core/commission.html#Commission.calculate_commission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Commission.calculate_commission" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate the commission for an order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order_size</strong> – Order size (positive for buy, negative for sell)</p></li>
+<li><p><strong>fill_price</strong> – Order fill price</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Commission fee</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.FixedCommission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">FixedCommission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fixed_fee</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/commission.html#FixedCommission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.FixedCommission" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qtrade.core.Commission" title="qtrade.core.commission.Commission"><code class="xref py py-class docutils literal notranslate"><span class="pre">Commission</span></code></a></p>
+<p>Commission scheme with a fixed fee per order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fixed_fee</strong> – Fixed commission fee per order</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If fixed_fee is negative.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.FixedCommission.calculate_commission">
+<span class="sig-name descname"><span class="pre">calculate_commission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/qtrade/core/commission.html#FixedCommission.calculate_commission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.FixedCommission.calculate_commission" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate commission as a fixed fee per order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order_size</strong> – Order size (positive for buy, negative for sell)</p></li>
+<li><p><strong>fill_price</strong> – Order fill price</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fixed commission fee</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.NoCommission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">NoCommission</span></span><a class="reference internal" href="../_modules/qtrade/core/commission.html#NoCommission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.NoCommission" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qtrade.core.Commission" title="qtrade.core.commission.Commission"><code class="xref py py-class docutils literal notranslate"><span class="pre">Commission</span></code></a></p>
+<p>Commission scheme with no fees.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.NoCommission.calculate_commission">
+<span class="sig-name descname"><span class="pre">calculate_commission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/qtrade/core/commission.html#NoCommission.calculate_commission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.NoCommission.calculate_commission" title="Link to this definition">¶</a></dt>
+<dd><p>Returns zero commission.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order_size</strong> – Order size (positive for buy, negative for sell)</p></li>
+<li><p><strong>fill_price</strong> – Order fill price</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>0.0</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.Order">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/order.html#Order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Order" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a trading order with optional limit, stop, stop loss, and take profit prices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em>) – Order size (positive for buy, negative for sell).</p></li>
+<li><p><strong>limit</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Limit price for limit orders.</p></li>
+<li><p><strong>stop</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Stop price for stop orders.</p></li>
+<li><p><strong>sl</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Stop loss price.</p></li>
+<li><p><strong>tp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Take profit price.</p></li>
+<li><p><strong>tag</strong> (<em>Optional</em><em>[</em><em>object</em><em>]</em>) – Tag for identifying the order.</p></li>
+<li><p><strong>is_filled</strong> (<em>bool</em>) – Indicates if the order has been filled.</p></li>
+<li><p><strong>is_closed</strong> (<em>bool</em>) – Indicates if the order has been canceled or rejected.</p></li>
+<li><p><strong>fill_price</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Price at which the order was filled.</p></li>
+<li><p><strong>fill_date</strong> (<em>Optional</em><em>[</em><em>pd.Timestamp</em><em>]</em>) – Date when the order was filled.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em>) – Order size (positive for buy, negative for sell).</p></li>
+<li><p><strong>limit</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Limit price for limit orders. Defaults to None.</p></li>
+<li><p><strong>stop</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Stop price for stop orders. Defaults to None.</p></li>
+<li><p><strong>sl</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Stop loss price. Defaults to None.</p></li>
+<li><p><strong>tp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Take profit price. Defaults to None.</p></li>
+<li><p><strong>tag</strong> (<em>Optional</em><em>[</em><em>object</em><em>]</em><em>, </em><em>optional</em>) – Tag for identification. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>AssertionError</strong> – If the order size is zero.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.Order.cancel">
+<span class="sig-name descname"><span class="pre">cancel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/qtrade/core/order.html#Order.cancel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Order.cancel" title="Link to this definition">¶</a></dt>
+<dd><p>Cancel the order.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.fill_date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fill_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Timestamp</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.fill_date" title="Link to this definition">¶</a></dt>
+<dd><p>Fill date.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[pd.Timestamp]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.fill_price">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fill_price</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.fill_price" title="Link to this definition">¶</a></dt>
+<dd><p>Fill price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.is_closed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_closed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#qtrade.core.Order.is_closed" title="Link to this definition">¶</a></dt>
+<dd><p>Indicates if the order is canceled or rejected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.is_filled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_filled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#qtrade.core.Order.is_filled" title="Link to this definition">¶</a></dt>
+<dd><p>Indicates if the order is filled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.is_long">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_long</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#qtrade.core.Order.is_long" title="Link to this definition">¶</a></dt>
+<dd><p>True if the order is a long position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.is_short">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_short</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#qtrade.core.Order.is_short" title="Link to this definition">¶</a></dt>
+<dd><p>True if the order is a short position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.limit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">limit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.limit" title="Link to this definition">¶</a></dt>
+<dd><p>Limit price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qtrade.core.Order.size" title="Link to this definition">¶</a></dt>
+<dd><p>Order size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.sl">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.sl" title="Link to this definition">¶</a></dt>
+<dd><p>Stop loss price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.stop">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.stop" title="Link to this definition">¶</a></dt>
+<dd><p>Stop price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.tag">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.tag" title="Link to this definition">¶</a></dt>
+<dd><p>Order tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[object]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.tp">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.tp" title="Link to this definition">¶</a></dt>
+<dd><p>Take profit price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.PercentageCommission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">PercentageCommission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percentage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/commission.html#PercentageCommission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.PercentageCommission" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qtrade.core.Commission" title="qtrade.core.commission.Commission"><code class="xref py py-class docutils literal notranslate"><span class="pre">Commission</span></code></a></p>
+<p>Commission scheme based on a percentage of the order value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>percentage</strong> – Commission percentage (e.g., 0.001 for 0.1%)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If percentage is negative.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.PercentageCommission.calculate_commission">
+<span class="sig-name descname"><span class="pre">calculate_commission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/qtrade/core/commission.html#PercentageCommission.calculate_commission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.PercentageCommission.calculate_commission" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate commission as a percentage of the order value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order_size</strong> – Order size (positive for buy, negative for sell)</p></li>
+<li><p><strong>fill_price</strong> – Order fill price</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Calculated commission fee</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.Position">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Position</span></span><a class="reference internal" href="../_modules/qtrade/core/position.html#Position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Position" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents a trading position containing active and closed trades.</p>
+<p>Initialize the Position with empty lists for active and closed trades.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Position.active_trades">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">active_trades</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#qtrade.core.Trade" title="qtrade.core.trade.Trade"><span class="pre">Trade</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qtrade.core.Position.active_trades" title="Link to this definition">¶</a></dt>
+<dd><p>Get a tuple of all active trades.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Tuple[Trade, …]</strong> – Active trades.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Position.closed_trades">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">closed_trades</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#qtrade.core.Trade" title="qtrade.core.trade.Trade"><span class="pre">Trade</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#qtrade.core.Position.closed_trades" title="Link to this definition">¶</a></dt>
+<dd><p>Get a tuple of all closed trades.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Tuple[Trade, …]</strong> – Closed trades.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Position.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qtrade.core.Position.size" title="Link to this definition">¶</a></dt>
+<dd><p>Calculates the total size of all active trades.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.SlippageCommission">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">SlippageCommission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slippage_percentage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/commission.html#SlippageCommission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.SlippageCommission" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#qtrade.core.Commission" title="qtrade.core.commission.Commission"><code class="xref py py-class docutils literal notranslate"><span class="pre">Commission</span></code></a></p>
+<p>Commission scheme that accounts for slippage as a percentage of the order value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>slippage_percentage</strong> – Slippage percentage (e.g., 0.001 for 0.1%)</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If slippage_percentage is negative.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.SlippageCommission.calculate_commission">
+<span class="sig-name descname"><span class="pre">calculate_commission</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">order_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/qtrade/core/commission.html#SlippageCommission.calculate_commission"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.SlippageCommission.calculate_commission" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate slippage as a percentage of the order value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>order_size</strong> – Order size (positive for buy, negative for sell)</p></li>
+<li><p><strong>fill_price</strong> – Order fill price</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Calculated slippage fee</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="qtrade.core.Trade">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Trade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/trade.html#Trade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Trade" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Represents an individual trade with entry and exit details, profit calculations, and trade status.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_size</strong> (<em>int</em>) – Trade size (positive for long, negative for short).</p></li>
+<li><p><strong>_entry_price</strong> (<em>float</em>) – Price at which the trade was entered.</p></li>
+<li><p><strong>_entry_date</strong> (<em>pd.Timestamp</em>) – Date when the trade was entered.</p></li>
+<li><p><strong>_sl</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Stop loss price.</p></li>
+<li><p><strong>_tp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Take profit price.</p></li>
+<li><p><strong>_tag</strong> (<em>Optional</em><em>[</em><em>object</em><em>]</em>) – Tag for identifying the trade.</p></li>
+<li><p><strong>_exit_price</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Price at which the trade was exited.</p></li>
+<li><p><strong>_exit_date</strong> (<em>Optional</em><em>[</em><em>pd.Timestamp</em><em>]</em>) – Date when the trade was exited.</p></li>
+<li><p><strong>_profit</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Profit or loss from the trade.</p></li>
+<li><p><strong>_exit_reason</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Reason for exiting the trade (‘signal’, ‘sl’, ‘tp’, ‘end’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>entry_price</strong> (<em>float</em>) – Price at which the trade was entered.</p></li>
+<li><p><strong>entry_date</strong> (<em>pd.Timestamp</em>) – Date when the trade was entered.</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – Trade size (positive for long, negative for short).</p></li>
+<li><p><strong>sl</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Stop loss price. Defaults to None.</p></li>
+<li><p><strong>tp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Take profit price. Defaults to None.</p></li>
+<li><p><strong>tag</strong> (<em>Optional</em><em>[</em><em>object</em><em>]</em><em>, </em><em>optional</em>) – Tag for identifying the trade. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the trade size is zero.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.Trade.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exit_reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#qtrade.core.Trade" title="qtrade.core.trade.Trade"><span class="pre">Trade</span></a></span></span><a class="reference internal" href="../_modules/qtrade/core/trade.html#Trade.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Trade.close" title="Link to this definition">¶</a></dt>
+<dd><p>Closes a portion or full of the trade and records exit details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em>) – Size to close (must not exceed current trade size).</p></li>
+<li><p><strong>exit_price</strong> (<em>float</em>) – Price at which the trade is closed.</p></li>
+<li><p><strong>exit_date</strong> (<em>pd.Timestamp</em>) – Date when the trade is closed.</p></li>
+<li><p><strong>exit_reason</strong> (<em>str</em>) – Reason for closing (‘signal’, ‘sl’, ‘tp’, ‘end’).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Trade</strong> – A new Trade instance representing the closed portion.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If attempting to close more than the current trade size or if the trade is already fully closed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.entry_date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entry_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Timestamp</span></em><a class="headerlink" href="#qtrade.core.Trade.entry_date" title="Link to this definition">¶</a></dt>
+<dd><p>Date when the trade was entered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Timestamp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.entry_index">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entry_index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qtrade.core.Trade.entry_index" title="Link to this definition">¶</a></dt>
+<dd><p>Index when the trade was entered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.entry_price">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">entry_price</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#qtrade.core.Trade.entry_price" title="Link to this definition">¶</a></dt>
+<dd><p>Price at which the trade was entered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.exit_date">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exit_date</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Timestamp</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.exit_date" title="Link to this definition">¶</a></dt>
+<dd><p>Date when the trade was exited.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[pd.Timestamp]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.exit_index">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exit_index</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.exit_index" title="Link to this definition">¶</a></dt>
+<dd><p>Index when the trade was exited.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.exit_price">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exit_price</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.exit_price" title="Link to this definition">¶</a></dt>
+<dd><p>Price at which the trade was exited.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.exit_reason">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exit_reason</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.exit_reason" title="Link to this definition">¶</a></dt>
+<dd><p>Reason for exiting the trade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Optional[str]</strong> – Exit reason if the trade is closed, otherwise None.</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.is_closed">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_closed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#qtrade.core.Trade.is_closed" title="Link to this definition">¶</a></dt>
+<dd><p>True if the trade has been fully closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.is_long">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_long</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#qtrade.core.Trade.is_long" title="Link to this definition">¶</a></dt>
+<dd><p>True if the trade is a long position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.is_short">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_short</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#qtrade.core.Trade.is_short" title="Link to this definition">¶</a></dt>
+<dd><p>True if the trade is a short position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.profit">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">profit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.profit" title="Link to this definition">¶</a></dt>
+<dd><p>Profit or loss from the trade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Optional[float]</strong> – Profit if the trade is closed, otherwise None.</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#qtrade.core.Trade.size" title="Link to this definition">¶</a></dt>
+<dd><p>Current size of the trade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.sl">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.sl" title="Link to this definition">¶</a></dt>
+<dd><p>Stop loss price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.tag">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.tag" title="Link to this definition">¶</a></dt>
+<dd><p>Tag for identifying the trade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[object]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.tp">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.tp" title="Link to this definition">¶</a></dt>
+<dd><p>Take profit price.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -252,7 +1018,15 @@
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="backtest/index.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Backtest</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="../guide/customize_environment.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
@@ -282,13 +1056,108 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Core components</a><ul>
+<li><a class="reference internal" href="#qtrade.core.Broker"><code class="docutils literal notranslate"><span class="pre">Broker</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.Broker.available_margin"><code class="docutils literal notranslate"><span class="pre">Broker.available_margin</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.close_all_positions"><code class="docutils literal notranslate"><span class="pre">Broker.close_all_positions()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.closed_orders"><code class="docutils literal notranslate"><span class="pre">Broker.closed_orders</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.closed_trades"><code class="docutils literal notranslate"><span class="pre">Broker.closed_trades</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.cumulative_returns"><code class="docutils literal notranslate"><span class="pre">Broker.cumulative_returns</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.equity"><code class="docutils literal notranslate"><span class="pre">Broker.equity</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.equity_history"><code class="docutils literal notranslate"><span class="pre">Broker.equity_history</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.filled_orders"><code class="docutils literal notranslate"><span class="pre">Broker.filled_orders</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.place_orders"><code class="docutils literal notranslate"><span class="pre">Broker.place_orders()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.process_bar"><code class="docutils literal notranslate"><span class="pre">Broker.process_bar()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.realized_pnl"><code class="docutils literal notranslate"><span class="pre">Broker.realized_pnl</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.unrealized_pnl"><code class="docutils literal notranslate"><span class="pre">Broker.unrealized_pnl</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.unrealized_pnl_pct"><code class="docutils literal notranslate"><span class="pre">Broker.unrealized_pnl_pct</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qtrade.core.Commission"><code class="docutils literal notranslate"><span class="pre">Commission</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.Commission.calculate_commission"><code class="docutils literal notranslate"><span class="pre">Commission.calculate_commission()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qtrade.core.FixedCommission"><code class="docutils literal notranslate"><span class="pre">FixedCommission</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.FixedCommission.calculate_commission"><code class="docutils literal notranslate"><span class="pre">FixedCommission.calculate_commission()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qtrade.core.NoCommission"><code class="docutils literal notranslate"><span class="pre">NoCommission</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.NoCommission.calculate_commission"><code class="docutils literal notranslate"><span class="pre">NoCommission.calculate_commission()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qtrade.core.Order"><code class="docutils literal notranslate"><span class="pre">Order</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.Order.cancel"><code class="docutils literal notranslate"><span class="pre">Order.cancel()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.fill_date"><code class="docutils literal notranslate"><span class="pre">Order.fill_date</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.fill_price"><code class="docutils literal notranslate"><span class="pre">Order.fill_price</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.is_closed"><code class="docutils literal notranslate"><span class="pre">Order.is_closed</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.is_filled"><code class="docutils literal notranslate"><span class="pre">Order.is_filled</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.is_long"><code class="docutils literal notranslate"><span class="pre">Order.is_long</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.is_short"><code class="docutils literal notranslate"><span class="pre">Order.is_short</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.limit"><code class="docutils literal notranslate"><span class="pre">Order.limit</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.size"><code class="docutils literal notranslate"><span class="pre">Order.size</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.sl"><code class="docutils literal notranslate"><span class="pre">Order.sl</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.stop"><code class="docutils literal notranslate"><span class="pre">Order.stop</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.tag"><code class="docutils literal notranslate"><span class="pre">Order.tag</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.tp"><code class="docutils literal notranslate"><span class="pre">Order.tp</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qtrade.core.PercentageCommission"><code class="docutils literal notranslate"><span class="pre">PercentageCommission</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.PercentageCommission.calculate_commission"><code class="docutils literal notranslate"><span class="pre">PercentageCommission.calculate_commission()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qtrade.core.Position"><code class="docutils literal notranslate"><span class="pre">Position</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.Position.active_trades"><code class="docutils literal notranslate"><span class="pre">Position.active_trades</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Position.closed_trades"><code class="docutils literal notranslate"><span class="pre">Position.closed_trades</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Position.size"><code class="docutils literal notranslate"><span class="pre">Position.size</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qtrade.core.SlippageCommission"><code class="docutils literal notranslate"><span class="pre">SlippageCommission</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.SlippageCommission.calculate_commission"><code class="docutils literal notranslate"><span class="pre">SlippageCommission.calculate_commission()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#qtrade.core.Trade"><code class="docutils literal notranslate"><span class="pre">Trade</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.core.Trade.close"><code class="docutils literal notranslate"><span class="pre">Trade.close()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.entry_date"><code class="docutils literal notranslate"><span class="pre">Trade.entry_date</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.entry_index"><code class="docutils literal notranslate"><span class="pre">Trade.entry_index</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.entry_price"><code class="docutils literal notranslate"><span class="pre">Trade.entry_price</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.exit_date"><code class="docutils literal notranslate"><span class="pre">Trade.exit_date</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.exit_index"><code class="docutils literal notranslate"><span class="pre">Trade.exit_index</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.exit_price"><code class="docutils literal notranslate"><span class="pre">Trade.exit_price</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.exit_reason"><code class="docutils literal notranslate"><span class="pre">Trade.exit_reason</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.is_closed"><code class="docutils literal notranslate"><span class="pre">Trade.is_closed</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.is_long"><code class="docutils literal notranslate"><span class="pre">Trade.is_long</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.is_short"><code class="docutils literal notranslate"><span class="pre">Trade.is_short</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.profit"><code class="docutils literal notranslate"><span class="pre">Trade.profit</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.size"><code class="docutils literal notranslate"><span class="pre">Trade.size</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.sl"><code class="docutils literal notranslate"><span class="pre">Trade.sl</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.tag"><code class="docutils literal notranslate"><span class="pre">Trade.tag</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.tp"><code class="docutils literal notranslate"><span class="pre">Trade.tp</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=01f34227"></script>
+</div><script src="../_static/documentation_options.js?v=938c9ccc"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

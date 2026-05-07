@@ -198,11 +198,15 @@
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api/core.html">Core components</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="api/backtest/index.html">Backtest</a><input aria-label="Toggle navigation of Backtest" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/backtest/Strategy.html">Strategy</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/env.html">Environment (RL)</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gguan/qtrade">GitHub</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gguan/qtrade/blob/main/docs/README.md">Contribute to the Docs</a></li>
 </ul>
 
 </div>
@@ -238,8 +242,416 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#L"><strong>L</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#Q"><strong>Q</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a></div>
 </section>
+<section id="A" class="genindex-section">
+  <h2>A</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.ActionScheme.action_space">action_space (qtrade.env.ActionScheme property)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.ActionScheme">ActionScheme (class in qtrade.env)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Position.active_trades">active_trades (qtrade.core.Position property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Broker.available_margin">available_margin (qtrade.core.Broker property)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="B" class="genindex-section">
+  <h2>B</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/backtest/index.html#qtrade.backtest.Backtest">Backtest (class in qtrade.backtest)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Broker">Broker (class in qtrade.core)</a>
+</li>
+        <li><a href="api/backtest/Strategy.html#qtrade.backtest.Strategy.buy">buy() (qtrade.backtest.Strategy method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="C" class="genindex-section">
+  <h2>C</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Commission.calculate_commission">calculate_commission() (qtrade.core.Commission method)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.FixedCommission.calculate_commission">(qtrade.core.FixedCommission method)</a>
+</li>
+          <li><a href="api/core.html#qtrade.core.NoCommission.calculate_commission">(qtrade.core.NoCommission method)</a>
+</li>
+          <li><a href="api/core.html#qtrade.core.PercentageCommission.calculate_commission">(qtrade.core.PercentageCommission method)</a>
+</li>
+          <li><a href="api/core.html#qtrade.core.SlippageCommission.calculate_commission">(qtrade.core.SlippageCommission method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.Order.cancel">cancel() (qtrade.core.Order method)</a>
+</li>
+        <li><a href="api/backtest/Strategy.html#qtrade.backtest.Strategy.close">close() (qtrade.backtest.Strategy method)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.close">(qtrade.core.Trade method)</a>
+</li>
+          <li><a href="api/env.html#qtrade.env.TradingEnv.close">(qtrade.env.TradingEnv method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Broker.close_all_positions">close_all_positions() (qtrade.core.Broker method)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Broker.closed_orders">closed_orders (qtrade.core.Broker property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Broker.closed_trades">closed_trades (qtrade.core.Broker property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Position.closed_trades">(qtrade.core.Position property)</a>
+</li>
+          <li><a href="api/env.html#qtrade.env.TradingEnv.closed_trades">(qtrade.env.TradingEnv property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.Commission">Commission (class in qtrade.core)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Broker.cumulative_returns">cumulative_returns (qtrade.core.Broker property)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.TradingEnv.current_time">current_time (qtrade.env.TradingEnv property)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="D" class="genindex-section">
+  <h2>D</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.TradingEnv.data">data (qtrade.env.TradingEnv property)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="E" class="genindex-section">
+  <h2>E</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Trade.entry_date">entry_date (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.entry_index">entry_index (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.entry_price">entry_price (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Broker.equity">equity (qtrade.core.Broker property)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Broker.equity_history">equity_history (qtrade.core.Broker property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.exit_date">exit_date (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.exit_index">exit_index (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.exit_price">exit_price (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.exit_reason">exit_reason (qtrade.core.Trade property)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="F" class="genindex-section">
+  <h2>F</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Order.fill_date">fill_date (qtrade.core.Order property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Order.fill_price">fill_price (qtrade.core.Order property)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Broker.filled_orders">filled_orders (qtrade.core.Broker property)</a>
+
+        <ul>
+          <li><a href="api/env.html#qtrade.env.TradingEnv.filled_orders">(qtrade.env.TradingEnv property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.FixedCommission">FixedCommission (class in qtrade.core)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="G" class="genindex-section">
+  <h2>G</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.ObserverScheme.get_observation">get_observation() (qtrade.env.ObserverScheme method)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.ActionScheme.get_orders">get_orders() (qtrade.env.ActionScheme method)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.RewardScheme.get_reward">get_reward() (qtrade.env.RewardScheme method)</a>
+</li>
+        <li><a href="api/backtest/index.html#qtrade.backtest.Backtest.get_trade_history">get_trade_history() (qtrade.backtest.Backtest method)</a>
+
+        <ul>
+          <li><a href="api/env.html#qtrade.env.TradingEnv.get_trade_history">(qtrade.env.TradingEnv method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="I" class="genindex-section">
+  <h2>I</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Order.is_closed">is_closed (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.is_closed">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.Order.is_filled">is_filled (qtrade.core.Order property)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Order.is_long">is_long (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.is_long">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.Order.is_short">is_short (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.is_short">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="L" class="genindex-section">
+  <h2>L</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Order.limit">limit (qtrade.core.Order property)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="M" class="genindex-section">
+  <h2>M</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.TradingEnv.metadata">metadata (qtrade.env.TradingEnv attribute)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    module
+
+        <ul>
+          <li><a href="api/core.html#module-qtrade.core">qtrade.core</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="N" class="genindex-section">
+  <h2>N</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.NoCommission">NoCommission (class in qtrade.core)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="O" class="genindex-section">
+  <h2>O</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.ObserverScheme.observation_space">observation_space (qtrade.env.ObserverScheme property)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.ObserverScheme">ObserverScheme (class in qtrade.env)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/backtest/Strategy.html#qtrade.backtest.Strategy.on_bar_close">on_bar_close() (qtrade.backtest.Strategy method)</a>
+</li>
+        <li><a href="api/backtest/index.html#qtrade.backtest.Backtest.optimize">optimize() (qtrade.backtest.Backtest method)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Order">Order (class in qtrade.core)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="P" class="genindex-section">
+  <h2>P</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.TradingEnv.pause_rendering">pause_rendering() (qtrade.env.TradingEnv method)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.PercentageCommission">PercentageCommission (class in qtrade.core)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Broker.place_orders">place_orders() (qtrade.core.Broker method)</a>
+</li>
+        <li><a href="api/backtest/index.html#qtrade.backtest.Backtest.plot">plot() (qtrade.backtest.Backtest method)</a>
+
+        <ul>
+          <li><a href="api/env.html#qtrade.env.TradingEnv.plot">(qtrade.env.TradingEnv method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Position">Position (class in qtrade.core)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.TradingEnv.position">position (qtrade.env.TradingEnv property)</a>
+</li>
+        <li><a href="api/backtest/Strategy.html#qtrade.backtest.Strategy.prepare">prepare() (qtrade.backtest.Strategy method)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Broker.process_bar">process_bar() (qtrade.core.Broker method)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.profit">profit (qtrade.core.Trade property)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="Q" class="genindex-section">
+  <h2>Q</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    qtrade.core
+
+        <ul>
+          <li><a href="api/core.html#module-qtrade.core">module</a>
+</li>
+        </ul></li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="R" class="genindex-section">
+  <h2>R</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Broker.realized_pnl">realized_pnl (qtrade.core.Broker property)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.TradingEnv.render">render() (qtrade.env.TradingEnv method)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.RewardScheme.reset">reset() (qtrade.env.RewardScheme method)</a>
+
+        <ul>
+          <li><a href="api/env.html#qtrade.env.TradingEnv.reset">(qtrade.env.TradingEnv method)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.RewardScheme">RewardScheme (class in qtrade.env)</a>
+</li>
+        <li><a href="api/backtest/index.html#qtrade.backtest.Backtest.run">run() (qtrade.backtest.Backtest method)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="S" class="genindex-section">
+  <h2>S</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/env.html#qtrade.env.TradingEnv.save_rendering">save_rendering() (qtrade.env.TradingEnv method)</a>
+</li>
+        <li><a href="api/backtest/Strategy.html#qtrade.backtest.Strategy.sell">sell() (qtrade.backtest.Strategy method)</a>
+</li>
+        <li><a href="api/backtest/index.html#qtrade.backtest.Backtest.show_stats">show_stats() (qtrade.backtest.Backtest method)</a>
+
+        <ul>
+          <li><a href="api/env.html#qtrade.env.TradingEnv.show_stats">(qtrade.env.TradingEnv method)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.Order.size">size (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Position.size">(qtrade.core.Position property)</a>
+</li>
+          <li><a href="api/core.html#qtrade.core.Trade.size">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Order.sl">sl (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.sl">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.SlippageCommission">SlippageCommission (class in qtrade.core)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.TradingEnv.step">step() (qtrade.env.TradingEnv method)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Order.stop">stop (qtrade.core.Order property)</a>
+</li>
+        <li><a href="api/backtest/Strategy.html#qtrade.backtest.Strategy">Strategy (class in qtrade.backtest)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Order.tag">tag (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.tag">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.Order.tp">tp (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.tp">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Trade">Trade (class in qtrade.core)</a>
+</li>
+        <li><a href="api/env.html#qtrade.env.TradingEnv">TradingEnv (class in qtrade.env)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="U" class="genindex-section">
+  <h2>U</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Broker.unrealized_pnl">unrealized_pnl (qtrade.core.Broker property)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Broker.unrealized_pnl_pct">unrealized_pnl_pct (qtrade.core.Broker property)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
 
         </article>
       </div>
@@ -272,7 +684,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=01f34227"></script>
+</div><script src="_static/documentation_options.js?v=938c9ccc"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
