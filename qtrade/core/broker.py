@@ -221,6 +221,23 @@ class Broker:
         """Get a tuple of all closed orders."""
         return tuple(self._closed_orders)
 
+    def get_trade_history(self) -> pd.DataFrame:
+        """Trade-by-trade DataFrame across all assets."""
+        trades = self.closed_trades
+        return pd.DataFrame({
+            'Asset': [t.asset for t in trades],
+            'Type': ['Long' if t.is_long else 'Short' for t in trades],
+            'Size': [t.size for t in trades],
+            'Entry Price': [t.entry_price for t in trades],
+            'Exit Price': [t.exit_price for t in trades],
+            'Entry Time': [t.entry_date for t in trades],
+            'Exit Date': [t.exit_date for t in trades],
+            'Profit': [t.profit for t in trades],
+            'Tag': [t.tag for t in trades],
+            'Exit Reason': [t.exit_reason for t in trades],
+            'Duration': [t.exit_date - t.entry_date if t.exit_date else None for t in trades],
+        })
+
     @property
     def equity_history(self) -> pd.Series:
         """Get a copy of the equity history (portfolio-level)."""

@@ -136,3 +136,38 @@ print(trade_details)
 
 The `Asset` column is `"default"` for single-asset backtests and the
 asset symbol when running on a portfolio (see [Multi-asset / portfolio backtests](multi_asset.md)).
+
+## Optimizing parameters (and avoiding overfitting)
+
+`Backtest.optimize` runs a grid search across the parameter space:
+
+```python
+best_params, best_stats, all_results = bt.optimize(
+    n1=[3, 5, 10],
+    n2=[10, 20, 30],
+    maximize='Sharpe Ratio',
+    constraint=lambda p: p['n1'] < p['n2'],
+)
+```
+
+The catch: those "best" params are picked **on the same data they're
+evaluated on**. They will look great in the backtest and frequently
+disappoint live. Use `walk_forward_optimize` instead to get an
+out-of-sample estimate:
+
+```python
+result = bt.walk_forward_optimize(
+    train_window=120,        # bars used for parameter selection per window
+    test_window=30,          # bars of out-of-sample evaluation that follow
+    maximize='Sharpe Ratio',
+    n1=[3, 5, 10],
+    n2=[10, 20, 30],
+    constraint=lambda p: p['n1'] < p['n2'],
+)
+print(result['summary'])
+# {'n_windows': 7, 'mean_oos_return': 0.84, 'hit_rate': 0.57, ...}
+```
+
+Each window picks its own best params on the train slice and is
+evaluated on the immediately following test slice; `summary` reports
+aggregate out-of-sample stats and `windows` has per-window details.
