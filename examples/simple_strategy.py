@@ -5,8 +5,10 @@ class SMAStrategy(Strategy):
     n1 = 3
     n2 = 10
     def prepare(self):
-        self._data[f'SMA_{self.n1}'] = self._data['Close'].rolling(self.n1).mean()
-        self._data[f'SMA_{self.n2}'] = self._data['Close'].rolling(self.n2).mean()
+        # self._data is dict[str, DataFrame]; single-asset → only one entry.
+        for df in self._data.values():
+            df[f'SMA_{self.n1}'] = df['Close'].rolling(self.n1).mean()
+            df[f'SMA_{self.n2}'] = df['Close'].rolling(self.n2).mean()
 
     def on_bar_close(self):
         sma_n1_prev = self.data[f'SMA_{self.n1}'].iloc[-2]

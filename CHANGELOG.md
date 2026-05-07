@@ -7,6 +7,20 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 
 ## [Unreleased]
 
+### Added
+- `tests/benchmarks/` — opt-in performance benchmarks via `pytest-benchmark`.
+  Excluded from the default `pytest` run; invoke with
+  `pytest tests/benchmarks/`. Baseline numbers and "where to optimize first
+  if it ever matters" notes live in `tests/benchmarks/README.md`.
+- Regression test for the recommended `prepare()` indicator pattern
+  (`for df in self._data.values(): ...`).
+
+### Fixed
+- `examples/simple_strategy.py` was silently broken since v0.3.0:
+  `self._data['Close']` no longer works because `_data` is a
+  `dict[str, DataFrame]`. Updated to iterate `self._data.values()`.
+- Same fix in the `getting_started.md` SMA strategy example.
+
 ## [0.4.0]
 
 ### Added

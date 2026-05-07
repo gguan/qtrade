@@ -12,6 +12,8 @@ dist/*
 .coverage
 .coverage.*
 htmlcov/*
+.benchmarks/
+.pytest_cache/
 
 doc/build/*
 docs/_build/
