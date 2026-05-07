@@ -241,53 +241,67 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for qtrade.backtest.backtest</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.backtest.strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Order</span><span class="p">,</span> <span class="n">Broker</span><span class="p">,</span> <span class="n">Commission</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.backtest.strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Broker</span><span class="p">,</span> <span class="n">Commission</span><span class="p">,</span> <span class="n">Order</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_stats</span><span class="p">,</span> <span class="n">plot_with_bokeh</span>
 
 
-<span class="c1"># Backtest class</span>
 <div class="viewcode-block" id="Backtest">
 <a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Backtest</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a strategy against historical data — single asset or a portfolio.</span>
+
+<span class="sd">    Pass a ``DataFrame`` for single-asset; pass ``dict[str, DataFrame]`` to</span>
+<span class="sd">    run a portfolio strategy across multiple assets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                 <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
                  <span class="n">strategy_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Strategy</span><span class="p">],</span>
                  <span class="n">cash</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
                  <span class="n">commission</span><span class="p">:</span> <span class="n">Commission</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">margin_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
-                 <span class="n">trade_on_close</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>  <span class="c1"># Determines fill_price_mode</span>
+                 <span class="n">trade_on_close</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the backtest.</span>
-
-<span class="sd">        :param data: DataFrame containing market data</span>
-<span class="sd">        :param strategy_class: Strategy class to use</span>
-<span class="sd">        :param cash: Starting cash</span>
-<span class="sd">        :param commission: Commission per trade</span>
-<span class="sd">        :param margin_ratio: Margin requirements</span>
-<span class="sd">        :param trade_on_close: If True, trades are filled on close price</span>
-<span class="sd">        :param verbose: If True, enables verbose logging</span>
+<span class="sd">        Args:</span>
+<span class="sd">            data: Single OHLCV DataFrame, or a dict mapping asset symbol to</span>
+<span class="sd">                its OHLCV DataFrame (multi-asset). All DataFrames must have a</span>
+<span class="sd">                DatetimeIndex and the same index for proper portfolio accounting.</span>
+<span class="sd">            strategy_class: Strategy class (subclass of Strategy) to instantiate.</span>
+<span class="sd">            cash: Starting cash.</span>
+<span class="sd">            commission: Commission calculator (None ⇒ no commission).</span>
+<span class="sd">            margin_ratio: Margin requirement (0 &lt; ratio ≤ 1).</span>
+<span class="sd">            trade_on_close: If True, market orders fill at the current bar&#39;s</span>
+<span class="sd">                close price; otherwise at the next bar&#39;s open.</span>
+<span class="sd">            verbose: Verbose logging.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data index must be a DatetimeIndex&quot;</span><span class="p">)</span>
-        
-        <span class="k">if</span> <span class="p">{</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">}</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">col</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Data must contain columns: &#39;open&#39;, &#39;high&#39;, &#39;low&#39;, &#39;close&#39;&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_multi_asset</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">is_monotonic_increasing</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_multi_asset</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Multi-asset data dict cannot be empty.&quot;</span>
+            <span class="n">data_by_asset</span> <span class="o">=</span> <span class="p">{</span><span class="n">asset</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_and_sort</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">asset</span><span class="p">)</span> <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="c1"># Cross-asset alignment: enforce identical indexes for portfolio accounting.</span>
+            <span class="n">first_idx</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data_by_asset</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="o">.</span><span class="n">index</span>
+            <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">data_by_asset</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">first_idx</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Asset &#39;</span><span class="si">{</span><span class="n">asset</span><span class="si">}</span><span class="s2">&#39; has a different index than the first asset; &quot;</span>
+                        <span class="s2">&quot;all assets must share the same DatetimeIndex (align/reindex before passing in).&quot;</span>
+                    <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_by_asset</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_and_sort</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broker</span> <span class="o">=</span> <span class="n">Broker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">cash</span><span class="p">,</span> <span class="n">commission</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="p">,</span> <span class="n">trade_on_close</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_class</span> <span class="o">=</span> <span class="n">strategy_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_bar</span> <span class="o">=</span> <span class="mi">0</span>
@@ -302,28 +316,49 @@
         <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="k">if</span> <span class="n">verbose</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_validate_and_sort</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Asset &#39;</span><span class="si">{</span><span class="n">asset</span><span class="si">}</span><span class="s2">&#39;: &quot;</span> <span class="k">if</span> <span class="n">asset</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">Data index must be a DatetimeIndex&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">{</span><span class="s1">&#39;open&#39;</span><span class="p">,</span> <span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">}</span> <span class="o">-</span> <span class="p">{</span><span class="n">col</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">}:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">Data must contain columns: &#39;open&#39;, &#39;high&#39;, &#39;low&#39;, &#39;close&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">is_monotonic_increasing</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Common datetime index across assets (validated equal in __init__).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_multi_asset</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="o">.</span><span class="n">index</span>  <span class="c1"># type: ignore[union-attr]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span>  <span class="c1"># type: ignore[union-attr]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_start_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;First bar index where every asset has all OHLC columns non-NaN.</span>
+
+<span class="sd">        Skips warm-up periods of indicators that the strategy populated in</span>
+<span class="sd">        prepare(). Multi-asset: take the latest such bar across all assets.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">starts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">starts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">starts</span><span class="p">)</span>
+
 <div class="viewcode-block" id="Backtest.run">
 <a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">strategy_params</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Run the backtest.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the backtest end-to-end.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_class</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">strategy_params</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">prepare</span><span class="p">()</span>
 
-        <span class="c1"># skip the first n bars where data contains NaN</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">notna</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Running Backtest&quot;</span><span class="p">):</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">()</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_idx</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Running Backtest&quot;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_bar</span> <span class="o">=</span> <span class="n">i</span>
-            <span class="n">current_time</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="o">.</span><span class="n">process_bar</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="o">.</span><span class="n">on_bar_close</span><span class="p">()</span>
 
-
-        <span class="c1"># Close all positions at the end</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="o">.</span><span class="n">close_all_positions</span><span class="p">()</span></div>
 
 
@@ -333,13 +368,15 @@
                  <span class="n">maximize</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="n">constraint</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">params_grid</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Optimize strategy parameters.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Grid-search strategy parameters and return the best.</span>
 
-<span class="sd">        :param maximize: The metric name to compare, e.g., &#39;Equity Final [$]&#39;</span>
-<span class="sd">        :param constraint: Optional constraint function, e.g., lambda p: p.n1 &lt; p.n2</span>
-<span class="sd">        :param params_grid: Parameter ranges, e.g., n1=range(5, 30, 5), n2=range(10, 70, 5)</span>
-<span class="sd">        :return: (best_params, best_stats, all_results)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            maximize: Metric name from `calculate_stats` to maximize.</span>
+<span class="sd">            constraint: Optional filter on parameter dicts (return False to skip).</span>
+<span class="sd">            **params_grid: Parameter ranges, e.g. ``n1=range(5, 30, 5)``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``(best_params, best_stats, all_results)``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">product</span>
 
@@ -347,34 +384,24 @@
         <span class="n">best_stats</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">all_results</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="c1"># Convert params_grid to iterable parameter combinations [(n1, n2), (n1, n2), ...]</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">params_grid</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">for</span> <span class="n">combination</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">params_grid</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
-            <span class="c1"># param_dict is like {&#39;n1&#39;: 10, &#39;n2&#39;: 20, ...}</span>
             <span class="n">param_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">combination</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
-            <span class="c1"># If a constraint function is provided, check if it is satisfied</span>
             <span class="k">if</span> <span class="n">constraint</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">constraint</span><span class="p">(</span><span class="n">param_dict</span><span class="p">):</span>
                 <span class="k">continue</span>
 
-            <span class="c1"># Run backtest</span>
+            <span class="c1"># Fresh broker for each parameter combination.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">broker</span> <span class="o">=</span> <span class="n">Broker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cash</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">param_dict</span><span class="p">)</span>
             <span class="n">stats</span> <span class="o">=</span> <span class="n">calculate_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span>
 
-            <span class="c1"># Record the result</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">param_dict</span><span class="p">,</span>
-                <span class="s1">&#39;stats&#39;</span><span class="p">:</span> <span class="n">stats</span>
-            <span class="p">}</span>
-            <span class="n">all_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+            <span class="n">all_results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;params&#39;</span><span class="p">:</span> <span class="n">param_dict</span><span class="p">,</span> <span class="s1">&#39;stats&#39;</span><span class="p">:</span> <span class="n">stats</span><span class="p">})</span>
 
-            <span class="c1"># Update best</span>
             <span class="k">if</span> <span class="n">best_stats</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">stats</span><span class="p">[</span><span class="n">maximize</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">best_stats</span><span class="p">[</span><span class="n">maximize</span><span class="p">]:</span>
                 <span class="n">best_stats</span> <span class="o">=</span> <span class="n">stats</span>
                 <span class="n">best_params</span> <span class="o">=</span> <span class="n">param_dict</span>
 
-        <span class="c1"># Optimization complete, return best parameters, best metrics, and all results</span>
         <span class="k">return</span> <span class="n">best_params</span><span class="p">,</span> <span class="n">best_stats</span><span class="p">,</span> <span class="n">all_results</span></div>
 
 
@@ -387,17 +414,13 @@
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">:</span><span class="s2">30</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
-  
 <div class="viewcode-block" id="Backtest.get_trade_history">
 <a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.get_trade_history">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_trade_history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get detailed information about all trades.</span>
-
-<span class="sd">        :return: DataFrame with trade details</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trade-by-trade DataFrame across all assets.&quot;&quot;&quot;</span>
         <span class="n">trade_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="o">.</span><span class="n">closed_trades</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s1">&#39;Asset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">asset</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
             <span class="s1">&#39;Type&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Long&#39;</span> <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">is_long</span> <span class="k">else</span> <span class="s1">&#39;Short&#39;</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
             <span class="s1">&#39;Size&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
             <span class="s1">&#39;Entry Price&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">entry_price</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
@@ -410,16 +433,12 @@
             <span class="s1">&#39;Duration&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">exit_date</span> <span class="o">-</span> <span class="n">trade</span><span class="o">.</span><span class="n">entry_date</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
         <span class="p">})</span></div>
 
-    
 
 <div class="viewcode-block" id="Backtest.plot">
 <a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Implement plotting if needed</span>
         <span class="n">plot_with_bokeh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span></div>
 </div>
-
-
 
 </pre></div>
         </article>
@@ -453,7 +472,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

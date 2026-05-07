@@ -258,46 +258,47 @@
 <h2>Backtest<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="qtrade.backtest.Backtest">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.backtest.</span></span><span class="sig-name descname"><span class="pre">Backtest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="Strategy.html#qtrade.backtest.Strategy" title="qtrade.backtest.strategy.Strategy"><span class="pre">Strategy</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10_000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commission</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core.html#qtrade.core.Commission" title="qtrade.core.commission.Commission"><span class="pre">Commission</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin_ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trade_on_close</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.backtest.</span></span><span class="sig-name descname"><span class="pre">Backtest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="Strategy.html#qtrade.backtest.Strategy" title="qtrade.backtest.strategy.Strategy"><span class="pre">Strategy</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cash</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10_000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">commission</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core.html#qtrade.core.Commission" title="qtrade.core.commission.Commission"><span class="pre">Commission</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin_ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trade_on_close</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Run a strategy against historical data — single asset or a portfolio.</p>
+<p>Pass a <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> for single-asset; pass <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">DataFrame]</span></code> to
+run a portfolio strategy across multiple assets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – DataFrame containing market data</p></li>
-<li><p><strong>strategy_class</strong> – Strategy class to use</p></li>
-<li><p><strong>cash</strong> – Starting cash</p></li>
-<li><p><strong>commission</strong> – Commission per trade</p></li>
-<li><p><strong>margin_ratio</strong> – Margin requirements</p></li>
-<li><p><strong>trade_on_close</strong> – If True, trades are filled on close price</p></li>
-<li><p><strong>verbose</strong> – If True, enables verbose logging</p></li>
+<li><p><strong>data</strong> – Single OHLCV DataFrame, or a dict mapping asset symbol to
+its OHLCV DataFrame (multi-asset). All DataFrames must have a
+DatetimeIndex and the same index for proper portfolio accounting.</p></li>
+<li><p><strong>strategy_class</strong> – Strategy class (subclass of Strategy) to instantiate.</p></li>
+<li><p><strong>cash</strong> – Starting cash.</p></li>
+<li><p><strong>commission</strong> – Commission calculator (None ⇒ no commission).</p></li>
+<li><p><strong>margin_ratio</strong> – Margin requirement (0 &lt; ratio ≤ 1).</p></li>
+<li><p><strong>trade_on_close</strong> – If True, market orders fill at the current bar’s
+close price; otherwise at the next bar’s open.</p></li>
+<li><p><strong>verbose</strong> – Verbose logging.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="qtrade.backtest.Backtest.get_trade_history">
 <span class="sig-name descname"><span class="pre">get_trade_history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.get_trade_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.get_trade_history" title="Link to this definition">¶</a></dt>
-<dd><p>Get detailed information about all trades.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>DataFrame with trade details</p>
-</dd>
-</dl>
+<dd><p>Trade-by-trade DataFrame across all assets.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qtrade.backtest.Backtest.optimize">
 <span class="sig-name descname"><span class="pre">optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">maximize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params_grid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.optimize" title="Link to this definition">¶</a></dt>
-<dd><p>Optimize strategy parameters.</p>
+<dd><p>Grid-search strategy parameters and return the best.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>maximize</strong> – The metric name to compare, e.g., ‘Equity Final [$]’</p></li>
-<li><p><strong>constraint</strong> – Optional constraint function, e.g., lambda p: p.n1 &lt; p.n2</p></li>
-<li><p><strong>params_grid</strong> – Parameter ranges, e.g., n1=range(5, 30, 5), n2=range(10, 70, 5)</p></li>
+<li><p><strong>maximize</strong> – Metric name from <cite>calculate_stats</cite> to maximize.</p></li>
+<li><p><strong>constraint</strong> – Optional filter on parameter dicts (return False to skip).</p></li>
+<li><p><strong>**params_grid</strong> – Parameter ranges, e.g. <code class="docutils literal notranslate"><span class="pre">n1=range(5,</span> <span class="pre">30,</span> <span class="pre">5)</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>(best_params, best_stats, all_results)</p>
+<dd class="field-even"><p><strong>``</strong> (<em>best_params, best_stats, all_results</em>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -310,7 +311,7 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="qtrade.backtest.Backtest.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">strategy_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.run" title="Link to this definition">¶</a></dt>
-<dd><p>Run the backtest.</p>
+<dd><p>Run the backtest end-to-end.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -401,7 +402,7 @@
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=938c9ccc"></script>
+</div><script src="../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -255,31 +255,51 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.commission</span><span class="w"> </span><span class="kn">import</span> <span class="n">Commission</span>
 
 
+<span class="c1"># Mapping of common case-insensitive column aliases to canonical capitalized names.</span>
+<span class="n">_COMMON_NAMES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;Date&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;Timestamp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="s2">&quot;Open&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;high&quot;</span><span class="p">:</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;low&quot;</span><span class="p">:</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="s2">&quot;Close&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;adj_close&quot;</span><span class="p">:</span> <span class="s2">&quot;Adj_Close&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="s2">&quot;Volume&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_canonicalize_columns</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">_COMMON_NAMES</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">_COMMON_NAMES</span> <span class="k">else</span> <span class="n">x</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="Broker">
 <a class="viewcode-back" href="../../../api/core.html#qtrade.core.Broker">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Broker</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Broker class is responsible for executing orders and managing positions.</span>
 
+<span class="sd">    Internally Broker tracks positions and OHLCV data per asset (keyed by string symbol);</span>
+<span class="sd">    a single-asset DataFrame passed to the constructor is wrapped under the key</span>
+<span class="sd">    ``&quot;default&quot;`` for backwards compatibility, so existing single-asset workflows</span>
+<span class="sd">    continue to use the same external API (``broker.data``, ``broker.position``).</span>
+
 <span class="sd">    Attributes:</span>
-<span class="sd">        data (pd.DataFrame): DataFrame containing market data with columns [&#39;Open&#39;, &#39;High&#39;, &#39;Low&#39;, &#39;Close&#39;].</span>
-<span class="sd">        cash (float): Current cash balance in the account.</span>
+<span class="sd">        cash (float): Current shared cash balance across all assets.</span>
 <span class="sd">        commission (Optional[Commission]): Instance for calculating trade commissions. If None, no commission is applied.</span>
 <span class="sd">        margin_ratio (float): Margin ratio (0 &lt; margin_ratio ≤ 1).</span>
 <span class="sd">        trade_on_close (bool): If True, orders are filled at the current close price. Otherwise, at the next open price.</span>
-<span class="sd">        position (Position): Current position information.</span>
 <span class="sd">        current_time (pd.Timestamp): Timestamp of the current bar.</span>
-<span class="sd">        _new_orders (List[Order]): Orders submitted in the current bar.</span>
 <span class="sd">        _pending_orders (List[Order]): Pending orders (e.g., stop/limit orders) awaiting execution.</span>
 <span class="sd">        _executing_orders (List[Order]): Orders to be executed at the next bar&#39;s open price if trade_on_close is False.</span>
 <span class="sd">        _filled_orders (List[Order]): List of filled orders.</span>
-<span class="sd">        _rejected_orders (List[Order]): List of rejected orders.</span>
-<span class="sd">        _equity_history (pd.Series): Historical record of account equity.</span>
+<span class="sd">        _closed_orders (List[Order]): List of rejected/canceled orders.</span>
+<span class="sd">        _equity_history (pd.Series): Portfolio-level historical record of account equity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">],</span>
         <span class="n">cash</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">commission</span><span class="p">:</span> <span class="n">Commission</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">margin_ratio</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -289,7 +309,10 @@
 <span class="sd">        Initialize the Broker with market data and account settings.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            data (pd.DataFrame): Market data with [&#39;Open&#39;, &#39;High&#39;, &#39;Low&#39;, &#39;Close&#39;] columns.</span>
+<span class="sd">            data (pd.DataFrame | dict[str, pd.DataFrame]): Market data with</span>
+<span class="sd">                [&#39;Open&#39;, &#39;High&#39;, &#39;Low&#39;, &#39;Close&#39;] columns. Pass a single DataFrame for</span>
+<span class="sd">                a single-asset backtest (wrapped internally as ``{&quot;default&quot;: data}``)</span>
+<span class="sd">                or a dict of DataFrames keyed by asset symbol for multi-asset.</span>
 <span class="sd">            cash (float): Initial cash balance. Must be positive.</span>
 <span class="sd">            commission (Optional[Commission]): Commission calculator instance.</span>
 <span class="sd">            margin_ratio (float): Margin ratio (0 &lt; margin_ratio ≤ 1).</span>
@@ -300,147 +323,157 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">cash</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Initial cash must be positive.&quot;</span>
         <span class="k">assert</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">margin_ratio</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Margin ratio must be between 0 and 1.&quot;</span>
-        
-        <span class="n">common_names</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;date&quot;</span><span class="p">:</span> <span class="s2">&quot;Date&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="s2">&quot;Time&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="s2">&quot;Timestamp&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="s2">&quot;Open&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;high&quot;</span><span class="p">:</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;low&quot;</span><span class="p">:</span> <span class="s2">&quot;Low&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;close&quot;</span><span class="p">:</span> <span class="s2">&quot;Close&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;adj_close&quot;</span><span class="p">:</span> <span class="s2">&quot;Adj_Close&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;volume&quot;</span><span class="p">:</span> <span class="s2">&quot;Volume&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="n">data</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">common_names</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">common_names</span> <span class="k">else</span> <span class="n">x</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="c1"># Normalize to dict[str, DataFrame]; canonicalize column names per asset.</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="n">data_by_asset</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Multi-asset data dict cannot be empty.&quot;</span>
+            <span class="n">data_by_asset</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">data_by_asset</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">_canonicalize_columns</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_by_asset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">=</span> <span class="n">cash</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commission</span> <span class="o">=</span> <span class="n">commission</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span> <span class="o">=</span> <span class="n">margin_ratio</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span> <span class="o">=</span> <span class="n">trade_on_close</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">Position</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Position</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">Position</span><span class="p">()</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">data_by_asset</span><span class="p">}</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Use the first asset&#39;s index as the timeline; multi-asset support assumes</span>
+        <span class="c1"># aligned indexes (validated in P2).</span>
+        <span class="n">first_index</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">data_by_asset</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="o">.</span><span class="n">index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span> <span class="o">=</span> <span class="n">first_index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_new_orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executing_orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_filled_orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_closed_orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Rejected and canceled orders</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_equity_history</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cash</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_equity_history</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cash</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">first_index</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Backwards-compatible single-asset accessors.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Single-asset access. For multi-asset, use :attr:`data_by_asset`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;Broker has multiple assets; use broker.data_by_asset[symbol] instead of broker.data&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">position</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Position</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Single-asset access. For multi-asset, use :attr:`positions`.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;Broker has multiple assets; use broker.positions[symbol] instead of broker.position&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">data_by_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Per-asset OHLCV data.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Position</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Per-asset Position objects.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of asset symbols this broker tracks.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Aggregate properties (portfolio-level for multi-asset, identical to</span>
+    <span class="c1"># single-asset behavior when only &quot;default&quot; is present).</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">equity</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the current equity of the account.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            float: Current equity (cash + unrealized P&amp;L).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the current equity of the account (cash + total unrealized P&amp;L).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">unrealized_pnl</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cumulative_returns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the cumulative returns of the account.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            float: Cumulative returns (equity / initial equity).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cumulative returns (equity / initial equity).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">equity</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_equity_history</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">available_margin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the available margin for new trades.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            float: Available margin, minimum 0.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">current_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
-        <span class="n">used_margin</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
-            <span class="nb">abs</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">current_price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span>
-            <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span>
-        <span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Available margin for new trades, summed across all assets.&quot;&quot;&quot;</span>
+        <span class="n">used_margin</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">current_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+            <span class="n">used_margin</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="nb">abs</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">current_price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span>
+                <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">equity</span> <span class="o">-</span> <span class="n">used_margin</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unrealized_pnl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the unrealized profit and loss.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sum of unrealized P&amp;L across all active trades on every asset.&quot;&quot;&quot;</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">current_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
+                <span class="n">total</span> <span class="o">+=</span> <span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_price</span> <span class="o">-</span> <span class="n">trade</span><span class="o">.</span><span class="n">entry_price</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">total</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            float: Sum of unrealized P&amp;L from all active trades.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">current_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
-            <span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="p">(</span><span class="n">current_price</span> <span class="o">-</span> <span class="n">trade</span><span class="o">.</span><span class="n">entry_price</span><span class="p">)</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span>
-        <span class="p">)</span>
-    
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unrealized_pnl_pct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the unrealized profit and loss percentage.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            float: Unrealized P&amp;L percentage.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">total_initial_margin</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
-            <span class="nb">abs</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">trade</span><span class="o">.</span><span class="n">entry_price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span>
-        <span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Unrealized P&amp;L as a percentage of total initial margin (across all assets).&quot;&quot;&quot;</span>
+        <span class="n">total_initial_margin</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">total_initial_margin</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="nb">abs</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">trade</span><span class="o">.</span><span class="n">entry_price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span>
+                <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">unrealized_pnl</span> <span class="o">/</span> <span class="n">total_initial_margin</span> <span class="o">*</span> <span class="mi">100</span> <span class="k">if</span> <span class="n">total_initial_margin</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">realized_pnl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculate the realized profit and loss.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sum of realized P&amp;L from all closed trades across all assets.&quot;&quot;&quot;</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">closed_trades</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">profit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">total</span> <span class="o">+=</span> <span class="n">trade</span><span class="o">.</span><span class="n">profit</span>
+        <span class="k">return</span> <span class="n">total</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            float: Sum of realized P&amp;L from all closed trades.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">profit</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">closed_trades</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">closed_trades</span> <span class="k">else</span> <span class="mi">0</span>
-    
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">closed_trades</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Trade</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a tuple of all closed trades.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Tuple[Trade, ...]: Closed trades.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">closed_trades</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Closed trades across all assets (concatenated; per-asset access via :attr:`positions`).&quot;&quot;&quot;</span>
+        <span class="n">result</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Trade</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">position</span><span class="o">.</span><span class="n">closed_trades</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">filled_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a tuple of all filled orders.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Tuple[Order, ...]: Filled orders.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a tuple of all filled orders.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filled_orders</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">closed_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Order</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a tuple of all closed orders.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            Tuple[Order, ...]: Closed orders.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a tuple of all closed orders.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_closed_orders</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">equity_history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a copy of the equity history.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            pd.Series: Historical equity values.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a copy of the equity history (portfolio-level).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_equity_history</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Order placement and bar processing.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="Broker.place_orders">
 <a class="viewcode-back" href="../../../api/core.html#qtrade.core.Broker.place_orders">[docs]</a>
@@ -462,14 +495,14 @@
             <span class="n">new_orders</span> <span class="o">=</span> <span class="p">[</span><span class="n">orders</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;orders must be an Order instance or a list of Orders.&quot;</span><span class="p">)</span>
-        
+
         <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">new_orders</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">_stop</span> <span class="ow">or</span> <span class="n">order</span><span class="o">.</span><span class="n">_limit</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_pending_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">:</span>
                     <span class="n">fill_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span>
-                    <span class="n">fill_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fill_date</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+                    <span class="n">fill_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fill_date</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__process_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">fill_price</span><span class="p">,</span> <span class="n">fill_date</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_executing_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
@@ -479,12 +512,7 @@
 <div class="viewcode-block" id="Broker.process_bar">
 <a class="viewcode-back" href="../../../api/core.html#qtrade.core.Broker.process_bar">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">process_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_time</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process the trading logic for the current bar.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            current_time (pd.Timestamp): Timestamp of the current bar.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process the trading logic for the current bar.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span> <span class="o">=</span> <span class="n">current_time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__remove_closed_orders</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__process_executing_orders</span><span class="p">()</span>
@@ -494,9 +522,6 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__update_account_value_history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the historical record of account equity.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_equity_history</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">equity</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__remove_closed_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -510,24 +535,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_executing_orders</span> <span class="o">=</span> <span class="p">[</span><span class="n">order</span> <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executing_orders</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">order</span><span class="o">.</span><span class="n">is_closed</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__process_executing_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Execute orders that are set to be filled at the next bar&#39;s open price.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute orders that were queued for fill at the next bar&#39;s open price.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executing_orders</span><span class="p">:</span>
             <span class="n">fill_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span>
-            <span class="n">fill_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fill_date</span><span class="p">,</span> <span class="s1">&#39;Open&#39;</span><span class="p">]</span>
+            <span class="n">fill_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fill_date</span><span class="p">,</span> <span class="s1">&#39;Open&#39;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__process_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">fill_price</span><span class="p">,</span> <span class="n">fill_date</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executing_orders</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__process_pending_orders</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Process pending orders, including stop and limit orders.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">]</span>
-        <span class="n">low</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Low&#39;</span><span class="p">]</span>
-
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process pending orders, including stop and limit orders.&quot;&quot;&quot;</span>
         <span class="n">orders_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_orders</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">]</span>
+            <span class="n">high</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">]</span>
+            <span class="n">low</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Low&#39;</span><span class="p">]</span>
+
             <span class="c1"># Check stop conditions</span>
             <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">_stop</span><span class="p">:</span>
                 <span class="n">is_stop_triggered</span> <span class="o">=</span> <span class="n">high</span> <span class="o">&gt;=</span> <span class="n">order</span><span class="o">.</span><span class="n">_stop</span> <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">is_long</span> <span class="k">else</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">order</span><span class="o">.</span><span class="n">_stop</span>
@@ -550,46 +572,38 @@
                 <span class="c1"># Market order</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">:</span>
                     <span class="n">fill_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span>
-                    <span class="n">fill_price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fill_date</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+                    <span class="n">fill_price</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fill_date</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__process_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">fill_price</span><span class="p">,</span> <span class="n">fill_date</span><span class="p">)</span>
                     <span class="n">orders_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_executing_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
 
-        <span class="c1"># Remove processed orders from pending_orders</span>
         <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders_to_remove</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pending_orders</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__process_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">fill_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">fill_date</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Handle the execution of a filled order.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            order (Order): The order to process.</span>
-<span class="sd">            fill_price (float): The price at which the order was filled.</span>
-<span class="sd">            fill_date (pd.Timestamp): The date when the order was filled.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Handle the execution of a filled order against the order&#39;s asset.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__is_margin_sufficient</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">fill_price</span><span class="p">):</span>
-            <span class="c1"># Insufficient margin, reject the order</span>
             <span class="n">order</span><span class="o">.</span><span class="n">_close</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Insufficient margin&quot;</span><span class="p">)</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Order rejected: </span><span class="si">{</span><span class="n">order</span><span class="o">.</span><span class="n">_close_reason</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_closed_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
             <span class="k">return</span>
 
+        <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">]</span>
         <span class="n">remaining_order_size</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">size</span>
         <span class="n">commission_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="o">.</span><span class="n">calculate_commission</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">fill_price</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">-=</span> <span class="n">commission_cost</span>
 
-        <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">is_long</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">is_long</span><span class="p">:</span>
                 <span class="k">continue</span>  <span class="c1"># Skip trades on the same side</span>
 
             <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">remaining_order_size</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
                 <span class="c1"># Fully close the trade</span>
                 <span class="n">closed_trade</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_trade</span><span class="p">(</span>
-                    <span class="n">trade</span> <span class="o">=</span> <span class="n">trade</span><span class="p">,</span> 
-                    <span class="n">exit_price</span> <span class="o">=</span> <span class="n">fill_price</span><span class="p">,</span>
-                    <span class="n">exit_date</span> <span class="o">=</span> <span class="n">fill_date</span><span class="p">,</span>
+                    <span class="n">trade</span><span class="o">=</span><span class="n">trade</span><span class="p">,</span>
+                    <span class="n">exit_price</span><span class="o">=</span><span class="n">fill_price</span><span class="p">,</span>
+                    <span class="n">exit_date</span><span class="o">=</span><span class="n">fill_date</span><span class="p">,</span>
                     <span class="n">exit_reason</span><span class="o">=</span><span class="s1">&#39;signal&#39;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">+=</span> <span class="n">closed_trade</span><span class="o">.</span><span class="n">profit</span>
@@ -597,106 +611,89 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Partially close the trade</span>
                 <span class="n">closed_trade</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_trade</span><span class="p">(</span>
-                    <span class="n">trade</span> <span class="o">=</span> <span class="n">trade</span><span class="p">,</span>
-                    <span class="n">close_size</span> <span class="o">=</span> <span class="o">-</span><span class="n">remaining_order_size</span><span class="p">,</span>
-                    <span class="n">exit_price</span> <span class="o">=</span> <span class="n">fill_price</span><span class="p">,</span>
-                    <span class="n">exit_date</span> <span class="o">=</span> <span class="n">fill_date</span><span class="p">,</span>
+                    <span class="n">trade</span><span class="o">=</span><span class="n">trade</span><span class="p">,</span>
+                    <span class="n">close_size</span><span class="o">=-</span><span class="n">remaining_order_size</span><span class="p">,</span>
+                    <span class="n">exit_price</span><span class="o">=</span><span class="n">fill_price</span><span class="p">,</span>
+                    <span class="n">exit_date</span><span class="o">=</span><span class="n">fill_date</span><span class="p">,</span>
                     <span class="n">exit_reason</span><span class="o">=</span><span class="s1">&#39;signal&#39;</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">+=</span> <span class="n">closed_trade</span><span class="o">.</span><span class="n">profit</span>
                 <span class="n">remaining_order_size</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Order fully filled</span>
 
             <span class="k">if</span> <span class="n">remaining_order_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">break</span>  <span class="c1"># Order fully filled</span>
+                <span class="k">break</span>
 
-        <span class="c1"># Remove trades with zero size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">_active_trades</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">trade</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span> <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span>
-        <span class="p">]</span>
+        <span class="c1"># Drop fully-closed trades</span>
+        <span class="n">position</span><span class="o">.</span><span class="n">_active_trades</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">remaining_order_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># Open a new position with the remaining order size</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_open_trade</span><span class="p">(</span>
-                <span class="n">entry_price</span> <span class="o">=</span> <span class="n">fill_price</span><span class="p">,</span>
-                <span class="n">entry_date</span> <span class="o">=</span> <span class="n">fill_date</span><span class="p">,</span>
-                <span class="n">size</span> <span class="o">=</span> <span class="n">remaining_order_size</span><span class="p">,</span>
-                <span class="n">sl</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">_sl</span><span class="p">,</span>
-                <span class="n">tp</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">_tp</span><span class="p">,</span>
-                <span class="n">tag</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">tag</span>
+                <span class="n">entry_price</span><span class="o">=</span><span class="n">fill_price</span><span class="p">,</span>
+                <span class="n">entry_date</span><span class="o">=</span><span class="n">fill_date</span><span class="p">,</span>
+                <span class="n">size</span><span class="o">=</span><span class="n">remaining_order_size</span><span class="p">,</span>
+                <span class="n">sl</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">_sl</span><span class="p">,</span>
+                <span class="n">tp</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">_tp</span><span class="p">,</span>
+                <span class="n">tag</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span>
+                <span class="n">asset</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="c1"># Record the filled order</span>
         <span class="n">order</span><span class="o">.</span><span class="n">_fill</span><span class="p">(</span><span class="n">fill_price</span><span class="p">,</span> <span class="n">fill_date</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filled_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__is_margin_sufficient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order</span><span class="p">:</span> <span class="n">Order</span><span class="p">,</span> <span class="n">fill_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check if there is sufficient margin to execute the order.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            order (Order): The order to check.</span>
-<span class="sd">            fill_price (float): The price at which the order will be filled.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            bool: True if there is sufficient margin, False otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_position_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">order</span><span class="o">.</span><span class="n">size</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if there&#39;s enough portfolio margin to take on the order on its asset.&quot;&quot;&quot;</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">]</span>
+        <span class="n">new_position_size</span> <span class="o">=</span> <span class="n">position</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">order</span><span class="o">.</span><span class="n">size</span>
         <span class="n">new_margin</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">new_position_size</span><span class="p">)</span> <span class="o">*</span> <span class="n">fill_price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span>
 
-        <span class="c1"># Calculate unrealized P&amp;L considering the fill price</span>
-        <span class="n">unrealized_pnl</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
-            <span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="p">(</span><span class="n">fill_price</span> <span class="o">-</span> <span class="n">trade</span><span class="o">.</span><span class="n">entry_price</span><span class="p">)</span> 
-            <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span>
-        <span class="p">)</span>
+        <span class="c1"># Account value uses the prospective fill_price for the order&#39;s asset</span>
+        <span class="c1"># and current Close for everyone else.</span>
+        <span class="n">unrealized_pnl</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">price</span> <span class="o">=</span> <span class="n">fill_price</span> <span class="k">if</span> <span class="n">asset</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">asset</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">pos</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
+                <span class="n">unrealized_pnl</span> <span class="o">+=</span> <span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="p">(</span><span class="n">price</span> <span class="o">-</span> <span class="n">trade</span><span class="o">.</span><span class="n">entry_price</span><span class="p">)</span>
         <span class="n">account_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">+</span> <span class="n">unrealized_pnl</span>
 
-        <span class="k">return</span> <span class="n">account_value</span> <span class="o">&gt;=</span> <span class="n">new_margin</span>
+        <span class="c1"># Other assets&#39; used margin counts against the available pool.</span>
+        <span class="n">other_used_margin</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">pos</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">asset</span> <span class="o">==</span> <span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+            <span class="n">other_used_margin</span> <span class="o">+=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="p">)</span> <span class="o">*</span> <span class="n">price</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">pos</span><span class="o">.</span><span class="n">active_trades</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">account_value</span> <span class="o">&gt;=</span> <span class="n">new_margin</span> <span class="o">+</span> <span class="n">other_used_margin</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__check_sl_tp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check and apply stop loss (SL) and take profit (TP) conditions for all active trades.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">]</span>
-        <span class="n">low</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Low&#39;</span><span class="p">]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check and apply stop loss / take profit conditions across every asset.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span>
+            <span class="n">high</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">]</span>
+            <span class="n">low</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Low&#39;</span><span class="p">]</span>
 
-        <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">trade</span><span class="o">.</span><span class="n">sl</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">trade</span><span class="o">.</span><span class="n">tp</span><span class="p">:</span>
-                <span class="k">continue</span>  <span class="c1"># No SL/TP set for this trade</span>
+            <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">trade</span><span class="o">.</span><span class="n">sl</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">trade</span><span class="o">.</span><span class="n">tp</span><span class="p">:</span>
+                    <span class="k">continue</span>
 
-            <span class="n">sl</span> <span class="o">=</span> <span class="n">trade</span><span class="o">.</span><span class="n">sl</span>
-            <span class="n">tp</span> <span class="o">=</span> <span class="n">trade</span><span class="o">.</span><span class="n">tp</span>
+                <span class="n">sl</span> <span class="o">=</span> <span class="n">trade</span><span class="o">.</span><span class="n">sl</span>
+                <span class="n">tp</span> <span class="o">=</span> <span class="n">trade</span><span class="o">.</span><span class="n">tp</span>
 
-            <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">is_long</span><span class="p">:</span>
-                <span class="c1"># For long positions</span>
-                <span class="k">if</span> <span class="n">sl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">sl</span><span class="p">:</span>
-                    <span class="c1"># Stop loss triggered</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__execute_trade_exit</span><span class="p">(</span><span class="n">trade</span><span class="p">,</span> <span class="n">sl</span><span class="p">,</span> <span class="s1">&#39;sl&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">tp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">high</span> <span class="o">&gt;=</span> <span class="n">tp</span><span class="p">:</span>
-                    <span class="c1"># Take profit triggered</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__execute_trade_exit</span><span class="p">(</span><span class="n">trade</span><span class="p">,</span> <span class="n">tp</span><span class="p">,</span> <span class="s1">&#39;tp&#39;</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># For short positions</span>
-                <span class="k">if</span> <span class="n">sl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">high</span> <span class="o">&gt;=</span> <span class="n">sl</span><span class="p">:</span>
-                    <span class="c1"># Stop loss triggered</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__execute_trade_exit</span><span class="p">(</span><span class="n">trade</span><span class="p">,</span> <span class="n">sl</span><span class="p">,</span> <span class="s1">&#39;sl&#39;</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">tp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">tp</span><span class="p">:</span>
-                    <span class="c1"># Take profit triggered</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">__execute_trade_exit</span><span class="p">(</span><span class="n">trade</span><span class="p">,</span> <span class="n">tp</span><span class="p">,</span> <span class="s1">&#39;tp&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">is_long</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">sl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">sl</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__execute_trade_exit</span><span class="p">(</span><span class="n">trade</span><span class="p">,</span> <span class="n">sl</span><span class="p">,</span> <span class="s1">&#39;sl&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">tp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">high</span> <span class="o">&gt;=</span> <span class="n">tp</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__execute_trade_exit</span><span class="p">(</span><span class="n">trade</span><span class="p">,</span> <span class="n">tp</span><span class="p">,</span> <span class="s1">&#39;tp&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">sl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">high</span> <span class="o">&gt;=</span> <span class="n">sl</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__execute_trade_exit</span><span class="p">(</span><span class="n">trade</span><span class="p">,</span> <span class="n">sl</span><span class="p">,</span> <span class="s1">&#39;sl&#39;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">tp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">low</span> <span class="o">&lt;=</span> <span class="n">tp</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__execute_trade_exit</span><span class="p">(</span><span class="n">trade</span><span class="p">,</span> <span class="n">tp</span><span class="p">,</span> <span class="s1">&#39;tp&#39;</span><span class="p">)</span>
 
-        <span class="c1"># Remove trades with zero size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">_active_trades</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">trade</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span> <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span>
-        <span class="p">]</span>
+            <span class="n">position</span><span class="o">.</span><span class="n">_active_trades</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__execute_trade_exit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trade</span><span class="p">:</span> <span class="n">Trade</span><span class="p">,</span> <span class="n">exit_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">exit_reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Execute the exit of a trade due to SL or TP.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            trade (Trade): The trade to exit.</span>
-<span class="sd">            exit_price (float): The price at which to exit the trade.</span>
-<span class="sd">            exit_reason (str): Reason for exit (&#39;sl&#39; or &#39;tp&#39;).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute the exit of a trade due to SL or TP.&quot;&quot;&quot;</span>
         <span class="n">commission_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="o">.</span><span class="n">calculate_commission</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">exit_price</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">-=</span> <span class="n">commission_cost</span>
 
@@ -708,96 +705,77 @@
         <span class="p">)</span>
         <span class="c1"># The exit is in the opposite direction of the trade itself</span>
         <span class="c1"># (closing a long is a sell; closing a short is a buy).</span>
-        <span class="n">sl_tp_order</span> <span class="o">=</span> <span class="n">Order</span><span class="p">(</span><span class="n">size</span><span class="o">=-</span><span class="n">closed_trade</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">exit_reason</span><span class="p">)</span>
+        <span class="n">sl_tp_order</span> <span class="o">=</span> <span class="n">Order</span><span class="p">(</span><span class="n">size</span><span class="o">=-</span><span class="n">closed_trade</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">tag</span><span class="o">=</span><span class="n">exit_reason</span><span class="p">,</span> <span class="n">asset</span><span class="o">=</span><span class="n">trade</span><span class="o">.</span><span class="n">asset</span><span class="p">)</span>
         <span class="n">sl_tp_order</span><span class="o">.</span><span class="n">_fill</span><span class="p">(</span><span class="n">exit_price</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filled_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sl_tp_order</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">+=</span> <span class="n">closed_trade</span><span class="o">.</span><span class="n">profit</span>
-        
+
 <div class="viewcode-block" id="Broker.close_all_positions">
 <a class="viewcode-back" href="../../../api/core.html#qtrade.core.Broker.close_all_positions">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">close_all_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Close all open positions at the end of the trading period.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
-            <span class="n">commission_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="o">.</span><span class="n">calculate_commission</span><span class="p">(</span>
-                <span class="nb">abs</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">price</span>
-            <span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span> <span class="k">else</span> <span class="mi">0</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">-=</span> <span class="n">commission_cost</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close all open positions across every asset at the current bar&#39;s close.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">price</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
+                <span class="n">commission_cost</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="o">.</span><span class="n">calculate_commission</span><span class="p">(</span>
+                    <span class="nb">abs</span><span class="p">(</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span><span class="p">),</span> <span class="n">price</span>
+                <span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">-=</span> <span class="n">commission_cost</span>
 
-            <span class="n">closed_trade</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_trade</span><span class="p">(</span>
-                <span class="n">trade</span><span class="o">=</span><span class="n">trade</span><span class="p">,</span>
-                <span class="n">exit_price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span>
-                <span class="n">exit_date</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span>
-                <span class="n">exit_reason</span><span class="o">=</span><span class="s1">&#39;end&#39;</span>
-            <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">+=</span> <span class="n">closed_trade</span><span class="o">.</span><span class="n">profit</span>
+                <span class="n">closed_trade</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_trade</span><span class="p">(</span>
+                    <span class="n">trade</span><span class="o">=</span><span class="n">trade</span><span class="p">,</span>
+                    <span class="n">exit_price</span><span class="o">=</span><span class="n">price</span><span class="p">,</span>
+                    <span class="n">exit_date</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span>
+                    <span class="n">exit_reason</span><span class="o">=</span><span class="s1">&#39;end&#39;</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">+=</span> <span class="n">closed_trade</span><span class="o">.</span><span class="n">profit</span>
 
-        <span class="c1"># Remove trades with zero size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">_active_trades</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">trade</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">active_trades</span> <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span>
-        <span class="p">]</span>
+            <span class="n">position</span><span class="o">.</span><span class="n">_active_trades</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__update_account_value_history</span><span class="p">()</span></div>
 
-        
-    <span class="k">def</span><span class="w"> </span><span class="nf">_open_trade</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> 
-            <span class="n">entry_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
-            <span class="n">entry_date</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">,</span> 
-            <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
-            <span class="n">sl</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-            <span class="n">tp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-            <span class="n">tag</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Open a new trade position with the specified parameters.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            size (int): Trade size.</span>
-<span class="sd">            entry_price (float): Entry price.</span>
-<span class="sd">            sl (Optional[float]): Stop loss price.</span>
-<span class="sd">            tp (Optional[float]): Take profit price.</span>
-<span class="sd">            tag (object): Custom tag for the trade.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Opens a new trade position with the specified parameters.&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_open_trade</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">entry_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">entry_date</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">sl</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">tp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">tag</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">asset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open a new trade position on the given asset.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span>
         <span class="n">new_trade</span> <span class="o">=</span> <span class="n">Trade</span><span class="p">(</span>
             <span class="n">entry_price</span><span class="o">=</span><span class="n">entry_price</span><span class="p">,</span>
             <span class="n">entry_date</span><span class="o">=</span><span class="n">entry_date</span><span class="p">,</span>
-            <span class="n">entry_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">entry_date</span><span class="p">),</span>
+            <span class="n">entry_index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">entry_date</span><span class="p">),</span>
             <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
             <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span>
             <span class="n">tp</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span>
-            <span class="n">tag</span><span class="o">=</span><span class="n">tag</span>
+            <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
+            <span class="n">asset</span><span class="o">=</span><span class="n">asset</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">_active_trades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_trade</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">_active_trades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_trade</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_close_trade</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> 
-            <span class="n">trade</span><span class="p">:</span> <span class="n">Trade</span><span class="p">,</span> 
-            <span class="n">exit_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
-            <span class="n">exit_date</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">,</span> 
-            <span class="n">exit_reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">trade</span><span class="p">:</span> <span class="n">Trade</span><span class="p">,</span>
+            <span class="n">exit_price</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">exit_date</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">,</span>
+            <span class="n">exit_reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">close_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Trade</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Close an active trade and move it to the closed trades list.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            trade (Trade): Trade to close.</span>
-<span class="sd">            close_size (int): Size to close.</span>
-<span class="sd">            exit_price (float): Price at which the trade is closed.</span>
-<span class="sd">            exit_date (pd.Timestamp): Date when the trade is closed.</span>
-<span class="sd">            exit_reason (str): Reason for closing (&#39;signal&#39;, &#39;sl&#39;, &#39;tp&#39;, &#39;end&#39;).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close an active trade and append it to the closed-trades list of its asset.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">asset</span><span class="p">]</span>
         <span class="n">closed_trade</span> <span class="o">=</span> <span class="n">trade</span><span class="o">.</span><span class="n">close</span><span class="p">(</span>
             <span class="n">size</span><span class="o">=</span><span class="n">close_size</span><span class="p">,</span>
             <span class="n">exit_price</span><span class="o">=</span><span class="n">exit_price</span><span class="p">,</span>
             <span class="n">exit_date</span><span class="o">=</span><span class="n">exit_date</span><span class="p">,</span>
-            <span class="n">exit_index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">exit_date</span><span class="p">),</span>
+            <span class="n">exit_index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_loc</span><span class="p">(</span><span class="n">exit_date</span><span class="p">),</span>
             <span class="n">exit_reason</span><span class="o">=</span><span class="n">exit_reason</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">_closed_trades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">closed_trade</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">asset</span><span class="p">]</span><span class="o">.</span><span class="n">_closed_trades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">closed_trade</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">closed_trade</span></div>
 
 </pre></div>
@@ -832,7 +810,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
+</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
