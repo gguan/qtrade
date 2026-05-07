@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Customizing Trading Environment" href="customize_environment.html"><link rel="prev" title="Reading the Bokeh report" href="plot.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="自定义交易环境" href="customize_environment.html"><link rel="prev" title="解读 Bokeh 报告" href="plot.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Gym Trading Environment - QTrade</title>
+        <title>Gym 交易环境 - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,17 +198,17 @@
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Gym Trading Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward 优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissions.html">佣金与滑点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Gym 交易环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -262,16 +262,11 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="gym-trading-environment">
-<h1>Gym Trading Environment<a class="headerlink" href="#gym-trading-environment" title="Link to this heading">¶</a></h1>
-<p>QTrade ships a <a class="reference external" href="https://gymnasium.farama.org/">Gymnasium</a> environment
-(<code class="docutils literal notranslate"><span class="pre">qtrade.env.TradingEnv</span></code>) that wraps the same <code class="docutils literal notranslate"><span class="pre">Broker</span></code> as
-<code class="docutils literal notranslate"><span class="pre">Backtest</span></code>. The agent steps through bars one at a time; same accounting,
-fill semantics, SL/TP behavior — just driven by <code class="docutils literal notranslate"><span class="pre">step()</span></code> instead of a
-Python loop.</p>
-<p>For customizing the action / observation / reward, see
-<a class="reference internal" href="customize_environment.html"><span class="std std-doc">Customizing Trading Environment</span></a>.</p>
+<h1>Gym 交易环境<a class="headerlink" href="#gym-trading-environment" title="Link to this heading">¶</a></h1>
+<p>QTrade 提供一个 <a class="reference external" href="https://gymnasium.farama.org/">Gymnasium</a> 环境（<code class="docutils literal notranslate"><span class="pre">qtrade.env.TradingEnv</span></code>），它包装的是和 <code class="docutils literal notranslate"><span class="pre">Backtest</span></code> 同一个 <code class="docutils literal notranslate"><span class="pre">Broker</span></code>。agent 一次推进一根 bar；账户逻辑、成交语义、SL/TP 行为完全一致 —— 只是用 <code class="docutils literal notranslate"><span class="pre">step()</span></code> 驱动而不是 Python 循环。</p>
+<p>自定义 action / observation / reward 见<a class="reference internal" href="customize_environment.html"><span class="std std-doc">自定义交易环境</span></a>。</p>
 <section id="initializing">
-<h2>Initializing<a class="headerlink" href="#initializing" title="Link to this heading">¶</a></h2>
+<h2>初始化<a class="headerlink" href="#initializing" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">TradingEnv</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.core.commission</span><span class="w"> </span><span class="kn">import</span> <span class="n">PercentageCommission</span>
@@ -300,119 +295,103 @@ Python loop.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>The default <code class="docutils literal notranslate"><span class="pre">ObserverScheme</span></code> returns a <code class="docutils literal notranslate"><span class="pre">(window_size,</span> <span class="pre">n_features)</span></code>
-window of every column except OHLCV. So the indicators you add to the
-DataFrame become the observation features automatically.</p>
+<p>默认的 <code class="docutils literal notranslate"><span class="pre">ObserverScheme</span></code> 返回除 OHLCV 之外所有列的 <code class="docutils literal notranslate"><span class="pre">(window_size,</span> <span class="pre">n_features)</span></code> 窗口。所以你加到 DataFrame 上的指标会自动变成观测特征。</p>
 </section>
 <section id="the-step-api">
-<h2>The step API<a class="headerlink" href="#the-step-api" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">env.step(action)</span></code> returns the standard 5-tuple:</p>
+<h2>step API<a class="headerlink" href="#the-step-api" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">env.step(action)</span></code> 返回标准 5 元组：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obs</span><span class="p">,</span> <span class="n">reward</span><span class="p">,</span> <span class="n">terminated</span><span class="p">,</span> <span class="n">truncated</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">action</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Field</p></th>
-<th class="head"><p>Meaning</p></th>
+<tr class="row-odd"><th class="head"><p>字段</p></th>
+<th class="head"><p>含义</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">obs</span></code></p></td>
-<td><p>Whatever the <code class="docutils literal notranslate"><span class="pre">ObserverScheme</span></code> produces. Default: <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(window_size,</span> <span class="pre">n_features)</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ObserverScheme</span></code> 产生的内容。默认：形状 <code class="docutils literal notranslate"><span class="pre">(window_size,</span> <span class="pre">n_features)</span></code> 的 <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reward</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">RewardScheme.get_reward(env)</span></code>. Default: log-return of trades closed this step minus commission.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RewardScheme.get_reward(env)</span></code>。默认：本步关闭交易的对数收益减去佣金。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">terminated</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code> iff <code class="docutils literal notranslate"><span class="pre">current_step</span> <span class="pre">&gt;=</span> <span class="pre">len(data)</span> <span class="pre">-</span> <span class="pre">1</span></code> — the data ran out.</p></td>
+<td><p>当且仅当 <code class="docutils literal notranslate"><span class="pre">current_step</span> <span class="pre">&gt;=</span> <span class="pre">len(data)</span> <span class="pre">-</span> <span class="pre">1</span></code> 时为 <code class="docutils literal notranslate"><span class="pre">True</span></code> —— 数据用完了。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">truncated</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code> iff <code class="docutils literal notranslate"><span class="pre">current_step</span> <span class="pre">-</span> <span class="pre">start_idx</span> <span class="pre">&gt;=</span> <span class="pre">max_steps</span></code> — the episode hit its time limit.</p></td>
+<td><p>当且仅当 <code class="docutils literal notranslate"><span class="pre">current_step</span> <span class="pre">-</span> <span class="pre">start_idx</span> <span class="pre">&gt;=</span> <span class="pre">max_steps</span></code> 时为 <code class="docutils literal notranslate"><span class="pre">True</span></code> —— episode 到时间限制。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">info</span></code></p></td>
-<td><p>Dict (see below).</p></td>
+<td><p>字典（见下文）。</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>When either <code class="docutils literal notranslate"><span class="pre">terminated</span></code> or <code class="docutils literal notranslate"><span class="pre">truncated</span></code> becomes True, the broker calls
-<code class="docutils literal notranslate"><span class="pre">close_all_positions()</span></code> automatically — the episode is &quot;settled&quot; before
-returning.</p>
+<p><code class="docutils literal notranslate"><span class="pre">terminated</span></code> 或 <code class="docutils literal notranslate"><span class="pre">truncated</span></code> 变 True 时，broker 自动调用 <code class="docutils literal notranslate"><span class="pre">close_all_positions()</span></code> —— episode 在返回前已「结算」。</p>
 <section id="what-s-in-info">
-<h3>What's in <code class="docutils literal notranslate"><span class="pre">info</span></code>?<a class="headerlink" href="#what-s-in-info" title="Link to this heading">¶</a></h3>
-<p>Every step:</p>
+<h3><code class="docutils literal notranslate"><span class="pre">info</span></code> 里有什么？<a class="headerlink" href="#what-s-in-info" title="Link to this heading">¶</a></h3>
+<p>每一步包含：</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Meaning</p></th>
+<tr class="row-odd"><th class="head"><p>键</p></th>
+<th class="head"><p>含义</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">equity</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">broker.equity</span></code> (cash + unrealized PnL).</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">broker.equity</span></code>（现金 + 浮动盈亏）。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unrealized_pnl</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">broker.unrealized_pnl</span></code>.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">broker.unrealized_pnl</span></code>。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cumulative_return</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">broker.cumulative_returns</span></code> — multiplicative growth since the episode start.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">broker.cumulative_returns</span></code> —— 自 episode 开始的乘性增长。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">position</span></code></p></td>
-<td><p>Net signed <code class="docutils literal notranslate"><span class="pre">position.size</span></code>.</p></td>
+<td><p>带符号的 <code class="docutils literal notranslate"><span class="pre">position.size</span></code> 净值。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">total_trades</span></code></p></td>
-<td><p>Count of closed trades so far this episode.</p></td>
+<td><p>本 episode 至今已平仓交易数。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trades_profit</span></code></p></td>
-<td><p>Sum of <code class="docutils literal notranslate"><span class="pre">profit</span></code> across all closed trades.</p></td>
+<td><p>所有已平仓交易 <code class="docutils literal notranslate"><span class="pre">profit</span></code> 之和。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">avg_trade_duration</span></code></p></td>
-<td><p>Mean <code class="docutils literal notranslate"><span class="pre">exit_index</span> <span class="pre">−</span> <span class="pre">entry_index</span></code> in bars (0 if no trades).</p></td>
+<td><p>平均 <code class="docutils literal notranslate"><span class="pre">exit_index</span> <span class="pre">−</span> <span class="pre">entry_index</span></code>（按 bar 计；无交易时为 0）。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">is_success</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">trades_profit</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. Useful for SB3's <code class="docutils literal notranslate"><span class="pre">EvalCallback</span></code> success-rate logging.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">trades_profit</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>。便于 SB3 <code class="docutils literal notranslate"><span class="pre">EvalCallback</span></code> 记录成功率。</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>If you need additional fields (open trade count, drawdown so far,
-specific trade properties), subclass <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> and override <code class="docutils literal notranslate"><span class="pre">step</span></code>
-to extend the dict.</p>
+<p>如需额外字段（持仓中交易数、当前回撤、特定交易属性），继承 <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> 并重写 <code class="docutils literal notranslate"><span class="pre">step</span></code> 来扩展这个 dict。</p>
 </section>
 </section>
 <section id="episodes-terminated-vs-truncated">
-<h2>Episodes: terminated vs truncated<a class="headerlink" href="#episodes-terminated-vs-truncated" title="Link to this heading">¶</a></h2>
-<p>The Gymnasium convention is:</p>
+<h2>Episode：terminated vs truncated<a class="headerlink" href="#episodes-terminated-vs-truncated" title="Link to this heading">¶</a></h2>
+<p>Gymnasium 的约定是：</p>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">terminated</span></code></strong>: the episode reached a <em>natural</em> end (won, lost, or
-ran out of valid states).</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">truncated</span></code></strong>: the episode was <em>cut</em> by an artificial time limit.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">terminated</span></code></strong>：episode 到达<em>自然</em>终点（胜、负或可用状态耗尽）。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">truncated</span></code></strong>：episode 被人为时间限制<em>截断</em>。</p></li>
 </ul>
-<p>In <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code>:</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> 里：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">terminated</span></code> fires when there's no more data
-(<code class="docutils literal notranslate"><span class="pre">current_step</span> <span class="pre">==</span> <span class="pre">len(data)</span> <span class="pre">-</span> <span class="pre">1</span></code>). The episode is &quot;complete.&quot;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">truncated</span></code> fires when <code class="docutils literal notranslate"><span class="pre">max_steps</span></code> is reached. The episode could
-have continued but you set a budget.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">terminated</span></code> 在数据用完时触发（<code class="docutils literal notranslate"><span class="pre">current_step</span> <span class="pre">==</span> <span class="pre">len(data)</span> <span class="pre">-</span> <span class="pre">1</span></code>）。Episode 「完整结束」。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">truncated</span></code> 在达到 <code class="docutils literal notranslate"><span class="pre">max_steps</span></code> 时触发。Episode 本可以继续，但你设置了预算。</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">stable-baselines3</span></code>'s value bootstrapping treats them differently —
-make sure you set <code class="docutils literal notranslate"><span class="pre">max_steps</span></code> short enough that most episodes truncate
-(so the agent learns from many short episodes), but not so short that
-the strategy never has time to play out.</p>
+<p><code class="docutils literal notranslate"><span class="pre">stable-baselines3</span></code> 的值函数 bootstrap 对二者处理不同 —— 把 <code class="docutils literal notranslate"><span class="pre">max_steps</span></code> 设得短到大多数 episode 是 truncate（让 agent 从多个短 episode 学），但不能短到策略没机会展开。</p>
 </section>
 <section id="random-start-for-episode-diversity">
-<h2><code class="docutils literal notranslate"><span class="pre">random_start</span></code> for episode diversity<a class="headerlink" href="#random-start-for-episode-diversity" title="Link to this heading">¶</a></h2>
-<p>By default <code class="docutils literal notranslate"><span class="pre">random_start=False</span></code>: every episode starts at bar index
-<code class="docutils literal notranslate"><span class="pre">window_size</span></code>. With <code class="docutils literal notranslate"><span class="pre">random_start=True</span></code>, each <code class="docutils literal notranslate"><span class="pre">reset()</span></code> picks a random
-start in <code class="docutils literal notranslate"><span class="pre">[window_size,</span> <span class="pre">len(data)</span> <span class="pre">-</span> <span class="pre">max_steps)</span></code>, so episodes sample
-different market regimes.</p>
-<p>Required: <code class="docutils literal notranslate"><span class="pre">len(data)</span> <span class="pre">&gt;</span> <span class="pre">window_size</span> <span class="pre">+</span> <span class="pre">max_steps</span></code>. The constructor
-raises a clear <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if not — keep <code class="docutils literal notranslate"><span class="pre">max_steps</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">len(data)</span> <span class="pre">-</span> <span class="pre">window_size</span></code> to leave room.</p>
+<h2><code class="docutils literal notranslate"><span class="pre">random_start</span></code> 增加 episode 多样性<a class="headerlink" href="#random-start-for-episode-diversity" title="Link to this heading">¶</a></h2>
+<p>默认 <code class="docutils literal notranslate"><span class="pre">random_start=False</span></code>：每个 episode 都从 bar 索引 <code class="docutils literal notranslate"><span class="pre">window_size</span></code> 开始。<code class="docutils literal notranslate"><span class="pre">random_start=True</span></code> 时，每次 <code class="docutils literal notranslate"><span class="pre">reset()</span></code> 在 <code class="docutils literal notranslate"><span class="pre">[window_size,</span> <span class="pre">len(data)</span> <span class="pre">-</span> <span class="pre">max_steps)</span></code> 范围随机选起点，让 episode 采样不同的市场 regime。</p>
+<p>前置条件：<code class="docutils literal notranslate"><span class="pre">len(data)</span> <span class="pre">&gt;</span> <span class="pre">window_size</span> <span class="pre">+</span> <span class="pre">max_steps</span></code>。不满足时构造函数抛出清晰的 <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> —— 保持 <code class="docutils literal notranslate"><span class="pre">max_steps</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">len(data)</span> <span class="pre">-</span> <span class="pre">window_size</span></code> 留余地。</p>
 </section>
 <section id="a-typical-training-loop">
-<h2>A typical training loop<a class="headerlink" href="#a-typical-training-loop" title="Link to this heading">¶</a></h2>
+<h2>典型训练循环<a class="headerlink" href="#a-typical-training-loop" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">stable_baselines3</span><span class="w"> </span><span class="kn">import</span> <span class="n">PPO</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span> <span class="n">env</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -429,41 +408,27 @@ raises a clear <code class="docutils literal notranslate"><span class="pre">Valu
 <span class="n">env</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">env.show_stats()</span></code> and <code class="docutils literal notranslate"><span class="pre">env.plot()</span></code> work the same as on a <code class="docutils literal notranslate"><span class="pre">Backtest</span></code>
-instance — same metrics, same multi-panel Bokeh report — because they
-both delegate to the underlying <code class="docutils literal notranslate"><span class="pre">Broker</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">env.show_stats()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">env.plot()</span></code> 行为和 <code class="docutils literal notranslate"><span class="pre">Backtest</span></code> 实例完全一致 —— 相同指标、相同的多面板 Bokeh 报告 —— 因为底层都委托给同一个 <code class="docutils literal notranslate"><span class="pre">Broker</span></code>。</p>
 </section>
 <section id="rendering">
-<h2>Rendering<a class="headerlink" href="#rendering" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">env.render('human')</span></code> opens a live mplfinance candle chart updating
-every step:</p>
-<p><img alt="Trading Environment Render" src="../_images/render_rgb.gif" /></p>
-<p>For RGB array output (e.g. SB3's <code class="docutils literal notranslate"><span class="pre">VecVideoRecorder</span></code>):</p>
+<h2>渲染<a class="headerlink" href="#rendering" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">env.render('human')</span></code> 打开一个 mplfinance 实时蜡烛图，每步更新：</p>
+<p><img alt="交易环境渲染" src="../_images/render_rgb.gif" /></p>
+<p>RGB 数组输出（用于 SB3 的 <code class="docutils literal notranslate"><span class="pre">VecVideoRecorder</span></code> 等）：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnv</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="s1">&#39;rgb_array&#39;</span><span class="p">)</span>
 <span class="n">frame</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">render</span><span class="p">()</span>  <span class="c1"># → ndarray of shape (h, w, 3)</span>
 </pre></div>
 </div>
 <blockquote>
-<div><p>Heads up: rendering is slow. For training, leave it off
-(<code class="docutils literal notranslate"><span class="pre">render_mode='human'</span></code> is the default but you don't have to <em>call</em>
-<code class="docutils literal notranslate"><span class="pre">render()</span></code>) and only render during evaluation.</p>
+<div><p>注意：渲染很慢。训练时关闭它（<code class="docutils literal notranslate"><span class="pre">render_mode='human'</span></code> 是默认值，但你不必<em>调用</em> <code class="docutils literal notranslate"><span class="pre">render()</span></code>），只在评估时渲染。</p>
 </div></blockquote>
 </section>
 <section id="common-pitfalls">
-<h2>Common pitfalls<a class="headerlink" href="#common-pitfalls" title="Link to this heading">¶</a></h2>
+<h2>常见坑<a class="headerlink" href="#common-pitfalls" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Sparse reward</strong>: the default reward only fires on bars where a
-trade closes. Long episodes with no closures train poorly. Either
-use an equity-based reward (see
-<a class="reference internal" href="customize_environment.html"><span class="std std-doc">Customizing Trading Environment</span></a>) or shorten
-episodes so end-of-episode auto-closure provides regular signal.</p></li>
-<li><p><strong>Indicators with NaN at start</strong>: any column you add to <code class="docutils literal notranslate"><span class="pre">data</span></code> is
-observed as-is. NaN in the observation crashes most policies. Drop
-the warmup rows with <code class="docutils literal notranslate"><span class="pre">data.dropna(inplace=True)</span></code> after computing
-indicators.</p></li>
-<li><p><strong>Action / observation drift</strong>: if you change schemes mid-experiment
-and load an old model, you'll get shape mismatches. Save model and
-scheme together when you're going to load.</p></li>
+<li><p><strong>稀疏奖励</strong>：默认奖励只在有交易平仓的 bar 触发。长 episode 没有平仓很难训练。要么用基于权益的奖励（见<a class="reference internal" href="customize_environment.html"><span class="std std-doc">自定义交易环境</span></a>），要么缩短 episode 让结尾的自动平仓提供规律信号。</p></li>
+<li><p><strong>指标开头有 NaN</strong>：你加到 <code class="docutils literal notranslate"><span class="pre">data</span></code> 上的列会被原样观测。观测里出现 NaN 会让大多数策略崩溃。计算指标后用 <code class="docutils literal notranslate"><span class="pre">data.dropna(inplace=True)</span></code> 丢掉热身行。</p></li>
+<li><p><strong>Action / observation 漂移</strong>：实验中途换 scheme 后加载旧模型会形状不匹配。打算后续加载的模型和对应的 scheme 一起保存。</p></li>
 </ul>
 </section>
 </section>
@@ -478,7 +443,7 @@ scheme together when you're going to load.</p></li>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Customizing Trading Environment</div>
+                <div class="title">自定义交易环境</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -489,7 +454,7 @@ scheme together when you're going to load.</p></li>
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Reading the Bokeh report</div>
+                <div class="title">解读 Bokeh 报告</div>
                 
               </div>
             </a>
@@ -523,17 +488,17 @@ scheme together when you're going to load.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Gym Trading Environment</a><ul>
-<li><a class="reference internal" href="#initializing">Initializing</a></li>
-<li><a class="reference internal" href="#the-step-api">The step API</a><ul>
-<li><a class="reference internal" href="#what-s-in-info">What's in <code class="docutils literal notranslate"><span class="pre">info</span></code>?</a></li>
+<li><a class="reference internal" href="#">Gym 交易环境</a><ul>
+<li><a class="reference internal" href="#initializing">初始化</a></li>
+<li><a class="reference internal" href="#the-step-api">step API</a><ul>
+<li><a class="reference internal" href="#what-s-in-info"><code class="docutils literal notranslate"><span class="pre">info</span></code> 里有什么？</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#episodes-terminated-vs-truncated">Episodes: terminated vs truncated</a></li>
-<li><a class="reference internal" href="#random-start-for-episode-diversity"><code class="docutils literal notranslate"><span class="pre">random_start</span></code> for episode diversity</a></li>
-<li><a class="reference internal" href="#a-typical-training-loop">A typical training loop</a></li>
-<li><a class="reference internal" href="#rendering">Rendering</a></li>
-<li><a class="reference internal" href="#common-pitfalls">Common pitfalls</a></li>
+<li><a class="reference internal" href="#episodes-terminated-vs-truncated">Episode：terminated vs truncated</a></li>
+<li><a class="reference internal" href="#random-start-for-episode-diversity"><code class="docutils literal notranslate"><span class="pre">random_start</span></code> 增加 episode 多样性</a></li>
+<li><a class="reference internal" href="#a-typical-training-loop">典型训练循环</a></li>
+<li><a class="reference internal" href="#rendering">渲染</a></li>
+<li><a class="reference internal" href="#common-pitfalls">常见坑</a></li>
 </ul>
 </li>
 </ul>

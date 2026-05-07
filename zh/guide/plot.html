@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Gym Trading Environment" href="trading_environment.html"><link rel="prev" title="Commissions and slippage" href="commissions.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Gym 交易环境" href="trading_environment.html"><link rel="prev" title="佣金与滑点" href="commissions.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Reading the Bokeh report - QTrade</title>
+        <title>解读 Bokeh 报告 - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,17 +198,17 @@
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Reading the Bokeh report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward 优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissions.html">佣金与滑点</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -262,25 +262,20 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="reading-the-bokeh-report">
-<h1>Reading the Bokeh report<a class="headerlink" href="#reading-the-bokeh-report" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Backtest.plot()</span></code> (and <code class="docutils literal notranslate"><span class="pre">TradingEnv.plot()</span></code>) renders an interactive
-Bokeh report combining equity, trade returns, and per-asset OHLC
-panels. This page explains what each panel shows and how to interpret
-it.</p>
+<h1>解读 Bokeh 报告<a class="headerlink" href="#reading-the-bokeh-report" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">Backtest.plot()</span></code>（以及 <code class="docutils literal notranslate"><span class="pre">TradingEnv.plot()</span></code>）渲染一份交互式 Bokeh 报告，包含净值、交易收益、按资产分的 OHLC 面板。本页解释每个面板展示什么、怎么读。</p>
 <section id="saving-to-file">
-<h2>Saving to file<a class="headerlink" href="#saving-to-file" title="Link to this heading">¶</a></h2>
-<p>By default <code class="docutils literal notranslate"><span class="pre">plot()</span></code> calls <code class="docutils literal notranslate"><span class="pre">bokeh.io.show()</span></code> which opens the report in
-a browser. To save a self-contained HTML for sharing or archiving:</p>
+<h2>保存到文件<a class="headerlink" href="#saving-to-file" title="Link to this heading">¶</a></h2>
+<p>默认情况下 <code class="docutils literal notranslate"><span class="pre">plot()</span></code> 调用 <code class="docutils literal notranslate"><span class="pre">bokeh.io.show()</span></code> 在浏览器打开报告。如需保存为自包含 HTML 文件用于分享或存档：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.plot_bokeh</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_with_bokeh</span>
 <span class="n">plot_with_bokeh</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The HTML has all data inlined — no Bokeh server, no external assets.
-Email it, commit it, drop it in a wiki.</p>
+<p>HTML 内联所有数据 —— 不需要 Bokeh 服务器、没有外部资源。可以邮件发送、提交进 git、放进 wiki。</p>
 </section>
 <section id="single-asset-layout">
-<h2>Single-asset layout<a class="headerlink" href="#single-asset-layout" title="Link to this heading">¶</a></h2>
-<p>Three stacked panels with linked x-axes:</p>
+<h2>单资产布局<a class="headerlink" href="#single-asset-layout" title="Link to this heading">¶</a></h2>
+<p>三个 X 轴联动的纵向堆叠面板：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────┐
 │ ▒▓▒  Equity vs. Buy &amp; Hold (cumulative returns) │
 │                                                 │
@@ -294,75 +289,61 @@ Email it, commit it, drop it in a wiki.</p>
 </pre></div>
 </div>
 <section id="top-equity-panel">
-<h3>Top: Equity panel<a class="headerlink" href="#top-equity-panel" title="Link to this heading">¶</a></h3>
+<h3>顶部：净值面板<a class="headerlink" href="#top-equity-panel" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><strong>Solid blue line</strong>: portfolio equity (cumulative returns, normalized to
-1.0 at the start).</p></li>
-<li><p><strong>Gray dotted line</strong>: Buy &amp; Hold returns on the same scale.</p></li>
-<li><p><strong>Purple dot</strong>: peak equity point.</p></li>
-<li><p><strong>Blue dot</strong>: final equity point (legend shows the final pct).</p></li>
-<li><p><strong>Gray dot</strong>: final B&amp;H point.</p></li>
-<li><p><strong>Red dot</strong>: max drawdown trough.</p></li>
-<li><p><strong>Red shaded area</strong>: the drawdown region (gap between equity and its
-running max).</p></li>
-<li><p><strong>Red horizontal segment</strong>: the longest drawdown duration.</p></li>
+<li><p><strong>蓝色实线</strong>：组合净值（累计收益，起点归一化为 1.0）。</p></li>
+<li><p><strong>灰色虚线</strong>：同尺度下的 Buy &amp; Hold 收益。</p></li>
+<li><p><strong>紫色点</strong>：净值峰值点。</p></li>
+<li><p><strong>蓝色点</strong>：最终净值点（图例显示最终百分比）。</p></li>
+<li><p><strong>灰色点</strong>：最终 Buy &amp; Hold 点。</p></li>
+<li><p><strong>红色点</strong>：最大回撤的谷底。</p></li>
+<li><p><strong>红色阴影区</strong>：回撤区域（净值与其滚动最大值的差距）。</p></li>
+<li><p><strong>红色水平线段</strong>：最长回撤持续时间。</p></li>
 </ul>
-<p>What to look for:</p>
+<p>重点观察：</p>
 <ul class="simple">
-<li><p>Is the blue line above the gray? You're beating Buy &amp; Hold.</p></li>
-<li><p>How &quot;smooth&quot; is the blue line vs gray? Smoother = lower volatility =
-better risk-adjusted return (the Sharpe story).</p></li>
-<li><p>Is the red shaded area concentrated in one period or spread out?
-Concentrated = strategy has one weak regime; spread out = systemic
-drag.</p></li>
+<li><p>蓝线是否在灰线之上？是的话你跑赢 Buy &amp; Hold。</p></li>
+<li><p>蓝线 vs 灰线哪个更「平滑」？更平滑 = 波动率更低 = 风险调整后收益更好（即 Sharpe）。</p></li>
+<li><p>红色阴影区集中在某段时间还是分散？集中 = 策略在某个 regime 失效；分散 = 系统性拖累。</p></li>
 </ul>
 </section>
 <section id="middle-trade-returns">
-<h3>Middle: Trade returns<a class="headerlink" href="#middle-trade-returns" title="Link to this heading">¶</a></h3>
-<p>A scatter of every closed trade plotted at its exit time:</p>
+<h3>中部：交易收益<a class="headerlink" href="#middle-trade-returns" title="Link to this heading">¶</a></h3>
+<p>每笔已平仓交易绘制在其平仓时间点的散点图：</p>
 <ul class="simple">
-<li><p><strong>Green up-triangles</strong>: long trades. y-axis is <code class="docutils literal notranslate"><span class="pre">(exit/entry</span> <span class="pre">−</span> <span class="pre">1)</span></code>.</p></li>
-<li><p><strong>Red down-triangles</strong>: short trades. y-axis is the equivalent for shorts.</p></li>
-<li><p><strong>Marker size</strong>: scaled to position size (bigger = larger trade).</p></li>
-<li><p><strong>Dashed horizontal at 0</strong>: break-even line.</p></li>
+<li><p><strong>绿色向上三角</strong>：多头交易。Y 轴是 <code class="docutils literal notranslate"><span class="pre">(exit/entry</span> <span class="pre">−</span> <span class="pre">1)</span></code>。</p></li>
+<li><p><strong>红色向下三角</strong>：空头交易。Y 轴是对应空头的等价表达式。</p></li>
+<li><p><strong>标记大小</strong>：按仓位 size 缩放（越大 = 仓位越大）。</p></li>
+<li><p><strong>0 处的水平虚线</strong>：盈亏平衡线。</p></li>
 </ul>
-<p>What to look for:</p>
+<p>重点观察：</p>
 <ul class="simple">
-<li><p>Are most markers above the 0-line? That's your win rate eyeballed.</p></li>
-<li><p>Is there a cluster of large-magnitude losses (way below 0)? That's
-where stop-losses (or lack thereof) hurt.</p></li>
-<li><p>Are big winners and big losers symmetric around 0? Asymmetric is
-good — small losses + large gains is the trend-following sweet spot.</p></li>
+<li><p>大多数标记是否在 0 线之上？这就是肉眼估算的胜率。</p></li>
+<li><p>是否有一簇深亏（远低于 0）？那里就是止损（或缺少止损）出问题的地方。</p></li>
+<li><p>大赢家和大输家围绕 0 是否对称？非对称才好 —— 小亏 + 大赚是趋势跟随的甜区。</p></li>
 </ul>
 </section>
 <section id="bottom-ohlc-volume-trade-boxes">
-<h3>Bottom: OHLC + volume + trade boxes<a class="headerlink" href="#bottom-ohlc-volume-trade-boxes" title="Link to this heading">¶</a></h3>
-<p>The price action with overlays:</p>
+<h3>底部：OHLC + 成交量 + 交易框<a class="headerlink" href="#bottom-ohlc-volume-trade-boxes" title="Link to this heading">¶</a></h3>
+<p>价格走势叠加多种标记：</p>
 <ul class="simple">
-<li><p><strong>Black line</strong>: closing prices.</p></li>
-<li><p><strong>Bottom bars (faint green/red)</strong>: volume (right y-axis), color-coded
-by close ≥/&lt; open.</p></li>
-<li><p><strong>Translucent green rectangles</strong>: winning trades — left/right edges
-are entry/exit times, top/bottom are entry/exit prices.</p></li>
-<li><p><strong>Translucent red rectangles</strong>: losing trades, same convention.</p></li>
-<li><p><strong>Triangle markers</strong>: order fills. Up = buy; down = sell. Size scaled
-to order magnitude.</p></li>
+<li><p><strong>黑线</strong>：收盘价。</p></li>
+<li><p><strong>底部柱状（淡绿 / 淡红）</strong>：成交量（右 Y 轴），按 close ≥/&lt; open 着色。</p></li>
+<li><p><strong>半透明绿色矩形</strong>：盈利交易 —— 左右边是开仓 / 平仓时间，上下边是开仓 / 平仓价格。</p></li>
+<li><p><strong>半透明红色矩形</strong>：亏损交易，约定相同。</p></li>
+<li><p><strong>三角标记</strong>：订单成交。向上 = 买；向下 = 卖。大小按订单规模缩放。</p></li>
 </ul>
-<p>What to look for:</p>
+<p>重点观察：</p>
 <ul class="simple">
-<li><p>Trade boxes that span long horizontal stretches = you held through
-noise. Short stretches = quick in-out trades.</p></li>
-<li><p>Buy markers at local highs / sell markers at local lows = bad
-timing, possibly a sign of late signal generation.</p></li>
-<li><p>Boxes piling up densely = high turnover. Watch the
-<code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Commission</span> <span class="pre">Cost</span></code> metric in <code class="docutils literal notranslate"><span class="pre">show_stats()</span></code>.</p></li>
+<li><p>横跨很长水平区间的交易框 = 你扛过了噪声。短区间 = 快进快出。</p></li>
+<li><p>买点在局部高点 / 卖点在局部低点 = 时机不好，可能是信号生成滞后。</p></li>
+<li><p>交易框密集堆叠 = 高换手。注意 <code class="docutils literal notranslate"><span class="pre">show_stats()</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Commission</span> <span class="pre">Cost</span></code> 指标。</p></li>
 </ul>
 </section>
 </section>
 <section id="multi-asset-layout">
-<h2>Multi-asset layout<a class="headerlink" href="#multi-asset-layout" title="Link to this heading">¶</a></h2>
-<p>The report adds one OHLC panel per asset, all stacked, all sharing the
-same x-axis:</p>
+<h2>多资产布局<a class="headerlink" href="#multi-asset-layout" title="Link to this heading">¶</a></h2>
+<p>报告为每个资产添加一个 OHLC 面板，全部堆叠并共享同一 X 轴：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────┐
 │  Portfolio equity vs equal-weighted Buy &amp; Hold  │
 ├─────────────────────────────────────────────────┤
@@ -376,37 +357,25 @@ same x-axis:</p>
 └─────────────────────────────────────────────────┘
 </pre></div>
 </div>
-<p>Each per-asset OHLC panel shows trades and orders <strong>filtered to that
-asset only</strong>, so you can see exactly when the strategy moved in each
-name. The equity panel up top is portfolio-level (one curve, summing
-across all assets).</p>
-<p>The Buy &amp; Hold benchmark is the <strong>equal-weighted average</strong> of each
-asset's first-to-last return — a fair &quot;naive portfolio&quot; comparison.</p>
+<p>每个资产的 OHLC 面板只显示<strong>该资产</strong>的交易和订单，所以你能精确看到策略在每个标的上的动作。顶部净值面板是组合级别的（一条曲线，跨资产汇总）。</p>
+<p>Buy &amp; Hold 基准是各资产首尾收益的<strong>等权平均</strong> —— 一个公平的「朴素组合」对照。</p>
 </section>
 <section id="interactive-features">
-<h2>Interactive features<a class="headerlink" href="#interactive-features" title="Link to this heading">¶</a></h2>
+<h2>交互特性<a class="headerlink" href="#interactive-features" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Drag the x-axis</strong> on any panel to pan; <strong>scroll</strong> to zoom.</p></li>
-<li><p><strong>Click a legend entry</strong> to toggle that series on/off.</p></li>
-<li><p><strong>Hover</strong> for tooltips: dates, prices, returns, profit per trade.</p></li>
-<li><p><strong>Auto-rescaling</strong>: zooming the x-axis triggers a JS callback that
-rescales the y-axes for the visible range only (single-asset layout).</p></li>
+<li><p>在任意面板<strong>拖动 X 轴</strong>平移；<strong>滚轮</strong>缩放。</p></li>
+<li><p><strong>点击图例项</strong>切换该系列显示 / 隐藏。</p></li>
+<li><p><strong>悬停</strong>显示 tooltip：日期、价格、收益、单笔盈亏。</p></li>
+<li><p><strong>自动缩放</strong>：缩放 X 轴会触发 JS 回调，只对可见范围重新缩放 Y 轴（单资产布局下）。</p></li>
 </ul>
 </section>
 <section id="common-surprises">
-<h2>Common surprises<a class="headerlink" href="#common-surprises" title="Link to this heading">¶</a></h2>
+<h2>常见困惑<a class="headerlink" href="#common-surprises" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Trade-return scatter looks empty</strong>: the strategy hasn't closed any
-trades yet. SL/TP not triggered + no signal exits = no closed trades.</p></li>
-<li><p><strong>OHLC shows a gap at the end with no buy/sell</strong>: the
-<code class="docutils literal notranslate"><span class="pre">close_all_positions()</span></code> end-of-run sweep records exits at the last
-bar's close, which can produce a flurry of markers right at the
-right edge.</p></li>
-<li><p><strong>Volume is missing</strong>: your input data didn't have a <code class="docutils literal notranslate"><span class="pre">Volume</span></code> column.
-Add one (or accept volume bars don't show).</p></li>
-<li><p><strong>Equity line drops sharply with no visible trade</strong>: you took a
-large mark-to-market loss without exiting. Check <code class="docutils literal notranslate"><span class="pre">unrealized_pnl</span></code>
-in your strategy logic.</p></li>
+<li><p><strong>交易收益散点图是空的</strong>：策略还没平仓。SL/TP 未触发 + 没有信号平仓 = 没有平仓交易。</p></li>
+<li><p><strong>OHLC 末端有一段没有买卖标记</strong>：<code class="docutils literal notranslate"><span class="pre">close_all_positions()</span></code> 在结束时的统一清仓使用最后一根 bar 的 close 价记录退出，可能在右边缘产生一堆密集标记。</p></li>
+<li><p><strong>没有成交量</strong>：你的输入数据没有 <code class="docutils literal notranslate"><span class="pre">Volume</span></code> 列。加一列（或接受没有成交量条）。</p></li>
+<li><p><strong>净值线骤降但看不到对应交易</strong>：你扛了一笔很大的浮亏但没平仓。检查策略逻辑里的 <code class="docutils literal notranslate"><span class="pre">unrealized_pnl</span></code>。</p></li>
 </ul>
 </section>
 </section>
@@ -421,7 +390,7 @@ in your strategy logic.</p></li>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Gym Trading Environment</div>
+                <div class="title">Gym 交易环境</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -432,7 +401,7 @@ in your strategy logic.</p></li>
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Commissions and slippage</div>
+                <div class="title">佣金与滑点</div>
                 
               </div>
             </a>
@@ -466,17 +435,17 @@ in your strategy logic.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Reading the Bokeh report</a><ul>
-<li><a class="reference internal" href="#saving-to-file">Saving to file</a></li>
-<li><a class="reference internal" href="#single-asset-layout">Single-asset layout</a><ul>
-<li><a class="reference internal" href="#top-equity-panel">Top: Equity panel</a></li>
-<li><a class="reference internal" href="#middle-trade-returns">Middle: Trade returns</a></li>
-<li><a class="reference internal" href="#bottom-ohlc-volume-trade-boxes">Bottom: OHLC + volume + trade boxes</a></li>
+<li><a class="reference internal" href="#">解读 Bokeh 报告</a><ul>
+<li><a class="reference internal" href="#saving-to-file">保存到文件</a></li>
+<li><a class="reference internal" href="#single-asset-layout">单资产布局</a><ul>
+<li><a class="reference internal" href="#top-equity-panel">顶部：净值面板</a></li>
+<li><a class="reference internal" href="#middle-trade-returns">中部：交易收益</a></li>
+<li><a class="reference internal" href="#bottom-ohlc-volume-trade-boxes">底部：OHLC + 成交量 + 交易框</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#multi-asset-layout">Multi-asset layout</a></li>
-<li><a class="reference internal" href="#interactive-features">Interactive features</a></li>
-<li><a class="reference internal" href="#common-surprises">Common surprises</a></li>
+<li><a class="reference internal" href="#multi-asset-layout">多资产布局</a></li>
+<li><a class="reference internal" href="#interactive-features">交互特性</a></li>
+<li><a class="reference internal" href="#common-surprises">常见困惑</a></li>
 </ul>
 </li>
 </ul>

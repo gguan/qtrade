@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Stats glossary" href="stats_glossary.html"><link rel="prev" title="Gym Trading Environment" href="trading_environment.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="统计指标词汇表" href="stats_glossary.html"><link rel="prev" title="Gym 交易环境" href="trading_environment.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Customizing Trading Environment - QTrade</title>
+        <title>自定义交易环境 - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,17 +198,17 @@
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Customizing Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward 优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissions.html">佣金与滑点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -262,34 +262,33 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="customizing-trading-environment">
-<h1>Customizing Trading Environment<a class="headerlink" href="#customizing-trading-environment" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> is composed of three pluggable pieces:</p>
+<h1>自定义交易环境<a class="headerlink" href="#customizing-trading-environment" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> 由三个可插拔的部分组成：</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Scheme</p></th>
-<th class="head"><p>Decides</p></th>
-<th class="head"><p>Default</p></th>
+<th class="head"><p>决定</p></th>
+<th class="head"><p>默认</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ActionScheme</span></code></p></td>
-<td><p>The agent's action space and how an action turns into orders</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DefaultAction</span></code>: 3-discrete (long / short / flat)</p></td>
+<td><p>agent 的动作空间，以及一个动作如何转换为订单</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DefaultAction</span></code>：3 离散（多 / 空 / 平）</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ObserverScheme</span></code></p></td>
-<td><p>The observation space and what the agent sees each step</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DefaultObserver</span></code>: trailing-window of selected feature columns</p></td>
+<td><p>观测空间，以及 agent 每步看到什么</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DefaultObserver</span></code>：选定特征列的滚动窗口</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RewardScheme</span></code></p></td>
-<td><p>The scalar reward returned by <code class="docutils literal notranslate"><span class="pre">env.step</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">DefaultReward</span></code>: log-return of trades closed this step, minus commission</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">env.step</span></code> 返回的标量奖励</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DefaultReward</span></code>：本步关闭交易的对数收益，扣除佣金</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>Subclass the abstract base for any of them and pass your instance to
-<code class="docutils literal notranslate"><span class="pre">TradingEnv(...)</span></code>:</p>
+<p>继承任一抽象基类，把你的实例传给 <code class="docutils literal notranslate"><span class="pre">TradingEnv(...)</span></code>：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">TradingEnv</span>
 
 <span class="n">env</span> <span class="o">=</span> <span class="n">TradingEnv</span><span class="p">(</span>
@@ -301,24 +300,19 @@
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>If you don't pass one, the corresponding default is used. You can mix
-custom and default schemes freely.</p>
+<p>不传则使用对应的默认实现。可以自由混搭自定义和默认 scheme。</p>
 <hr class="docutils" />
 <section id="actionscheme">
 <h2>ActionScheme<a class="headerlink" href="#actionscheme" title="Link to this heading">¶</a></h2>
-<p>Two methods to implement:</p>
+<p>需要实现两个方法：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">action_space</span></code> — a <code class="docutils literal notranslate"><span class="pre">gymnasium.spaces.Space</span></code> describing what the agent
-can output.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_orders(action,</span> <span class="pre">env)</span> <span class="pre">-&gt;</span> <span class="pre">list[Order]</span></code> — translate the chosen action
-into actual <code class="docutils literal notranslate"><span class="pre">Order</span></code> objects to place. Return <code class="docutils literal notranslate"><span class="pre">[]</span></code> for &quot;do nothing.&quot;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">action_space</span></code> —— 一个 <code class="docutils literal notranslate"><span class="pre">gymnasium.spaces.Space</span></code>，描述 agent 能输出什么。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_orders(action,</span> <span class="pre">env)</span> <span class="pre">-&gt;</span> <span class="pre">list[Order]</span></code> —— 把选定的动作转换为待下的 <code class="docutils literal notranslate"><span class="pre">Order</span></code> 列表。返回 <code class="docutils literal notranslate"><span class="pre">[]</span></code> 表示「什么都不做」。</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">env</span></code> exposes <code class="docutils literal notranslate"><span class="pre">env.position</span></code>, <code class="docutils literal notranslate"><span class="pre">env.equity</span></code>, <code class="docutils literal notranslate"><span class="pre">env.data</span></code>, <code class="docutils literal notranslate"><span class="pre">env.current_time</span></code>,
-and the underlying <code class="docutils literal notranslate"><span class="pre">env._broker</span></code> if you need more.</p>
+<p><code class="docutils literal notranslate"><span class="pre">env</span></code> 暴露 <code class="docutils literal notranslate"><span class="pre">env.position</span></code>、<code class="docutils literal notranslate"><span class="pre">env.equity</span></code>、<code class="docutils literal notranslate"><span class="pre">env.data</span></code>、<code class="docutils literal notranslate"><span class="pre">env.current_time</span></code>，如需更多可用底层的 <code class="docutils literal notranslate"><span class="pre">env._broker</span></code>。</p>
 <section id="example-position-sized-actions">
-<h3>Example: position-sized actions<a class="headerlink" href="#example-position-sized-actions" title="Link to this heading">¶</a></h3>
-<p>The default action scheme uses fixed <code class="docutils literal notranslate"><span class="pre">size=1</span></code>. Here's one that lets the
-agent pick a position scale (small / medium / large) along with direction:</p>
+<h3>示例：分档仓位动作<a class="headerlink" href="#example-position-sized-actions" title="Link to this heading">¶</a></h3>
+<p>默认 action scheme 用固定 <code class="docutils literal notranslate"><span class="pre">size=1</span></code>。下面这个让 agent 可以同时选择仓位档位（小 / 中 / 大）和方向：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gymnasium.spaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">Space</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActionScheme</span>
@@ -348,9 +342,8 @@ agent pick a position scale (small / medium / large) along with direction:</p>
 </div>
 </section>
 <section id="example-continuous-box-action-space">
-<h3>Example: continuous (Box) action space<a class="headerlink" href="#example-continuous-box-action-space" title="Link to this heading">¶</a></h3>
-<p>Useful for PPO / SAC if you want the agent to pick a target position
-fraction directly.</p>
+<h3>示例：连续（Box）动作空间<a class="headerlink" href="#example-continuous-box-action-space" title="Link to this heading">¶</a></h3>
+<p>PPO / SAC 想让 agent 直接选目标仓位比例时很有用。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">gymnasium.spaces</span><span class="w"> </span><span class="kn">import</span> <span class="n">Box</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">ActionScheme</span>
@@ -377,21 +370,15 @@ fraction directly.</p>
 <hr class="docutils" />
 <section id="observerscheme">
 <h2>ObserverScheme<a class="headerlink" href="#observerscheme" title="Link to this heading">¶</a></h2>
-<p>Two methods to implement:</p>
+<p>需要实现两个方法：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">observation_space</span></code> — a <code class="docutils literal notranslate"><span class="pre">gymnasium.spaces.Space</span></code>. Make sure its <code class="docutils literal notranslate"><span class="pre">shape</span></code>
-/ <code class="docutils literal notranslate"><span class="pre">dtype</span></code> match what <code class="docutils literal notranslate"><span class="pre">get_observation</span></code> actually returns.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">get_observation(env)</span> <span class="pre">-&gt;</span> <span class="pre">np.ndarray</span> <span class="pre">|</span> <span class="pre">dict[str,</span> <span class="pre">np.ndarray]</span></code> — pull
-whatever you want out of <code class="docutils literal notranslate"><span class="pre">env.data</span></code>, <code class="docutils literal notranslate"><span class="pre">env.position</span></code>, <code class="docutils literal notranslate"><span class="pre">env._broker</span></code>,
-etc., shaped to match <code class="docutils literal notranslate"><span class="pre">observation_space</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">observation_space</span></code> —— 一个 <code class="docutils literal notranslate"><span class="pre">gymnasium.spaces.Space</span></code>。确保其 <code class="docutils literal notranslate"><span class="pre">shape</span></code> / <code class="docutils literal notranslate"><span class="pre">dtype</span></code> 和 <code class="docutils literal notranslate"><span class="pre">get_observation</span></code> 实际返回的匹配。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_observation(env)</span> <span class="pre">-&gt;</span> <span class="pre">np.ndarray</span> <span class="pre">|</span> <span class="pre">dict[str,</span> <span class="pre">np.ndarray]</span></code> —— 从 <code class="docutils literal notranslate"><span class="pre">env.data</span></code>、<code class="docutils literal notranslate"><span class="pre">env.position</span></code>、<code class="docutils literal notranslate"><span class="pre">env._broker</span></code> 等取你想要的数据，形状与 <code class="docutils literal notranslate"><span class="pre">observation_space</span></code> 匹配。</p></li>
 </ul>
-<p>The default observer returns a trailing window of feature columns.
-You can subclass to return raw OHLCV, technical indicators, position
-state, or a <code class="docutils literal notranslate"><span class="pre">Dict</span></code> space combining several modalities.</p>
+<p>默认 observer 返回特征列的滚动窗口。你可以继承它返回原始 OHLCV、技术指标、持仓状态，或者用 <code class="docutils literal notranslate"><span class="pre">Dict</span></code> 空间组合多种模态。</p>
 <section id="example-include-position-state">
-<h3>Example: include position state<a class="headerlink" href="#example-include-position-state" title="Link to this heading">¶</a></h3>
-<p>A common need is letting the agent know its current position size and
-unrealized PnL alongside market data:</p>
+<h3>示例：把持仓状态加入观测<a class="headerlink" href="#example-include-position-state" title="Link to this heading">¶</a></h3>
+<p>常见需求：让 agent 在看市场数据的同时知道当前仓位大小和浮动盈亏：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObserverScheme</span>
@@ -428,14 +415,12 @@ unrealized PnL alongside market data:</p>
 </pre></div>
 </div>
 <blockquote>
-<div><p>A <code class="docutils literal notranslate"><span class="pre">Dict</span></code> observation space requires a <code class="docutils literal notranslate"><span class="pre">MultiInputPolicy</span></code> in
-<code class="docutils literal notranslate"><span class="pre">stable-baselines3</span></code>. For most off-the-shelf policies, stick to a flat
-<code class="docutils literal notranslate"><span class="pre">Box</span></code>.</p>
+<div><p><code class="docutils literal notranslate"><span class="pre">Dict</span></code> 观测空间在 <code class="docutils literal notranslate"><span class="pre">stable-baselines3</span></code> 里需要 <code class="docutils literal notranslate"><span class="pre">MultiInputPolicy</span></code>。大多数现成策略请坚持使用扁平的 <code class="docutils literal notranslate"><span class="pre">Box</span></code>。</p>
 </div></blockquote>
 </section>
 <section id="example-returns-instead-of-prices">
-<h3>Example: returns instead of prices<a class="headerlink" href="#example-returns-instead-of-prices" title="Link to this heading">¶</a></h3>
-<p>Raw price series are non-stationary. Most RL papers feed log-returns:</p>
+<h3>示例：用收益率代替原始价格<a class="headerlink" href="#example-returns-instead-of-prices" title="Link to this heading">¶</a></h3>
+<p>原始价格序列是非平稳的。大多数 RL 论文会喂对数收益率：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">gymnasium</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gym</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">ObserverScheme</span>
@@ -462,16 +447,14 @@ unrealized PnL alongside market data:</p>
 <hr class="docutils" />
 <section id="rewardscheme">
 <h2>RewardScheme<a class="headerlink" href="#rewardscheme" title="Link to this heading">¶</a></h2>
-<p>One required method, one optional:</p>
+<p>一个必需方法、一个可选方法：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">get_reward(env)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code> — the scalar reward for the current step.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">reset()</span></code> — optional. Called from <code class="docutils literal notranslate"><span class="pre">env.reset()</span></code>. Use it to clear any
-per-episode state your reward function tracks.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_reward(env)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code> —— 当前步的标量奖励。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset()</span></code> —— 可选。<code class="docutils literal notranslate"><span class="pre">env.reset()</span></code> 时调用。用来清除奖励函数维护的 episode 级状态。</p></li>
 </ul>
-<p>The default rewards realized log-returns of trades closed this step
-(minus commission). Three other patterns come up a lot:</p>
+<p>默认奖励是本步关闭交易的对数已实现收益（扣佣金）。还有三种模式经常出现：</p>
 <section id="example-equity-based-reward-every-step">
-<h3>Example: equity-based reward (every step)<a class="headerlink" href="#example-equity-based-reward-every-step" title="Link to this heading">¶</a></h3>
+<h3>示例：基于权益的奖励（每步触发）<a class="headerlink" href="#example-equity-based-reward-every-step" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">RewardScheme</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">EquityChangeReward</span><span class="p">(</span><span class="n">RewardScheme</span><span class="p">):</span>
@@ -495,8 +478,8 @@ per-episode state your reward function tracks.</p></li>
 </div>
 </section>
 <section id="example-differential-sharpe-ratio">
-<h3>Example: differential Sharpe ratio<a class="headerlink" href="#example-differential-sharpe-ratio" title="Link to this heading">¶</a></h3>
-<p>Rewards risk-adjusted returns rather than raw PnL — see Moody &amp; Saffell (1998):</p>
+<h3>示例：差分 Sharpe 比率<a class="headerlink" href="#example-differential-sharpe-ratio" title="Link to this heading">¶</a></h3>
+<p>奖励风险调整后收益而非原始盈亏 —— 见 Moody &amp; Saffell (1998)：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">RewardScheme</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DifferentialSharpe</span><span class="p">(</span><span class="n">RewardScheme</span><span class="p">):</span>
@@ -530,9 +513,8 @@ per-episode state your reward function tracks.</p></li>
 </div>
 </section>
 <section id="example-drawdown-penalty-composes-another-reward">
-<h3>Example: drawdown penalty (composes another reward)<a class="headerlink" href="#example-drawdown-penalty-composes-another-reward" title="Link to this heading">¶</a></h3>
-<p>A risk-aware reward that wraps any base scheme and adds a penalty
-proportional to current drawdown:</p>
+<h3>示例：回撤惩罚（包装另一个奖励）<a class="headerlink" href="#example-drawdown-penalty-composes-another-reward" title="Link to this heading">¶</a></h3>
+<p>一个风险感知的奖励，包装任意基础 scheme 并加上与当前回撤成比例的惩罚：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">RewardScheme</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DrawdownPenalty</span><span class="p">(</span><span class="n">RewardScheme</span><span class="p">):</span>
@@ -554,7 +536,7 @@ proportional to current drawdown:</p>
 </section>
 <hr class="docutils" />
 <section id="putting-it-together">
-<h2>Putting it together<a class="headerlink" href="#putting-it-together" title="Link to this heading">¶</a></h2>
+<h2>组合使用<a class="headerlink" href="#putting-it-together" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.env</span><span class="w"> </span><span class="kn">import</span> <span class="n">TradingEnv</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">PercentageCommission</span>
@@ -584,8 +566,7 @@ proportional to current drawdown:</p>
         <span class="k">break</span>
 </pre></div>
 </div>
-<p>For training the resulting environment with <code class="docutils literal notranslate"><span class="pre">stable-baselines3</span></code>, see
-<a class="reference internal" href="trading_environment.html"><span class="std std-doc">Gym Trading Environment</span></a>.</p>
+<p>用 <code class="docutils literal notranslate"><span class="pre">stable-baselines3</span></code> 训练这个环境的方法见 <a class="reference internal" href="trading_environment.html"><span class="std std-doc">Gym 交易环境</span></a>。</p>
 </section>
 </section>
 
@@ -599,7 +580,7 @@ proportional to current drawdown:</p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Stats glossary</div>
+                <div class="title">统计指标词汇表</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -610,7 +591,7 @@ proportional to current drawdown:</p>
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Gym Trading Environment</div>
+                <div class="title">Gym 交易环境</div>
                 
               </div>
             </a>
@@ -644,24 +625,24 @@ proportional to current drawdown:</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Customizing Trading Environment</a><ul>
+<li><a class="reference internal" href="#">自定义交易环境</a><ul>
 <li><a class="reference internal" href="#actionscheme">ActionScheme</a><ul>
-<li><a class="reference internal" href="#example-position-sized-actions">Example: position-sized actions</a></li>
-<li><a class="reference internal" href="#example-continuous-box-action-space">Example: continuous (Box) action space</a></li>
+<li><a class="reference internal" href="#example-position-sized-actions">示例：分档仓位动作</a></li>
+<li><a class="reference internal" href="#example-continuous-box-action-space">示例：连续（Box）动作空间</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#observerscheme">ObserverScheme</a><ul>
-<li><a class="reference internal" href="#example-include-position-state">Example: include position state</a></li>
-<li><a class="reference internal" href="#example-returns-instead-of-prices">Example: returns instead of prices</a></li>
+<li><a class="reference internal" href="#example-include-position-state">示例：把持仓状态加入观测</a></li>
+<li><a class="reference internal" href="#example-returns-instead-of-prices">示例：用收益率代替原始价格</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#rewardscheme">RewardScheme</a><ul>
-<li><a class="reference internal" href="#example-equity-based-reward-every-step">Example: equity-based reward (every step)</a></li>
-<li><a class="reference internal" href="#example-differential-sharpe-ratio">Example: differential Sharpe ratio</a></li>
-<li><a class="reference internal" href="#example-drawdown-penalty-composes-another-reward">Example: drawdown penalty (composes another reward)</a></li>
+<li><a class="reference internal" href="#example-equity-based-reward-every-step">示例：基于权益的奖励（每步触发）</a></li>
+<li><a class="reference internal" href="#example-differential-sharpe-ratio">示例：差分 Sharpe 比率</a></li>
+<li><a class="reference internal" href="#example-drawdown-penalty-composes-another-reward">示例：回撤惩罚（包装另一个奖励）</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#putting-it-together">Putting it together</a></li>
+<li><a class="reference internal" href="#putting-it-together">组合使用</a></li>
 </ul>
 </li>
 </ul>

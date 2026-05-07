@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Core components" href="../api/core.html"><link rel="prev" title="Stats glossary" href="stats_glossary.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Core components" href="../api/core.html"><link rel="prev" title="统计指标词汇表" href="stats_glossary.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
         <title>FAQ - QTrade</title>
@@ -198,17 +198,17 @@
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward 优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissions.html">佣金与滑点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -263,191 +263,135 @@
         <article role="main" id="furo-main-content">
           <section id="faq">
 <h1>FAQ<a class="headerlink" href="#faq" title="Link to this heading">¶</a></h1>
-<p>Common questions and pitfalls. If you hit something not covered here,
-<a class="reference external" href="https://github.com/gguan/qtrade/issues">open an issue</a>.</p>
+<p>常见问题和坑。如果碰到本页没覆盖的，<a class="reference external" href="https://github.com/gguan/qtrade/issues">开个 issue</a>。</p>
 <section id="backtesting">
-<h2>Backtesting<a class="headerlink" href="#backtesting" title="Link to this heading">¶</a></h2>
+<h2>回测<a class="headerlink" href="#backtesting" title="Link to this heading">¶</a></h2>
 <section id="why-does-my-strategy-underperform-buy-hold">
-<h3>Why does my strategy underperform Buy &amp; Hold?<a class="headerlink" href="#why-does-my-strategy-underperform-buy-hold" title="Link to this heading">¶</a></h3>
-<p>Most simple strategies do. Buy &amp; Hold extracts the asset's underlying
-trend with zero commission and zero timing risk. To beat it your
-strategy needs to either:</p>
+<h3>为什么我的策略跑不过 Buy &amp; Hold？<a class="headerlink" href="#why-does-my-strategy-underperform-buy-hold" title="Link to this heading">¶</a></h3>
+<p>大多数简单策略都跑不过。Buy &amp; Hold 以零佣金、零择时风险捕获标的的趋势。要击败它，你的策略需要满足以下之一：</p>
 <ol class="arabic simple">
-<li><p><strong>Avoid drawdowns</strong> — sit out the worst periods (timing).</p></li>
-<li><p><strong>Add diversification</strong> — multi-asset reduces variance even with
-B&amp;H-like returns per asset.</p></li>
-<li><p><strong>Use leverage</strong> — explicit via <code class="docutils literal notranslate"><span class="pre">margin_ratio</span></code> or position sizing.</p></li>
-<li><p><strong>Trade with edge</strong> — short-side gains, mean reversion, etc.</p></li>
+<li><p><strong>避开回撤</strong> —— 在最差的时段空仓（择时）。</p></li>
+<li><p><strong>增加分散</strong> —— 即便每个资产收益和 B&amp;H 接近，多资产也能降低方差。</p></li>
+<li><p><strong>使用杠杆</strong> —— 通过 <code class="docutils literal notranslate"><span class="pre">margin_ratio</span></code> 或仓位规模显式实现。</p></li>
+<li><p><strong>有真正 edge</strong> —— 做空收益、均值回归等。</p></li>
 </ol>
-<p>If your strategy has a positive Sharpe but loses to B&amp;H, it might still
-be valuable as a portfolio component (uncorrelated with passive long).</p>
+<p>如果你的策略 Sharpe 为正但跑不过 B&amp;H，作为组合的一个分量仍可能有价值（和被动多头不相关）。</p>
 </section>
 <section id="how-do-i-avoid-look-ahead-bias">
-<h3>How do I avoid look-ahead bias?<a class="headerlink" href="#how-do-i-avoid-look-ahead-bias" title="Link to this heading">¶</a></h3>
-<p>QTrade prevents the most common form by construction: <code class="docutils literal notranslate"><span class="pre">self.data</span></code> (and
-<code class="docutils literal notranslate"><span class="pre">self.data_by_asset[asset]</span></code>) is sliced to <code class="docutils literal notranslate"><span class="pre">[:current_time]</span></code>, so you
-<em>cannot</em> read future bars from inside <code class="docutils literal notranslate"><span class="pre">on_bar_close</span></code>.</p>
-<p>Where look-ahead can still creep in:</p>
+<h3>怎么避免未来函数？<a class="headerlink" href="#how-do-i-avoid-look-ahead-bias" title="Link to this heading">¶</a></h3>
+<p>QTrade 在结构上阻断最常见的一种：<code class="docutils literal notranslate"><span class="pre">self.data</span></code>（和 <code class="docutils literal notranslate"><span class="pre">self.data_by_asset[asset]</span></code>）被切到 <code class="docutils literal notranslate"><span class="pre">[:current_time]</span></code>，所以你在 <code class="docutils literal notranslate"><span class="pre">on_bar_close</span></code> 里<em>根本读不到</em>未来的 bar。</p>
+<p>未来函数仍可能从这些地方溜进来：</p>
 <ul class="simple">
-<li><p><strong>In <code class="docutils literal notranslate"><span class="pre">prepare()</span></code></strong>, you have access to the full DataFrame. If you
-compute an indicator that uses future information (e.g.
-<code class="docutils literal notranslate"><span class="pre">df['Close'].shift(-1)</span></code>), <code class="docutils literal notranslate"><span class="pre">on_bar_close</span></code> will read it.</p></li>
-<li><p><strong>Limit / stop fills</strong> assume the price actually traded at your
-level inside the bar. For thinly-traded assets this overstates
-fill probability.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">trade_on_close=True</span></code></strong> lets a market order fill at the current
-bar's close — the same bar your signal was computed from. For some
-signals this is realistic (close-of-bar signals), for others it's
-effectively cheating. If unsure, set <code class="docutils literal notranslate"><span class="pre">trade_on_close=False</span></code> and
-fills happen at the next bar's open.</p></li>
+<li><p><strong>在 <code class="docutils literal notranslate"><span class="pre">prepare()</span></code> 里</strong>你能访问完整 DataFrame。如果你用了未来信息计算指标（比如 <code class="docutils literal notranslate"><span class="pre">df['Close'].shift(-1)</span></code>），<code class="docutils literal notranslate"><span class="pre">on_bar_close</span></code> 会读到它。</p></li>
+<li><p><strong>Limit / stop 成交</strong>假设价格在 bar 内确实触及你的价位。对流动性差的资产，这高估了成交概率。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">trade_on_close=True</span></code></strong> 让市价单在当前 bar 的收盘价成交 —— 也就是你计算信号使用的那根 bar。对收盘类信号是合理的，对其他信号实际上等于作弊。不确定的话设 <code class="docutils literal notranslate"><span class="pre">trade_on_close=False</span></code>，让成交发生在下一根 bar 的开盘。</p></li>
 </ul>
 </section>
 <section id="what-s-the-difference-between-trade-on-close-true-and-false">
-<h3>What's the difference between <code class="docutils literal notranslate"><span class="pre">trade_on_close=True</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code>?<a class="headerlink" href="#what-s-the-difference-between-trade-on-close-true-and-false" title="Link to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">trade_on_close=True</span></code> 和 <code class="docutils literal notranslate"><span class="pre">False</span></code> 有什么区别?<a class="headerlink" href="#what-s-the-difference-between-trade-on-close-true-and-false" title="Link to this heading">¶</a></h3>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Setting</p></th>
-<th class="head"><p>Market order placed in <code class="docutils literal notranslate"><span class="pre">on_bar_close()</span></code> for bar N fills at...</p></th>
+<tr class="row-odd"><th class="head"><p>设置</p></th>
+<th class="head"><p>在第 N 根 bar 的 <code class="docutils literal notranslate"><span class="pre">on_bar_close()</span></code> 里下的市价单成交价...</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
-<td><p>Bar N's <strong>close</strong> (same bar)</p></td>
+<td><p>第 N 根 bar 的<strong>收盘价</strong>（同一根 bar）</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-<td><p>Bar N+1's <strong>open</strong></p></td>
+<td><p>第 N+1 根 bar 的<strong>开盘价</strong></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">True</span></code> is convenient for backtests where your signal genuinely arrives
-at end-of-bar (e.g. you compute on close prices). <code class="docutils literal notranslate"><span class="pre">False</span></code> is the
-realistic setting if your signal could in practice take a tick to act
-on — slightly conservative, recommended unless you have a reason.</p>
+<p><code class="docutils literal notranslate"><span class="pre">True</span></code> 适合信号确实在收盘时到达的回测（比如你用收盘价计算）。<code class="docutils literal notranslate"><span class="pre">False</span></code> 更接近现实，因为信号在实盘中通常需要一个 tick 才能行动 —— 偏保守，没特别理由就用这个。</p>
 </section>
 <section id="my-strategy-fires-no-trades-why">
-<h3>My strategy fires no trades. Why?<a class="headerlink" href="#my-strategy-fires-no-trades-why" title="Link to this heading">¶</a></h3>
-<p>A few common causes:</p>
+<h3>我的策略一笔交易都没下，为什么？<a class="headerlink" href="#my-strategy-fires-no-trades-why" title="Link to this heading">¶</a></h3>
+<p>几个常见原因：</p>
 <ol class="arabic simple">
-<li><p><strong>Indicators are NaN at the start</strong> — the first <code class="docutils literal notranslate"><span class="pre">window_size</span></code> bars
-are warmup. <code class="docutils literal notranslate"><span class="pre">Backtest._start_idx</span></code> skips them automatically; if your
-data is shorter than the warmup, you get zero trades.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">available_margin</span></code> is 0</strong> — <code class="docutils literal notranslate"><span class="pre">margin_ratio</span> <span class="pre">&lt;</span> <span class="pre">1</span></code> lets you take
-leveraged positions, but <code class="docutils literal notranslate"><span class="pre">available_margin</span></code> shrinks fast as you
-stack trades. Lower the size or raise the ratio.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">size=0</span></code> quietly does nothing</strong> — <code class="docutils literal notranslate"><span class="pre">Order(size=0)</span></code> raises now (good!),
-but if you compute <code class="docutils literal notranslate"><span class="pre">size</span> <span class="pre">=</span> <span class="pre">available_margin</span> <span class="pre">//</span> <span class="pre">close</span></code> with too-small
-cash, default <code class="docutils literal notranslate"><span class="pre">Strategy.buy()</span></code> resolves to size 0 and Order
-construction errors.</p></li>
+<li><p><strong>开头的指标是 NaN</strong> —— 前 <code class="docutils literal notranslate"><span class="pre">window_size</span></code> 根 bar 是热身。<code class="docutils literal notranslate"><span class="pre">Backtest._start_idx</span></code> 自动跳过它们；如果数据比热身期还短，就一笔交易都没有。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">available_margin</span></code> 是 0</strong> —— <code class="docutils literal notranslate"><span class="pre">margin_ratio</span> <span class="pre">&lt;</span> <span class="pre">1</span></code> 允许你加杠杆，但堆叠交易后<code class="docutils literal notranslate"><span class="pre">available_margin</span></code> 缩水很快。降低 size 或调高 margin_ratio。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">size=0</span></code> 静默无效</strong> —— <code class="docutils literal notranslate"><span class="pre">Order(size=0)</span></code> 现在会抛错（好事！），但如果你用 <code class="docutils literal notranslate"><span class="pre">size</span> <span class="pre">=</span> <span class="pre">available_margin</span> <span class="pre">//</span> <span class="pre">close</span></code> 算出来 size=0（现金太少），默认的 <code class="docutils literal notranslate"><span class="pre">Strategy.buy()</span></code> 会触发 Order 构造时报错。</p></li>
 </ol>
 </section>
 <section id="why-does-my-sl-tp-fire-at-a-price-different-from-what-i-set">
-<h3>Why does my SL/TP fire at a price different from what I set?<a class="headerlink" href="#why-does-my-sl-tp-fire-at-a-price-different-from-what-i-set" title="Link to this heading">¶</a></h3>
-<p>The SL/TP triggers when the bar's <code class="docutils literal notranslate"><span class="pre">low</span></code> (for long stops) or <code class="docutils literal notranslate"><span class="pre">high</span></code> (for
-long take-profits) crosses your level. The synthetic exit is recorded
-<em>at your SL/TP level</em>, not at the bar's close. So if you set sl=99 and
-the bar dips to low=98, your fill is recorded at 99, even though the
-bar closed at 102.</p>
+<h3>为什么 SL/TP 触发的价格和我设的不一样？<a class="headerlink" href="#why-does-my-sl-tp-fire-at-a-price-different-from-what-i-set" title="Link to this heading">¶</a></h3>
+<p>SL/TP 在 bar 的 <code class="docutils literal notranslate"><span class="pre">low</span></code>（多头止损）或 <code class="docutils literal notranslate"><span class="pre">high</span></code>（多头止盈）触及你设置的价位时触发。成交价记录的是<em>你设置的 SL/TP 价位</em>，不是 bar 的收盘价。所以你设 sl=99、bar 跌到 low=98，成交价被记录为 99，哪怕这根 bar 收盘在 102。</p>
 <blockquote>
-<div><p>Caveat: ordinary stop <em>orders</em> (placed via <code class="docutils literal notranslate"><span class="pre">Order(stop=...)</span></code>) currently
-fill at the bar's close, not the trigger price — a known fidelity gap
-tracked as a future fix. SL/TP attached to a Trade work as described.</p>
+<div><p>注意：通过 <code class="docutils literal notranslate"><span class="pre">Order(stop=...)</span></code> 下的普通 stop <em>订单</em>目前在 bar 收盘价成交，而不是触发价 —— 这是已知的真实度差距，留作未来修复。挂在 Trade 上的 SL/TP 按上面描述工作。</p>
 </div></blockquote>
 </section>
 </section>
 <section id="optimization">
-<h2>Optimization<a class="headerlink" href="#optimization" title="Link to this heading">¶</a></h2>
+<h2>参数优化<a class="headerlink" href="#optimization" title="Link to this heading">¶</a></h2>
 <section id="why-does-my-strategy-look-great-in-optimize-but-bad-live">
-<h3>Why does my strategy look great in <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> but bad live?<a class="headerlink" href="#why-does-my-strategy-look-great-in-optimize-but-bad-live" title="Link to this heading">¶</a></h3>
-<p>In-sample overfitting. <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> picks the params that look best on
-the same data they're tested on — which is a textbook recipe for
-fitting noise.</p>
-<p>Use <code class="docutils literal notranslate"><span class="pre">walk_forward_optimize</span></code> instead — see
-<a class="reference internal" href="walk_forward.html"><span class="std std-doc">Walk-forward optimization</span></a>. Each parameter set is
-evaluated only on data the strategy was never tuned on.</p>
-<p>If walk-forward Sharpe is much lower than <code class="docutils literal notranslate"><span class="pre">optimize</span></code> Sharpe, that gap
-is your overfit. Common; expected; treat the walk-forward number as
-the realistic one.</p>
+<h3>为什么 <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> 里看起来很美的策略实盘很差？<a class="headerlink" href="#why-does-my-strategy-look-great-in-optimize-but-bad-live" title="Link to this heading">¶</a></h3>
+<p>样本内过拟合。<code class="docutils literal notranslate"><span class="pre">optimize()</span></code> 在同一份数据上既挑参又测试 —— 这是教科书级别的「拟合噪声」配方。</p>
+<p>改用 <code class="docutils literal notranslate"><span class="pre">walk_forward_optimize</span></code> —— 详见 <a class="reference internal" href="walk_forward.html"><span class="std std-doc">Walk-forward 优化</span></a>。每组参数只在策略从未调过参的数据上评估。</p>
+<p>如果 walk-forward 的 Sharpe 远低于 <code class="docutils literal notranslate"><span class="pre">optimize</span></code> 的 Sharpe，差距就是你的过拟合程度。很常见、很正常 —— 把 walk-forward 数字当成实际表现。</p>
 </section>
 <section id="how-do-i-pick-the-maximize-metric">
-<h3>How do I pick the <code class="docutils literal notranslate"><span class="pre">maximize</span></code> metric?<a class="headerlink" href="#how-do-i-pick-the-maximize-metric" title="Link to this heading">¶</a></h3>
+<h3>怎么选择 <code class="docutils literal notranslate"><span class="pre">maximize</span></code> 指标？<a class="headerlink" href="#how-do-i-pick-the-maximize-metric" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><strong>Total Return [%]</strong>: simple, but punishes nothing for risk.
-Strategies with huge drawdowns can win.</p></li>
-<li><p><strong>Sharpe Ratio</strong>: most common default. Good for normal-ish return
-distributions.</p></li>
-<li><p><strong>Sortino Ratio</strong>: better for asymmetric / fat-tailed returns
-(trend-followers).</p></li>
-<li><p><strong>Calmar Ratio</strong>: rewards smooth equity curves; good if you care
-about drawdown experience.</p></li>
+<li><p><strong>Total Return [%]</strong>：简单，但完全不惩罚风险。回撤巨大的策略可能胜出。</p></li>
+<li><p><strong>Sharpe Ratio</strong>：最常见的默认选择。适合接近正态的收益分布。</p></li>
+<li><p><strong>Sortino Ratio</strong>：适合非对称 / 厚尾收益（趋势跟随）。</p></li>
+<li><p><strong>Calmar Ratio</strong>：奖励平滑的净值曲线；适合关心回撤体验的场景。</p></li>
 </ul>
-<p>Start with Sharpe unless you have a specific reason.</p>
+<p>没有特殊理由就从 Sharpe 开始。</p>
 </section>
 <section id="my-grid-search-is-too-slow">
-<h3>My grid search is too slow.<a class="headerlink" href="#my-grid-search-is-too-slow" title="Link to this heading">¶</a></h3>
-<p>Two paths:</p>
+<h3>我的网格搜索太慢了。<a class="headerlink" href="#my-grid-search-is-too-slow" title="Link to this heading">¶</a></h3>
+<p>两条路：</p>
 <ol class="arabic simple">
-<li><p><strong>Reduce grid size</strong> — many strategies have one or two truly
-important parameters; ranges of 4–6 values per param are usually
-enough. Don't sweep everything at fine resolution.</p></li>
-<li><p><strong>Use vectorbt instead</strong> — for thousands of param combinations,
-QTrade's event loop is the wrong tool. See
-<a class="reference external" href="https://github.com/gguan/qtrade/blob/main/COMPARISON.md">COMPARISON.md</a>.</p></li>
+<li><p><strong>缩小网格</strong> —— 多数策略只有一两个真正重要的参数；每个参数 4–6 个候选值通常够。不要把所有东西都细粒度扫一遍。</p></li>
+<li><p><strong>改用 vectorbt</strong> —— 上千参数组合时，QTrade 的事件循环不是合适工具。详见 <a class="reference external" href="https://github.com/gguan/qtrade/blob/main/COMPARISON.md">COMPARISON.md</a>。</p></li>
 </ol>
 </section>
 </section>
 <section id="multi-asset">
-<h2>Multi-asset<a class="headerlink" href="#multi-asset" title="Link to this heading">¶</a></h2>
+<h2>多资产<a class="headerlink" href="#multi-asset" title="Link to this heading">¶</a></h2>
 <section id="how-do-i-align-data-from-different-sources">
-<h3>How do I align data from different sources?<a class="headerlink" href="#how-do-i-align-data-from-different-sources" title="Link to this heading">¶</a></h3>
-<p>QTrade requires every asset's DataFrame to share an identical
-<code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code>. Use a pandas join on the indexes before passing in:</p>
+<h3>怎么对齐不同来源的数据？<a class="headerlink" href="#how-do-i-align-data-from-different-sources" title="Link to this heading">¶</a></h3>
+<p>QTrade 要求每个资产的 DataFrame 共享完全一致的 <code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code>。传入前用 pandas 在索引上做 join：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">common</span> <span class="o">=</span> <span class="n">aapl</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">msft</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
 <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;AAPL&quot;</span><span class="p">:</span> <span class="n">aapl</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">common</span><span class="p">],</span> <span class="s2">&quot;MSFT&quot;</span><span class="p">:</span> <span class="n">msft</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">common</span><span class="p">]}</span>
 </pre></div>
 </div>
-<p>For data with gaps (corporate actions, illiquid days) you might prefer
-union + forward-fill — but <strong>be careful</strong>: forward-filled bars give
-the impression of liquidity that wasn't there.</p>
+<p>对于有缺口的数据（公司行为、流动性差的日子），你可能更想要 union + 前向填充 —— 但<strong>小心</strong>：前向填充的 bar 会让没有的流动性看起来像有。</p>
 </section>
 <section id="can-i-have-different-commission-per-asset">
-<h3>Can I have different commission per asset?<a class="headerlink" href="#can-i-have-different-commission-per-asset" title="Link to this heading">¶</a></h3>
-<p>Not currently. <code class="docutils literal notranslate"><span class="pre">Commission</span></code> is a single instance shared across the
-broker. To approximate per-asset cost, wrap your strategy logic to
-add asset-specific slippage manually before placing orders.</p>
+<h3>可以为每个资产设置不同佣金吗？<a class="headerlink" href="#can-i-have-different-commission-per-asset" title="Link to this heading">¶</a></h3>
+<p>暂不支持。<code class="docutils literal notranslate"><span class="pre">Commission</span></code> 是 broker 共享的单一实例。如要近似按资产收费，在下单前手动在策略逻辑里加上资产特定的滑点。</p>
 </section>
 <section id="why-does-self-position-raise-in-multi-asset-mode">
-<h3>Why does <code class="docutils literal notranslate"><span class="pre">self.position</span></code> raise in multi-asset mode?<a class="headerlink" href="#why-does-self-position-raise-in-multi-asset-mode" title="Link to this heading">¶</a></h3>
-<p>Because there's no single Position to return — you have one per asset.
-Use <code class="docutils literal notranslate"><span class="pre">self.positions[&quot;AAPL&quot;]</span></code> (dict access) instead. Same for
-<code class="docutils literal notranslate"><span class="pre">self.data</span></code> → <code class="docutils literal notranslate"><span class="pre">self.data_by_asset[&quot;AAPL&quot;]</span></code>.</p>
+<h3>为什么多资产模式下 <code class="docutils literal notranslate"><span class="pre">self.position</span></code> 会抛错？<a class="headerlink" href="#why-does-self-position-raise-in-multi-asset-mode" title="Link to this heading">¶</a></h3>
+<p>因为没有单一 Position 可返回 —— 每个资产一个。改用 <code class="docutils literal notranslate"><span class="pre">self.positions[&quot;AAPL&quot;]</span></code>（dict 访问）。<code class="docutils literal notranslate"><span class="pre">self.data</span></code> 同理 → <code class="docutils literal notranslate"><span class="pre">self.data_by_asset[&quot;AAPL&quot;]</span></code>。</p>
 </section>
 </section>
 <section id="reinforcement-learning">
-<h2>Reinforcement Learning<a class="headerlink" href="#reinforcement-learning" title="Link to this heading">¶</a></h2>
+<h2>强化学习<a class="headerlink" href="#reinforcement-learning" title="Link to this heading">¶</a></h2>
 <section id="my-agent-learns-to-do-nothing-reward-0">
-<h3>My agent learns to do nothing (reward = 0).<a class="headerlink" href="#my-agent-learns-to-do-nothing-reward-0" title="Link to this heading">¶</a></h3>
-<p>The default <code class="docutils literal notranslate"><span class="pre">RewardScheme</span></code> only rewards realized PnL on bars where a
-trade closed. If your agent never closes trades, reward stays 0 and
-the gradient signal is too sparse.</p>
-<p>Try one of:</p>
+<h3>我的 agent 学会了什么都不做（reward = 0）。<a class="headerlink" href="#my-agent-learns-to-do-nothing-reward-0" title="Link to this heading">¶</a></h3>
+<p>默认的 <code class="docutils literal notranslate"><span class="pre">RewardScheme</span></code> 只在有交易平仓的 bar 给已实现盈亏的奖励。如果 agent 从不平仓，reward 一直是 0，梯度信号过于稀疏。</p>
+<p>试试以下方案之一：</p>
 <ul class="simple">
-<li><p>An equity-based reward that fires every bar (see
-<a class="reference internal" href="customize_environment.html"><span class="std std-doc">Customizing Trading Environment</span></a>).</p></li>
-<li><p>An action scheme that forces flat at episode end (so trades close
-for sure).</p></li>
-<li><p>A higher episode count — sparse reward + long episodes is hard.</p></li>
+<li><p>基于权益的奖励，每根 bar 都触发（详见<a class="reference internal" href="customize_environment.html"><span class="std std-doc">自定义交易环境</span></a>）。</p></li>
+<li><p>在 episode 结束时强制平仓的 action scheme（保证交易最终都关闭）。</p></li>
+<li><p>增加 episode 数量 —— 稀疏奖励 + 长 episode 很难学。</p></li>
 </ul>
 </section>
 <section id="what-does-info-contain-in-env-step-returns">
-<h3>What does <code class="docutils literal notranslate"><span class="pre">info</span></code> contain in <code class="docutils literal notranslate"><span class="pre">env.step()</span></code> returns?<a class="headerlink" href="#what-does-info-contain-in-env-step-returns" title="Link to this heading">¶</a></h3>
-<p>Per-step dict from <code class="docutils literal notranslate"><span class="pre">TradingEnv.step()</span></code>:</p>
+<h3><code class="docutils literal notranslate"><span class="pre">env.step()</span></code> 返回的 <code class="docutils literal notranslate"><span class="pre">info</span></code> 里有什么？<a class="headerlink" href="#what-does-info-contain-in-env-step-returns" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TradingEnv.step()</span></code> 的每步 dict：</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Meaning</p></th>
+<tr class="row-odd"><th class="head"><p>键</p></th>
+<th class="head"><p>含义</p></th>
 </tr>
 </thead>
 <tbody>
@@ -458,19 +402,19 @@ for sure).</p></li>
 <td><p><code class="docutils literal notranslate"><span class="pre">broker.unrealized_pnl</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cumulative_return</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">broker.cumulative_returns</span></code> (multiplicative since start)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">broker.cumulative_returns</span></code>（自起点的乘性增长）</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">position</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">broker.position.size</span></code> (signed)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">broker.position.size</span></code>（带符号）</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">total_trades</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">len(broker.closed_trades)</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">trades_profit</span></code></p></td>
-<td><p>Sum of all closed trade profits</p></td>
+<td><p>所有已平仓交易盈亏之和</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">avg_trade_duration</span></code></p></td>
-<td><p>Mean exit_index − entry_index in bars</p></td>
+<td><p>平均 exit_index − entry_index（按 bar 数）</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">is_success</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">trades_profit</span> <span class="pre">&gt;</span> <span class="pre">0</span></code></p></td>
@@ -478,36 +422,28 @@ for sure).</p></li>
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">is_success</span></code> is intended for SB3's success-rate logging in
-<code class="docutils literal notranslate"><span class="pre">EvalCallback</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">is_success</span></code> 是给 SB3 <code class="docutils literal notranslate"><span class="pre">EvalCallback</span></code> 的成功率日志用的。</p>
 </section>
 <section id="random-start-true-errors-with-a-cryptic-message">
-<h3><code class="docutils literal notranslate"><span class="pre">random_start=True</span></code> errors with a cryptic message.<a class="headerlink" href="#random-start-true-errors-with-a-cryptic-message" title="Link to this heading">¶</a></h3>
-<p>Fixed in v0.3.0 — now raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if
-<code class="docutils literal notranslate"><span class="pre">len(data)</span> <span class="pre">&lt;=</span> <span class="pre">window_size</span> <span class="pre">+</span> <span class="pre">max_steps</span></code>. The default <code class="docutils literal notranslate"><span class="pre">max_steps=3000</span></code>
-needs at least ~3000 bars of data; lower it for shorter datasets.</p>
+<h3><code class="docutils literal notranslate"><span class="pre">random_start=True</span></code> 报了一条看不懂的错误。<a class="headerlink" href="#random-start-true-errors-with-a-cryptic-message" title="Link to this heading">¶</a></h3>
+<p>v0.3.0 已修复 —— 现在 <code class="docutils literal notranslate"><span class="pre">len(data)</span> <span class="pre">&lt;=</span> <span class="pre">window_size</span> <span class="pre">+</span> <span class="pre">max_steps</span></code> 时抛 <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>。默认 <code class="docutils literal notranslate"><span class="pre">max_steps=3000</span></code> 需要至少 ~3000 根 bar；数据较短就调小这个值。</p>
 </section>
 </section>
 <section id="misc">
-<h2>Misc<a class="headerlink" href="#misc" title="Link to this heading">¶</a></h2>
+<h2>杂项<a class="headerlink" href="#misc" title="Link to this heading">¶</a></h2>
 <section id="how-do-i-save-the-backtest-result-for-later">
-<h3>How do I save the backtest result for later?<a class="headerlink" href="#how-do-i-save-the-backtest-result-for-later" title="Link to this heading">¶</a></h3>
-<p>There's no built-in serializer, but the broker holds everything. Pickle
-works as a quick-and-dirty save:</p>
+<h3>怎么把回测结果保存起来稍后用？<a class="headerlink" href="#how-do-i-save-the-backtest-result-for-later" title="Link to this heading">¶</a></h3>
+<p>没有内置序列化，但 broker 持有一切。Pickle 是简单粗暴的保存方式：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;run.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>For something less brittle (cross-version safe), pull what you need
-into DataFrames first: <code class="docutils literal notranslate"><span class="pre">bt.broker.equity_history</span></code>,
-<code class="docutils literal notranslate"><span class="pre">bt.get_trade_history()</span></code>, <code class="docutils literal notranslate"><span class="pre">calculate_stats(bt.broker)</span></code>.</p>
+<p>如果想要更稳健（跨版本安全），先把需要的内容拉成 DataFrame：<code class="docutils literal notranslate"><span class="pre">bt.broker.equity_history</span></code>、<code class="docutils literal notranslate"><span class="pre">bt.get_trade_history()</span></code>、<code class="docutils literal notranslate"><span class="pre">calculate_stats(bt.broker)</span></code>。</p>
 </section>
 <section id="where-do-i-report-bugs">
-<h3>Where do I report bugs?<a class="headerlink" href="#where-do-i-report-bugs" title="Link to this heading">¶</a></h3>
-<p><a class="reference external" href="https://github.com/gguan/qtrade/issues">https://github.com/gguan/qtrade/issues</a>.
-Minimal repro + the QTrade version (<code class="docutils literal notranslate"><span class="pre">qtrade-lib</span> <span class="pre">--version</span></code> doesn't
-exist; use <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">show</span> <span class="pre">qtrade-lib</span></code>) helps a lot.</p>
+<h3>怎么提 bug？<a class="headerlink" href="#where-do-i-report-bugs" title="Link to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/gguan/qtrade/issues">https://github.com/gguan/qtrade/issues</a>。最小复现 + QTrade 版本号（<code class="docutils literal notranslate"><span class="pre">qtrade-lib</span> <span class="pre">--version</span></code> 不存在；用 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">show</span> <span class="pre">qtrade-lib</span></code>）会帮上大忙。</p>
 </section>
 </section>
 </section>
@@ -533,7 +469,7 @@ exist; use <code class="docutils literal notranslate"><span class="pre">pip</spa
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Stats glossary</div>
+                <div class="title">统计指标词汇表</div>
                 
               </div>
             </a>
@@ -568,35 +504,35 @@ exist; use <code class="docutils literal notranslate"><span class="pre">pip</spa
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">FAQ</a><ul>
-<li><a class="reference internal" href="#backtesting">Backtesting</a><ul>
-<li><a class="reference internal" href="#why-does-my-strategy-underperform-buy-hold">Why does my strategy underperform Buy &amp; Hold?</a></li>
-<li><a class="reference internal" href="#how-do-i-avoid-look-ahead-bias">How do I avoid look-ahead bias?</a></li>
-<li><a class="reference internal" href="#what-s-the-difference-between-trade-on-close-true-and-false">What's the difference between <code class="docutils literal notranslate"><span class="pre">trade_on_close=True</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code>?</a></li>
-<li><a class="reference internal" href="#my-strategy-fires-no-trades-why">My strategy fires no trades. Why?</a></li>
-<li><a class="reference internal" href="#why-does-my-sl-tp-fire-at-a-price-different-from-what-i-set">Why does my SL/TP fire at a price different from what I set?</a></li>
+<li><a class="reference internal" href="#backtesting">回测</a><ul>
+<li><a class="reference internal" href="#why-does-my-strategy-underperform-buy-hold">为什么我的策略跑不过 Buy &amp; Hold？</a></li>
+<li><a class="reference internal" href="#how-do-i-avoid-look-ahead-bias">怎么避免未来函数？</a></li>
+<li><a class="reference internal" href="#what-s-the-difference-between-trade-on-close-true-and-false"><code class="docutils literal notranslate"><span class="pre">trade_on_close=True</span></code> 和 <code class="docutils literal notranslate"><span class="pre">False</span></code> 有什么区别?</a></li>
+<li><a class="reference internal" href="#my-strategy-fires-no-trades-why">我的策略一笔交易都没下，为什么？</a></li>
+<li><a class="reference internal" href="#why-does-my-sl-tp-fire-at-a-price-different-from-what-i-set">为什么 SL/TP 触发的价格和我设的不一样？</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#optimization">Optimization</a><ul>
-<li><a class="reference internal" href="#why-does-my-strategy-look-great-in-optimize-but-bad-live">Why does my strategy look great in <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> but bad live?</a></li>
-<li><a class="reference internal" href="#how-do-i-pick-the-maximize-metric">How do I pick the <code class="docutils literal notranslate"><span class="pre">maximize</span></code> metric?</a></li>
-<li><a class="reference internal" href="#my-grid-search-is-too-slow">My grid search is too slow.</a></li>
+<li><a class="reference internal" href="#optimization">参数优化</a><ul>
+<li><a class="reference internal" href="#why-does-my-strategy-look-great-in-optimize-but-bad-live">为什么 <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> 里看起来很美的策略实盘很差？</a></li>
+<li><a class="reference internal" href="#how-do-i-pick-the-maximize-metric">怎么选择 <code class="docutils literal notranslate"><span class="pre">maximize</span></code> 指标？</a></li>
+<li><a class="reference internal" href="#my-grid-search-is-too-slow">我的网格搜索太慢了。</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#multi-asset">Multi-asset</a><ul>
-<li><a class="reference internal" href="#how-do-i-align-data-from-different-sources">How do I align data from different sources?</a></li>
-<li><a class="reference internal" href="#can-i-have-different-commission-per-asset">Can I have different commission per asset?</a></li>
-<li><a class="reference internal" href="#why-does-self-position-raise-in-multi-asset-mode">Why does <code class="docutils literal notranslate"><span class="pre">self.position</span></code> raise in multi-asset mode?</a></li>
+<li><a class="reference internal" href="#multi-asset">多资产</a><ul>
+<li><a class="reference internal" href="#how-do-i-align-data-from-different-sources">怎么对齐不同来源的数据？</a></li>
+<li><a class="reference internal" href="#can-i-have-different-commission-per-asset">可以为每个资产设置不同佣金吗？</a></li>
+<li><a class="reference internal" href="#why-does-self-position-raise-in-multi-asset-mode">为什么多资产模式下 <code class="docutils literal notranslate"><span class="pre">self.position</span></code> 会抛错？</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#reinforcement-learning">Reinforcement Learning</a><ul>
-<li><a class="reference internal" href="#my-agent-learns-to-do-nothing-reward-0">My agent learns to do nothing (reward = 0).</a></li>
-<li><a class="reference internal" href="#what-does-info-contain-in-env-step-returns">What does <code class="docutils literal notranslate"><span class="pre">info</span></code> contain in <code class="docutils literal notranslate"><span class="pre">env.step()</span></code> returns?</a></li>
-<li><a class="reference internal" href="#random-start-true-errors-with-a-cryptic-message"><code class="docutils literal notranslate"><span class="pre">random_start=True</span></code> errors with a cryptic message.</a></li>
+<li><a class="reference internal" href="#reinforcement-learning">强化学习</a><ul>
+<li><a class="reference internal" href="#my-agent-learns-to-do-nothing-reward-0">我的 agent 学会了什么都不做（reward = 0）。</a></li>
+<li><a class="reference internal" href="#what-does-info-contain-in-env-step-returns"><code class="docutils literal notranslate"><span class="pre">env.step()</span></code> 返回的 <code class="docutils literal notranslate"><span class="pre">info</span></code> 里有什么？</a></li>
+<li><a class="reference internal" href="#random-start-true-errors-with-a-cryptic-message"><code class="docutils literal notranslate"><span class="pre">random_start=True</span></code> 报了一条看不懂的错误。</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#misc">Misc</a><ul>
-<li><a class="reference internal" href="#how-do-i-save-the-backtest-result-for-later">How do I save the backtest result for later?</a></li>
-<li><a class="reference internal" href="#where-do-i-report-bugs">Where do I report bugs?</a></li>
+<li><a class="reference internal" href="#misc">杂项</a><ul>
+<li><a class="reference internal" href="#how-do-i-save-the-backtest-result-for-later">怎么把回测结果保存起来稍后用？</a></li>
+<li><a class="reference internal" href="#where-do-i-report-bugs">怎么提 bug？</a></li>
 </ul>
 </li>
 </ul>

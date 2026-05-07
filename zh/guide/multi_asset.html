@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Walk-forward optimization" href="walk_forward.html"><link rel="prev" title="Concepts" href="concepts.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Walk-forward 优化" href="walk_forward.html"><link rel="prev" title="核心概念" href="concepts.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Multi-asset / portfolio backtests - QTrade</title>
+        <title>多资产 / 投资组合回测 - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,17 +198,17 @@
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward 优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissions.html">佣金与滑点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -262,16 +262,11 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="multi-asset-portfolio-backtests">
-<h1>Multi-asset / portfolio backtests<a class="headerlink" href="#multi-asset-portfolio-backtests" title="Link to this heading">¶</a></h1>
-<p>QTrade supports portfolio backtests where a single strategy trades multiple
-assets sharing one cash pool. The single-asset workflow from
-<a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> is unchanged — multi-asset is enabled
-by passing a dict of DataFrames instead of a single one.</p>
+<h1>多资产 / 投资组合回测<a class="headerlink" href="#multi-asset-portfolio-backtests" title="Link to this heading">¶</a></h1>
+<p>QTrade 支持投资组合回测：单个策略同时交易多个资产，共用一个现金池。<a class="reference internal" href="getting_started.html"><span class="std std-doc">快速开始</span></a>里的单资产用法保持不变 —— 启用多资产只需要把 DataFrame 换成 dict 传进去。</p>
 <section id="data">
-<h2>Data<a class="headerlink" href="#data" title="Link to this heading">¶</a></h2>
-<p>Pass a <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">pd.DataFrame]</span></code> keyed by asset symbol. Every DataFrame
-needs the standard OHLCV columns and <strong>must share an identical
-<code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code></strong> (align/reindex up-front if your sources don't):</p>
+<h2>数据<a class="headerlink" href="#data" title="Link to this heading">¶</a></h2>
+<p>传入一个以资产代码为键的 <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">pd.DataFrame]</span></code>。每个 DataFrame 都需要标准的 OHLCV 列，并且<strong>必须共享完全一致的 <code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code></strong>（数据源不一致时请预先对齐 / reindex）：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yfinance</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">yf</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
@@ -288,14 +283,11 @@ needs the standard OHLCV columns and <strong>must share an identical
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Backtest</span></code> validates each DataFrame independently and raises a clear error
-if the indexes diverge.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Backtest</span></code> 会单独验证每个 DataFrame，如果索引不一致会抛出清晰的错误。</p>
 </section>
 <section id="strategy">
-<h2>Strategy<a class="headerlink" href="#strategy" title="Link to this heading">¶</a></h2>
-<p>In multi-asset mode the strategy must specify which asset each order
-targets. Iterate <code class="docutils literal notranslate"><span class="pre">self.assets</span></code> and use <code class="docutils literal notranslate"><span class="pre">self.positions[symbol]</span></code> /
-<code class="docutils literal notranslate"><span class="pre">self.data_by_asset[symbol]</span></code>:</p>
+<h2>策略<a class="headerlink" href="#strategy" title="Link to this heading">¶</a></h2>
+<p>多资产模式下，策略必须指定每个订单针对哪个资产。遍历 <code class="docutils literal notranslate"><span class="pre">self.assets</span></code>，并使用 <code class="docutils literal notranslate"><span class="pre">self.positions[symbol]</span></code> / <code class="docutils literal notranslate"><span class="pre">self.data_by_asset[symbol]</span></code>：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.backtest</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PortfolioMeanReversion</span><span class="p">(</span><span class="n">Strategy</span><span class="p">):</span>
@@ -323,12 +315,12 @@ targets. Iterate <code class="docutils literal notranslate"><span class="pre">se
                 <span class="bp">self</span><span class="o">.</span><span class="n">sell</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>API overview when running multi-asset:</p>
+<p>多资产模式下的 API 速查：</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Single-asset shorthand</p></th>
-<th class="head"><p>Multi-asset equivalent</p></th>
+<tr class="row-odd"><th class="head"><p>单资产简写</p></th>
+<th class="head"><p>多资产对应写法</p></th>
 </tr>
 </thead>
 <tbody>
@@ -339,7 +331,7 @@ targets. Iterate <code class="docutils literal notranslate"><span class="pre">se
 <td><p><code class="docutils literal notranslate"><span class="pre">self.sell(&quot;AAPL&quot;,</span> <span class="pre">size=5)</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">self.close()</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.close()</span></code> — closes every asset, or <code class="docutils literal notranslate"><span class="pre">self.close(&quot;AAPL&quot;)</span></code> for one</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.close()</span></code> —— 关掉所有资产；<code class="docutils literal notranslate"><span class="pre">self.close(&quot;AAPL&quot;)</span></code> 只关一个</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">self.position</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.positions[&quot;AAPL&quot;]</span></code></p></td>
@@ -350,11 +342,10 @@ targets. Iterate <code class="docutils literal notranslate"><span class="pre">se
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">self.position</span></code> and <code class="docutils literal notranslate"><span class="pre">self.data</span></code> raise <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> in multi-asset
-mode with a message pointing at the dict accessor.</p>
+<p>在多资产模式下，<code class="docutils literal notranslate"><span class="pre">self.position</span></code> 和 <code class="docutils literal notranslate"><span class="pre">self.data</span></code> 会抛出 <code class="docutils literal notranslate"><span class="pre">AttributeError</span></code>，提示信息会指向对应的 dict 访问器。</p>
 </section>
 <section id="running-it">
-<h2>Running it<a class="headerlink" href="#running-it" title="Link to this heading">¶</a></h2>
+<h2>运行回测<a class="headerlink" href="#running-it" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.backtest</span><span class="w"> </span><span class="kn">import</span> <span class="n">Backtest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">PercentageCommission</span>
 
@@ -371,13 +362,11 @@ mode with a message pointing at the dict accessor.</p>
 <span class="n">bt</span><span class="o">.</span><span class="n">show_stats</span><span class="p">()</span>  <span class="c1"># portfolio-level metrics</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">Buy</span> <span class="pre">&amp;</span> <span class="pre">Hold</span> <span class="pre">Return</span> <span class="pre">[%]</span></code> shown in <code class="docutils literal notranslate"><span class="pre">show_stats()</span></code> is the
-<strong>equal-weighted average</strong> across all assets — a sensible default
-benchmark for portfolio strategies.</p>
+<p><code class="docutils literal notranslate"><span class="pre">show_stats()</span></code> 输出的 <code class="docutils literal notranslate"><span class="pre">Buy</span> <span class="pre">&amp;</span> <span class="pre">Hold</span> <span class="pre">Return</span> <span class="pre">[%]</span></code> 是各资产的<strong>等权平均</strong>收益 —— 对组合策略而言这是一个合理的默认基准。</p>
 </section>
 <section id="per-asset-breakdown">
-<h2>Per-asset breakdown<a class="headerlink" href="#per-asset-breakdown" title="Link to this heading">¶</a></h2>
-<p>For trade-level statistics on each asset:</p>
+<h2>按资产拆分<a class="headerlink" href="#per-asset-breakdown" title="Link to this heading">¶</a></h2>
+<p>查看每个资产的交易级统计：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_stats_per_asset</span>
 
 <span class="n">per</span> <span class="o">=</span> <span class="n">calculate_stats_per_asset</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span>
@@ -388,26 +377,21 @@ benchmark for portfolio strategies.</p>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Buy &amp; Hold: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;Buy &amp; Hold Return [%]&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Aggregate metrics (Sharpe, Sortino, drawdown, equity curve) are inherently
-portfolio-wide and only available via <code class="docutils literal notranslate"><span class="pre">calculate_stats(broker)</span></code> —
-attribution to individual assets requires extra accounting that QTrade
-intentionally doesn't try to do.</p>
+<p>组合级指标（Sharpe、Sortino、回撤、净值曲线）本质上是组合范围的，只能通过 <code class="docutils literal notranslate"><span class="pre">calculate_stats(broker)</span></code> 获取 —— 把它们归因到单个资产需要额外的会计逻辑，QTrade 有意不去做这件事。</p>
 </section>
 <section id="plot">
-<h2>Plot<a class="headerlink" href="#plot" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">bt.plot()</span></code> renders a multi-panel layout:</p>
+<h2>可视化<a class="headerlink" href="#plot" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bt.plot()</span></code> 渲染多面板布局：</p>
 <ul class="simple">
-<li><p><strong>Top:</strong> portfolio equity vs equal-weighted Buy &amp; Hold (with drawdown overlay).</p></li>
-<li><p><strong>Middle:</strong> trade-returns scatter across all assets.</p></li>
-<li><p><strong>Bottom:</strong> one OHLC panel per asset, stacked vertically with linked x-axes.</p></li>
+<li><p><strong>顶部</strong>：组合净值 vs 等权 Buy &amp; Hold（叠加回撤区域）。</p></li>
+<li><p><strong>中部</strong>：所有资产的交易收益散点图。</p></li>
+<li><p><strong>底部</strong>：每个资产一个 OHLC 面板，纵向堆叠，X 轴联动缩放。</p></li>
 </ul>
-<p>Each per-asset panel shows the win/lose trade boxes and buy/sell markers
-filtered to that asset's trades only.</p>
+<p>每个资产面板上的赢/输交易框和买卖标记仅显示该资产自身的交易。</p>
 </section>
 <section id="trade-history">
-<h2>Trade history<a class="headerlink" href="#trade-history" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">bt.get_trade_history()</span></code> returns a DataFrame with an <code class="docutils literal notranslate"><span class="pre">Asset</span></code> column so
-you can filter or group by symbol downstream:</p>
+<h2>交易历史<a class="headerlink" href="#trade-history" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bt.get_trade_history()</span></code> 返回的 DataFrame 包含 <code class="docutils literal notranslate"><span class="pre">Asset</span></code> 列，方便后续按代码筛选或分组：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">get_trade_history</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;Asset&#39;</span><span class="p">)[</span><span class="s1">&#39;Profit&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 </pre></div>
@@ -425,7 +409,7 @@ you can filter or group by symbol downstream:</p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Walk-forward optimization</div>
+                <div class="title">Walk-forward 优化</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -436,7 +420,7 @@ you can filter or group by symbol downstream:</p>
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Concepts</div>
+                <div class="title">核心概念</div>
                 
               </div>
             </a>
@@ -470,13 +454,13 @@ you can filter or group by symbol downstream:</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Multi-asset / portfolio backtests</a><ul>
-<li><a class="reference internal" href="#data">Data</a></li>
-<li><a class="reference internal" href="#strategy">Strategy</a></li>
-<li><a class="reference internal" href="#running-it">Running it</a></li>
-<li><a class="reference internal" href="#per-asset-breakdown">Per-asset breakdown</a></li>
-<li><a class="reference internal" href="#plot">Plot</a></li>
-<li><a class="reference internal" href="#trade-history">Trade history</a></li>
+<li><a class="reference internal" href="#">多资产 / 投资组合回测</a><ul>
+<li><a class="reference internal" href="#data">数据</a></li>
+<li><a class="reference internal" href="#strategy">策略</a></li>
+<li><a class="reference internal" href="#running-it">运行回测</a></li>
+<li><a class="reference internal" href="#per-asset-breakdown">按资产拆分</a></li>
+<li><a class="reference internal" href="#plot">可视化</a></li>
+<li><a class="reference internal" href="#trade-history">交易历史</a></li>
 </ul>
 </li>
 </ul>

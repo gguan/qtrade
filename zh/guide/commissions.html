@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Reading the Bokeh report" href="plot.html"><link rel="prev" title="Walk-forward optimization" href="walk_forward.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="解读 Bokeh 报告" href="plot.html"><link rel="prev" title="Walk-forward 优化" href="walk_forward.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Commissions and slippage - QTrade</title>
+        <title>佣金与滑点 - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,17 +198,17 @@
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Commissions and slippage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward 优化</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">佣金与滑点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -262,10 +262,8 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="commissions-and-slippage">
-<h1>Commissions and slippage<a class="headerlink" href="#commissions-and-slippage" title="Link to this heading">¶</a></h1>
-<p>QTrade ships four <code class="docutils literal notranslate"><span class="pre">Commission</span></code> implementations covering the patterns
-most strategies need. All live in <code class="docutils literal notranslate"><span class="pre">qtrade.core.commission</span></code> and share
-the abstract base <code class="docutils literal notranslate"><span class="pre">Commission</span></code>.</p>
+<h1>佣金与滑点<a class="headerlink" href="#commissions-and-slippage" title="Link to this heading">¶</a></h1>
+<p>QTrade 内置四种 <code class="docutils literal notranslate"><span class="pre">Commission</span></code> 实现，覆盖大多数策略需要的模式。全部位于 <code class="docutils literal notranslate"><span class="pre">qtrade.core.commission</span></code>，共享抽象基类 <code class="docutils literal notranslate"><span class="pre">Commission</span></code>。</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">NoCommission</span><span class="p">,</span>            <span class="c1"># default: 0</span>
     <span class="n">PercentageCommission</span><span class="p">,</span>    <span class="c1"># X% of order value</span>
@@ -274,17 +272,12 @@ the abstract base <code class="docutils literal notranslate"><span class="pre">C
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Pass an instance to <code class="docutils literal notranslate"><span class="pre">Backtest(...,</span> <span class="pre">commission=...)</span></code> or
-<code class="docutils literal notranslate"><span class="pre">TradingEnv(...,</span> <span class="pre">commission=...)</span></code>. <code class="docutils literal notranslate"><span class="pre">commission=None</span></code> is equivalent to
-<code class="docutils literal notranslate"><span class="pre">NoCommission()</span></code>.</p>
+<p>把实例传给 <code class="docutils literal notranslate"><span class="pre">Backtest(...,</span> <span class="pre">commission=...)</span></code> 或 <code class="docutils literal notranslate"><span class="pre">TradingEnv(...,</span> <span class="pre">commission=...)</span></code>。<code class="docutils literal notranslate"><span class="pre">commission=None</span></code> 等价于 <code class="docutils literal notranslate"><span class="pre">NoCommission()</span></code>。</p>
 <section id="the-interface">
-<h2>The interface<a class="headerlink" href="#the-interface" title="Link to this heading">¶</a></h2>
+<h2>接口<a class="headerlink" href="#the-interface" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Commission.calculate_commission(order_size:</span> <span class="pre">int,</span> <span class="pre">fill_price:</span> <span class="pre">float)</span> <span class="pre">-&gt;</span> <span class="pre">float</span></code></p>
-<p>Returns the commission in account currency for a single fill. The
-Broker subtracts it from <code class="docutils literal notranslate"><span class="pre">cash</span></code> at fill time. Sign of <code class="docutils literal notranslate"><span class="pre">order_size</span></code> is
-preserved — use <code class="docutils literal notranslate"><span class="pre">abs(order_size)</span></code> inside if you want symmetric fees on
-buys and sells.</p>
-<p>To roll your own:</p>
+<p>返回一笔成交的佣金（账户币种）。Broker 在成交时从 <code class="docutils literal notranslate"><span class="pre">cash</span></code> 扣除。<code class="docutils literal notranslate"><span class="pre">order_size</span></code> 的符号保留 —— 如果想买卖对称收费，在内部用 <code class="docutils literal notranslate"><span class="pre">abs(order_size)</span></code>。</p>
+<p>自定义实现：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.core.commission</span><span class="w"> </span><span class="kn">import</span> <span class="n">Commission</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TieredCommission</span><span class="p">(</span><span class="n">Commission</span><span class="p">):</span>
@@ -298,48 +291,39 @@ buys and sells.</p>
 </div>
 </section>
 <section id="built-in-implementations">
-<h2>Built-in implementations<a class="headerlink" href="#built-in-implementations" title="Link to this heading">¶</a></h2>
+<h2>内置实现<a class="headerlink" href="#built-in-implementations" title="Link to this heading">¶</a></h2>
 <section id="nocommission">
 <h3>NoCommission<a class="headerlink" href="#nocommission" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">NoCommission</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Returns <code class="docutils literal notranslate"><span class="pre">0.0</span></code> always. The default if you don't pass anything. Use it
-for clean comparisons against Buy &amp; Hold, or when modeling commission-free
-brokers.</p>
+<p>始终返回 <code class="docutils literal notranslate"><span class="pre">0.0</span></code>。不传任何参数时的默认值。用于和 Buy &amp; Hold 做干净对比，或者建模零佣金券商。</p>
 </section>
 <section id="percentagecommission">
 <h3>PercentageCommission<a class="headerlink" href="#percentagecommission" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">PercentageCommission</span><span class="p">(</span><span class="n">percentage</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>   <span class="c1"># 0.1%</span>
 </pre></div>
 </div>
-<p>Charges <code class="docutils literal notranslate"><span class="pre">abs(order_size)</span> <span class="pre">*</span> <span class="pre">fill_price</span> <span class="pre">*</span> <span class="pre">percentage</span></code>.</p>
-<p>The standard model for <strong>stocks</strong> (commissions quoted as bps of notional)
-and <strong>crypto spot</strong> (taker fees are typically 0.05–0.1%).</p>
+<p>按 <code class="docutils literal notranslate"><span class="pre">abs(order_size)</span> <span class="pre">*</span> <span class="pre">fill_price</span> <span class="pre">*</span> <span class="pre">percentage</span></code> 收费。</p>
+<p><strong>股票</strong>（佣金按名义本金的 bps 报价）和<strong>加密现货</strong>（taker 费率通常 0.05–0.1%）的标准模型。</p>
 </section>
 <section id="fixedcommission">
 <h3>FixedCommission<a class="headerlink" href="#fixedcommission" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FixedCommission</span><span class="p">(</span><span class="n">fixed_fee</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>   <span class="c1"># $1 per fill</span>
 </pre></div>
 </div>
-<p>Returns a flat fee regardless of size or price. Realistic for <strong>futures</strong>
-(where the exchange charges per-contract) and for <strong>discount brokers</strong>
-that quote a flat ticket charge.</p>
-<p>For futures with multiple commission components (exchange + clearing +
-broker), sum them up: <code class="docutils literal notranslate"><span class="pre">FixedCommission(fixed_fee=2.50)</span></code>.</p>
+<p>无论 size 和价格如何，返回固定费用。适合 <strong>期货</strong>（交易所按合约计费）和按笔收单一费用的<strong>折扣券商</strong>。</p>
+<p>对于含多个佣金组件（交易所 + 清算 + 券商）的期货，加总后传入：<code class="docutils literal notranslate"><span class="pre">FixedCommission(fixed_fee=2.50)</span></code>。</p>
 </section>
 <section id="slippagecommission">
 <h3>SlippageCommission<a class="headerlink" href="#slippagecommission" title="Link to this heading">¶</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SlippageCommission</span><span class="p">(</span><span class="n">slippage_percentage</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">)</span>   <span class="c1"># 5 bps</span>
 </pre></div>
 </div>
-<p>Mathematically identical to <code class="docutils literal notranslate"><span class="pre">PercentageCommission</span></code>, but the intent is
-different — this models the <em>price impact</em> of crossing the spread,
-not a venue fee. Use it when:</p>
+<p>数学上与 <code class="docutils literal notranslate"><span class="pre">PercentageCommission</span></code> 相同，但意图不同 —— 这个建模的是穿越买卖价差的<em>价格冲击</em>，不是交易所费用。适用场景：</p>
 <ul class="simple">
-<li><p>You want to add slippage <strong>on top of</strong> an explicit commission.</p></li>
-<li><p>You want the cost to scale with notional but separate from &quot;fees&quot; in
-reporting.</p></li>
+<li><p>想在显式佣金<strong>之上</strong>额外加上滑点。</p></li>
+<li><p>想让成本按名义本金缩放，但在报表中和「佣金」分开统计。</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Crypto spot: 0.1% taker fee + 0.05% slippage</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CryptoCost</span><span class="p">(</span><span class="n">Commission</span><span class="p">):</span>
@@ -354,56 +338,45 @@ reporting.</p></li>
 </section>
 </section>
 <section id="picking-the-right-model">
-<h2>Picking the right model<a class="headerlink" href="#picking-the-right-model" title="Link to this heading">¶</a></h2>
+<h2>如何选择合适的模型<a class="headerlink" href="#picking-the-right-model" title="Link to this heading">¶</a></h2>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Asset class</p></th>
-<th class="head"><p>Typical setup</p></th>
+<tr class="row-odd"><th class="head"><p>资产类别</p></th>
+<th class="head"><p>典型设置</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>US equities (retail)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">NoCommission()</span></code> (most brokers are zero now) + small <code class="docutils literal notranslate"><span class="pre">SlippageCommission</span></code></p></td>
+<tr class="row-even"><td><p>美股（零售）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NoCommission()</span></code>（大多数券商已零佣）+ 小额 <code class="docutils literal notranslate"><span class="pre">SlippageCommission</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>US equities (institutional)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">PercentageCommission(0.0005)</span></code> (~5 bps blended)</p></td>
+<tr class="row-odd"><td><p>美股（机构）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PercentageCommission(0.0005)</span></code>（综合约 5 bps）</p></td>
 </tr>
-<tr class="row-even"><td><p>Futures</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">FixedCommission(2.5)</span></code> per contract + slippage</p></td>
+<tr class="row-even"><td><p>期货</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FixedCommission(2.5)</span></code> 每合约 + 滑点</p></td>
 </tr>
-<tr class="row-odd"><td><p>FX</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">PercentageCommission(0.0001)</span></code> (1 pip on majors)</p></td>
+<tr class="row-odd"><td><p>外汇</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PercentageCommission(0.0001)</span></code>（主要货币对约 1 个点）</p></td>
 </tr>
-<tr class="row-even"><td><p>Crypto spot</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">PercentageCommission(0.001)</span></code> (taker) or <code class="docutils literal notranslate"><span class="pre">(0.0005)</span></code> (maker)</p></td>
+<tr class="row-even"><td><p>加密现货</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PercentageCommission(0.001)</span></code>（taker）或 <code class="docutils literal notranslate"><span class="pre">(0.0005)</span></code>（maker）</p></td>
 </tr>
-<tr class="row-odd"><td><p>Crypto perps</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">PercentageCommission(0.0005)</span></code> taker + funding (modeled separately)</p></td>
+<tr class="row-odd"><td><p>加密永续合约</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">PercentageCommission(0.0005)</span></code> taker + 资金费率（单独建模）</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>If unsure, <strong>run the backtest both with and without commission</strong>. The
-gap tells you how cost-sensitive your strategy is — high-turnover
-strategies often look great pre-cost and lose money post-cost.</p>
+<p>不确定的话，<strong>回测时分别带和不带佣金跑一遍</strong>。差距告诉你策略的成本敏感度 —— 高换手率策略经常成本前看起来很美，扣掉成本就亏钱。</p>
 </section>
 <section id="what-s-not-modeled">
-<h2>What's not modeled<a class="headerlink" href="#what-s-not-modeled" title="Link to this heading">¶</a></h2>
+<h2>未建模的部分<a class="headerlink" href="#what-s-not-modeled" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Maker/taker asymmetry.</strong> All fills are charged at one rate. To
-model maker fees on limit orders, write a custom <code class="docutils literal notranslate"><span class="pre">Commission</span></code> and
-branch on whether the order has a <code class="docutils literal notranslate"><span class="pre">limit</span></code> price.</p></li>
-<li><p><strong>Spread.</strong> The Broker fills market orders at <code class="docutils literal notranslate"><span class="pre">Close</span></code> (or next
-<code class="docutils literal notranslate"><span class="pre">Open</span></code>). The bid/ask spread isn't modeled — <code class="docutils literal notranslate"><span class="pre">SlippageCommission</span></code> is
-the closest approximation.</p></li>
-<li><p><strong>Funding rates / borrow costs.</strong> Not modeled. For long-running short
-positions or perp funding, you'd need to subtract from <code class="docutils literal notranslate"><span class="pre">cash</span></code> manually
-in your strategy's <code class="docutils literal notranslate"><span class="pre">on_bar_close</span></code>.</p></li>
-<li><p><strong>Per-asset commission.</strong> A single <code class="docutils literal notranslate"><span class="pre">Commission</span></code> instance applies to
-all assets in a multi-asset backtest. If you need different rates
-per asset, write a custom <code class="docutils literal notranslate"><span class="pre">Commission</span></code> that branches on the order's
-<code class="docutils literal notranslate"><span class="pre">_fill_price</span></code> or wrap it in your strategy logic.</p></li>
+<li><p><strong>Maker / taker 不对称</strong>。所有成交按单一费率收费。如需对限价单按 maker 费率收费，写一个自定义 <code class="docutils literal notranslate"><span class="pre">Commission</span></code> 并根据订单是否有 <code class="docutils literal notranslate"><span class="pre">limit</span></code> 价格分支。</p></li>
+<li><p><strong>买卖价差</strong>。Broker 用 <code class="docutils literal notranslate"><span class="pre">Close</span></code>（或下一根 <code class="docutils literal notranslate"><span class="pre">Open</span></code>）成交市价单。买卖价差未建模 —— <code class="docutils literal notranslate"><span class="pre">SlippageCommission</span></code> 是最接近的近似。</p></li>
+<li><p><strong>资金费率 / 借券成本</strong>。未建模。对于长期空仓或永续合约资金费率，需要在策略的 <code class="docutils literal notranslate"><span class="pre">on_bar_close</span></code> 里手动扣 <code class="docutils literal notranslate"><span class="pre">cash</span></code>。</p></li>
+<li><p><strong>按资产收费</strong>。多资产回测中单个 <code class="docutils literal notranslate"><span class="pre">Commission</span></code> 实例应用到所有资产。如需按资产差异化费率，写一个根据订单 <code class="docutils literal notranslate"><span class="pre">_fill_price</span></code> 分支的自定义 <code class="docutils literal notranslate"><span class="pre">Commission</span></code>，或在策略逻辑里包装。</p></li>
 </ul>
 </section>
 </section>
@@ -418,7 +391,7 @@ per asset, write a custom <code class="docutils literal notranslate"><span class
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Reading the Bokeh report</div>
+                <div class="title">解读 Bokeh 报告</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -429,7 +402,7 @@ per asset, write a custom <code class="docutils literal notranslate"><span class
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Walk-forward optimization</div>
+                <div class="title">Walk-forward 优化</div>
                 
               </div>
             </a>
@@ -463,17 +436,17 @@ per asset, write a custom <code class="docutils literal notranslate"><span class
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Commissions and slippage</a><ul>
-<li><a class="reference internal" href="#the-interface">The interface</a></li>
-<li><a class="reference internal" href="#built-in-implementations">Built-in implementations</a><ul>
+<li><a class="reference internal" href="#">佣金与滑点</a><ul>
+<li><a class="reference internal" href="#the-interface">接口</a></li>
+<li><a class="reference internal" href="#built-in-implementations">内置实现</a><ul>
 <li><a class="reference internal" href="#nocommission">NoCommission</a></li>
 <li><a class="reference internal" href="#percentagecommission">PercentageCommission</a></li>
 <li><a class="reference internal" href="#fixedcommission">FixedCommission</a></li>
 <li><a class="reference internal" href="#slippagecommission">SlippageCommission</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#picking-the-right-model">Picking the right model</a></li>
-<li><a class="reference internal" href="#what-s-not-modeled">What's not modeled</a></li>
+<li><a class="reference internal" href="#picking-the-right-model">如何选择合适的模型</a></li>
+<li><a class="reference internal" href="#what-s-not-modeled">未建模的部分</a></li>
 </ul>
 </li>
 </ul>

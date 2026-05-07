@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Commissions and slippage" href="commissions.html"><link rel="prev" title="Multi-asset / portfolio backtests" href="multi_asset.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="佣金与滑点" href="commissions.html"><link rel="prev" title="多资产 / 投资组合回测" href="multi_asset.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Walk-forward optimization - QTrade</title>
+        <title>Walk-forward 优化 - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,17 +198,17 @@
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Walk-forward optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Walk-forward 优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissions.html">佣金与滑点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -262,14 +262,9 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="walk-forward-optimization">
-<h1>Walk-forward optimization<a class="headerlink" href="#walk-forward-optimization" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Backtest.optimize()</span></code> picks the best parameter combination over the
-<em>entire</em> dataset — and reports its in-sample performance. This is the
-classic recipe for fitting noise. The &quot;best Sharpe 2.4&quot; you see almost
-never holds up live.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Backtest.walk_forward_optimize()</span></code> runs the same grid search inside
-rolling windows and reports performance on data the strategy was
-never tuned on:</p>
+<h1>Walk-forward 优化<a class="headerlink" href="#walk-forward-optimization" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">Backtest.optimize()</span></code> 在<em>整个</em>数据集上挑选最佳参数组合 —— 然后汇报样本内表现。这是拟合噪声的经典配方。看到的「最优 Sharpe 2.4」实盘几乎从不成立。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Backtest.walk_forward_optimize()</span></code> 在滚动窗口内做同样的网格搜索，在策略从未调过参的数据上汇报表现：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>                        train          test
 window 0:   [─────────────────────][──────]
 window 1:           [─────────────────────][──────]
@@ -277,10 +272,7 @@ window 2:                   [─────────────────
                                                 step
 </pre></div>
 </div>
-<p>For every window pair, QTrade picks the best params on the train slice
-and evaluates them on the immediately following test slice. The
-aggregate of the test slices is your honest, out-of-sample (OoS)
-estimate of how the strategy actually performs.</p>
+<p>每个窗口对里，QTrade 在训练片段挑选最佳参数，并在紧接的测试片段上评估。测试片段的聚合结果是策略真实表现的诚实样本外（OoS）估计。</p>
 <section id="api">
 <h2>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">walk_forward_optimize</span><span class="p">(</span>
@@ -294,92 +286,83 @@ estimate of how the strategy actually performs.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Required:</p>
+<p>必填：</p>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">train_window</span></code></strong>: bars per training slice.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">test_window</span></code></strong>: bars per test slice (immediately follows the train slice).</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">maximize</span></code></strong>: name of the metric from <code class="docutils literal notranslate"><span class="pre">calculate_stats()</span></code> to
-maximize within each train slice. Common choices: <code class="docutils literal notranslate"><span class="pre">Sharpe</span> <span class="pre">Ratio</span></code>,
-<code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Return</span> <span class="pre">[%]</span></code>, <code class="docutils literal notranslate"><span class="pre">Calmar</span> <span class="pre">Ratio</span></code>. See the
-<a class="reference internal" href="stats_glossary.html"><span class="std std-doc">stats glossary</span></a> for what each means.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">**params_grid</span></code></strong>: same syntax as <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> — keyword arguments
-whose values are iterables of candidates.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">train_window</span></code></strong>：每个训练片段的 bar 数。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">test_window</span></code></strong>：每个测试片段的 bar 数（紧跟训练片段之后）。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">maximize</span></code></strong>：在每个训练片段内最大化的 <code class="docutils literal notranslate"><span class="pre">calculate_stats()</span></code> 指标名。常见选择：<code class="docutils literal notranslate"><span class="pre">Sharpe</span> <span class="pre">Ratio</span></code>、<code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Return</span> <span class="pre">[%]</span></code>、<code class="docutils literal notranslate"><span class="pre">Calmar</span> <span class="pre">Ratio</span></code>。含义详见 <a class="reference internal" href="stats_glossary.html"><span class="std std-doc">统计指标词汇表</span></a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">**params_grid</span></code></strong>：和 <code class="docutils literal notranslate"><span class="pre">optimize()</span></code> 同语法 —— 关键字参数，值是候选项的可迭代对象。</p></li>
 </ul>
-<p>Optional:</p>
+<p>可选：</p>
 <ul class="simple">
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">step</span></code></strong>: how many bars to advance between consecutive train starts.
-Defaults to <code class="docutils literal notranslate"><span class="pre">test_window</span></code> (non-overlapping test windows). Smaller
-values give overlapping (correlated) test windows; larger values
-leave gaps.</p></li>
-<li><p><strong><code class="docutils literal notranslate"><span class="pre">constraint</span></code></strong>: filter <code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">p:</span> <span class="pre">bool</span></code> applied to each parameter
-dict before evaluating. Use this to skip nonsensical combinations
-(e.g. fast SMA window &gt; slow SMA window).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">step</span></code></strong>：相邻训练起点之间推进多少 bar。默认 <code class="docutils literal notranslate"><span class="pre">test_window</span></code>（测试窗口不重叠）。更小值产生重叠（相关）的测试窗口；更大值留下空隙。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">constraint</span></code></strong>：评估前应用到每个参数字典的过滤器（<code class="docutils literal notranslate"><span class="pre">lambda</span> <span class="pre">p:</span> <span class="pre">bool</span></code>）。用于跳过无意义组合（如快线 SMA 窗口 &gt; 慢线窗口）。</p></li>
 </ul>
 </section>
 <section id="reading-the-result">
-<h2>Reading the result<a class="headerlink" href="#reading-the-result" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">result</span></code> is a dict:</p>
+<h2>解读结果<a class="headerlink" href="#reading-the-result" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">result</span></code> 是一个 dict：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;windows&#39;</span><span class="p">]</span>    <span class="c1"># list of per-window dicts</span>
 <span class="n">result</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">]</span>    <span class="c1"># aggregate OoS metrics</span>
 </pre></div>
 </div>
-<p>Each window dict contains:</p>
+<p>每个 window dict 包含：</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Value</p></th>
+<tr class="row-odd"><th class="head"><p>键</p></th>
+<th class="head"><p>值</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">train_start</span></code>, <code class="docutils literal notranslate"><span class="pre">train_end</span></code></p></td>
-<td><p>Timestamps of the train slice.</p></td>
+<td><p>训练片段的时间戳。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">test_start</span></code>, <code class="docutils literal notranslate"><span class="pre">test_end</span></code></p></td>
-<td><p>Timestamps of the test slice.</p></td>
+<td><p>测试片段的时间戳。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">best_params</span></code></p></td>
-<td><p>The parameter combo that maximized <code class="docutils literal notranslate"><span class="pre">maximize</span></code> on the train slice.</p></td>
+<td><p>在训练片段上最大化 <code class="docutils literal notranslate"><span class="pre">maximize</span></code> 的参数组合。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">train_stats</span></code></p></td>
-<td><p>Full stats dict from the train run with <code class="docutils literal notranslate"><span class="pre">best_params</span></code>.</p></td>
+<td><p>用 <code class="docutils literal notranslate"><span class="pre">best_params</span></code> 跑训练片段得到的完整 stats dict。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">test_stats</span></code></p></td>
-<td><p>Full stats dict from the test run.</p></td>
+<td><p>测试片段跑出来的完整 stats dict。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">test_equity</span></code></p></td>
-<td><p>The test slice's <code class="docutils literal notranslate"><span class="pre">equity_history</span></code> Series.</p></td>
+<td><p>测试片段的 <code class="docutils literal notranslate"><span class="pre">equity_history</span></code> Series。</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>The summary:</p>
+<p>summary 包含：</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>Key</p></th>
-<th class="head"><p>Meaning</p></th>
+<tr class="row-odd"><th class="head"><p>键</p></th>
+<th class="head"><p>含义</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">n_windows</span></code></p></td>
-<td><p>Total number of train/test pairs evaluated.</p></td>
+<td><p>评估的训练 / 测试对总数。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">mean_oos_return</span></code></p></td>
-<td><p>Average <code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Return</span> <span class="pre">[%]</span></code> across test windows.</p></td>
+<td><p>测试窗口的 <code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Return</span> <span class="pre">[%]</span></code> 平均值。</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hit_rate</span></code></p></td>
-<td><p>Fraction of test windows with positive return.</p></td>
+<td><p>正收益的测试窗口占比。</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">min_oos_return</span></code>, <code class="docutils literal notranslate"><span class="pre">max_oos_return</span></code></p></td>
-<td><p>Best and worst test windows.</p></td>
+<td><p>最差和最好的测试窗口。</p></td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
 <section id="a-typical-workflow">
-<h2>A typical workflow<a class="headerlink" href="#a-typical-workflow" title="Link to this heading">¶</a></h2>
+<h2>典型工作流<a class="headerlink" href="#a-typical-workflow" title="Link to this heading">¶</a></h2>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.backtest</span><span class="w"> </span><span class="kn">import</span> <span class="n">Backtest</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_stats</span>
 
@@ -413,69 +396,49 @@ dict before evaluating. Use this to skip nonsensical combinations
     <span class="p">)</span>
 </pre></div>
 </div>
-<p>If the in-sample Sharpe and OoS mean are wildly different, you've
-found your overfit. The OoS number is the one to trust.</p>
+<p>如果样本内 Sharpe 和样本外均值差距悬殊，你已经找到了过拟合。要相信样本外的数字。</p>
 </section>
 <section id="choosing-the-windows">
-<h2>Choosing the windows<a class="headerlink" href="#choosing-the-windows" title="Link to this heading">¶</a></h2>
-<p>The right <code class="docutils literal notranslate"><span class="pre">train_window</span></code> and <code class="docutils literal notranslate"><span class="pre">test_window</span></code> depend on:</p>
+<h2>如何选择窗口<a class="headerlink" href="#choosing-the-windows" title="Link to this heading">¶</a></h2>
+<p>合适的 <code class="docutils literal notranslate"><span class="pre">train_window</span></code> 和 <code class="docutils literal notranslate"><span class="pre">test_window</span></code> 取决于：</p>
 <ul class="simple">
-<li><p><strong>Strategy &quot;memory&quot;</strong>: how many bars does the strategy need to fit a
-parameter? A 20-bar SMA needs at least ~50 bars to give the system
-some room. A 200-bar lookback model needs a much larger train_window.</p></li>
-<li><p><strong>Market regime length</strong>: a train window that's too small only sees
-one regime; too large straddles multiple regimes (averaging conflicting
-optima). 6–12 months of daily bars is a typical starting point.</p></li>
-<li><p><strong>Number of windows you can afford</strong>: longer windows = fewer windows,
-but more data per fit; shorter windows = more windows but each is
-noisier. Aim for <strong>at least 5–10 windows</strong> so the summary statistics
-are meaningful.</p></li>
+<li><p><strong>策略「记忆长度」</strong>：策略拟合一个参数需要多少 bar？20 bar 的 SMA 至少需要 ~50 bar 给系统留余地。200 bar 回看的模型需要大得多的 train_window。</p></li>
+<li><p><strong>市场 regime 长度</strong>：训练窗口太小只能看到一个 regime；太大跨越多个 regime（不同 regime 的最优解相互抵消）。日 bar 数据的话，6–12 个月通常是合适起点。</p></li>
+<li><p><strong>你能支撑的窗口数量</strong>：长窗口 = 窗口更少，但每次拟合数据更多；短窗口 = 窗口更多但每个噪声更大。<strong>至少 5–10 个窗口</strong>汇总统计才有意义。</p></li>
 </ul>
-<p>Rule of thumb: <code class="docutils literal notranslate"><span class="pre">train_window</span> <span class="pre">≈</span> <span class="pre">4–10</span> <span class="pre">×</span> <span class="pre">test_window</span></code> is a common ratio.</p>
+<p>经验法则：<code class="docutils literal notranslate"><span class="pre">train_window</span> <span class="pre">≈</span> <span class="pre">4–10</span> <span class="pre">×</span> <span class="pre">test_window</span></code> 是常见比例。</p>
 </section>
 <section id="common-pitfalls">
-<h2>Common pitfalls<a class="headerlink" href="#common-pitfalls" title="Link to this heading">¶</a></h2>
+<h2>常见坑<a class="headerlink" href="#common-pitfalls" title="Link to this heading">¶</a></h2>
 <section id="oos-hit-rate-is-0-5">
-<h3>&quot;OoS hit rate is 0.5&quot;<a class="headerlink" href="#oos-hit-rate-is-0-5" title="Link to this heading">¶</a></h3>
-<p>Coin flip. Either the strategy genuinely doesn't have edge, or your
-parameter grid doesn't cover the meaningful space. Try:</p>
+<h3>「OoS 命中率是 0.5」<a class="headerlink" href="#oos-hit-rate-is-0-5" title="Link to this heading">¶</a></h3>
+<p>和抛硬币没区别。要么策略真的没有 edge，要么你的参数网格没覆盖有意义的空间。试试：</p>
 <ol class="arabic simple">
-<li><p>Look at <em>which</em> params win in each window — if they're wildly
-different across windows, the strategy isn't stable.</p></li>
-<li><p>Widen the grid. If the optimum keeps landing at the edge, you're
-not exploring far enough.</p></li>
-<li><p>Try a longer <code class="docutils literal notranslate"><span class="pre">train_window</span></code>.</p></li>
+<li><p>看<em>哪些</em>参数在每个窗口胜出 —— 如果窗口之间的最优参数差异巨大，策略不稳定。</p></li>
+<li><p>扩大网格。如果最优值老是落在网格边缘，说明你探索的范围不够远。</p></li>
+<li><p>试更长的 <code class="docutils literal notranslate"><span class="pre">train_window</span></code>。</p></li>
 </ol>
 </section>
 <section id="mean-oos-return-is-positive-but-min-is-catastrophic">
-<h3>&quot;Mean OoS return is positive but min is catastrophic&quot;<a class="headerlink" href="#mean-oos-return-is-positive-but-min-is-catastrophic" title="Link to this heading">¶</a></h3>
-<p>A common signature of strategies that work most of the time but blow
-up periodically (e.g. martingale-like betting, undefended short vol).
-The mean hides the tail.</p>
-<p>Always look at the per-window list, not just the summary.</p>
+<h3>「OoS 均值是正的但最差窗口惨不忍睹」<a class="headerlink" href="#mean-oos-return-is-positive-but-min-is-catastrophic" title="Link to this heading">¶</a></h3>
+<p>这是「大部分时间 work 但偶尔爆仓」类策略的典型特征（如马丁格尔式加仓、裸卖空波动率）。均值掩盖了尾部风险。</p>
+<p>永远要看每个窗口的明细，不要只看 summary。</p>
 </section>
 <section id="walk-forward-sharpe-is-much-lower-than-in-sample-sharpe">
-<h3>&quot;Walk-forward Sharpe is much lower than in-sample Sharpe&quot;<a class="headerlink" href="#walk-forward-sharpe-is-much-lower-than-in-sample-sharpe" title="Link to this heading">¶</a></h3>
-<p>Expected and normal. The gap is your overfit. A 2:1 ratio
-(in-sample 2.0 → OoS 1.0) is fine; 5:1 means you're fitting noise.
-Reduce parameter freedom (smaller grid) or extend the strategy's
-inductive bias (use a constraint, share parameters across assets, etc.).</p>
+<h3>「Walk-forward Sharpe 比样本内 Sharpe 低很多」<a class="headerlink" href="#walk-forward-sharpe-is-much-lower-than-in-sample-sharpe" title="Link to this heading">¶</a></h3>
+<p>正常现象。差距就是过拟合的程度。2:1 的比例（样本内 2.0 → OoS 1.0）尚可；5:1 说明你在拟合噪声。降低参数自由度（缩小网格），或者增加策略的归纳偏置（用 constraint、跨资产共享参数等）。</p>
 </section>
 <section id="step-smaller-than-test-window">
-<h3>&quot;Step smaller than test_window&quot;<a class="headerlink" href="#step-smaller-than-test-window" title="Link to this heading">¶</a></h3>
-<p>This produces <em>overlapping</em> test windows. The summary metrics
-double-count bars and inflate <code class="docutils literal notranslate"><span class="pre">n_windows</span></code>. Sometimes you want this
-(e.g. for adaptive walk-forward that retrains weekly), but understand
-that the windows aren't statistically independent.</p>
+<h3>「Step 小于 test_window」<a class="headerlink" href="#step-smaller-than-test-window" title="Link to this heading">¶</a></h3>
+<p>这会产生<em>重叠的</em>测试窗口。summary 指标会重复计算 bar 并夸大 <code class="docutils literal notranslate"><span class="pre">n_windows</span></code>。有时这是有意为之（如每周重训的自适应 walk-forward），但需要明白窗口在统计上不独立。</p>
 </section>
 </section>
 <section id="see-also">
-<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
+<h2>另请参考<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="stats_glossary.html"><span class="std std-doc">Stats glossary</span></a> — pick the right <code class="docutils literal notranslate"><span class="pre">maximize</span></code> metric.</p></li>
-<li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> — basic Backtest workflow.</p></li>
-<li><p><a class="reference external" href="https://github.com/gguan/qtrade/blob/main/examples/portfolio_strategy.py"><code class="docutils literal notranslate"><span class="pre">examples/portfolio_strategy.py</span></code></a>
-— multi-asset walk-forward in a runnable file.</p></li>
+<li><p><a class="reference internal" href="stats_glossary.html"><span class="std std-doc">统计指标词汇表</span></a> —— 选择合适的 <code class="docutils literal notranslate"><span class="pre">maximize</span></code> 指标。</p></li>
+<li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">快速开始</span></a> —— 基础 Backtest 工作流。</p></li>
+<li><p><a class="reference external" href="https://github.com/gguan/qtrade/blob/main/examples/portfolio_strategy.py"><code class="docutils literal notranslate"><span class="pre">examples/portfolio_strategy.py</span></code></a> —— 可运行的多资产 walk-forward 示例。</p></li>
 </ul>
 </section>
 </section>
@@ -490,7 +453,7 @@ that the windows aren't statistically independent.</p>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Commissions and slippage</div>
+                <div class="title">佣金与滑点</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -501,7 +464,7 @@ that the windows aren't statistically independent.</p>
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Multi-asset / portfolio backtests</div>
+                <div class="title">多资产 / 投资组合回测</div>
                 
               </div>
             </a>
@@ -535,19 +498,19 @@ that the windows aren't statistically independent.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Walk-forward optimization</a><ul>
+<li><a class="reference internal" href="#">Walk-forward 优化</a><ul>
 <li><a class="reference internal" href="#api">API</a></li>
-<li><a class="reference internal" href="#reading-the-result">Reading the result</a></li>
-<li><a class="reference internal" href="#a-typical-workflow">A typical workflow</a></li>
-<li><a class="reference internal" href="#choosing-the-windows">Choosing the windows</a></li>
-<li><a class="reference internal" href="#common-pitfalls">Common pitfalls</a><ul>
-<li><a class="reference internal" href="#oos-hit-rate-is-0-5">&quot;OoS hit rate is 0.5&quot;</a></li>
-<li><a class="reference internal" href="#mean-oos-return-is-positive-but-min-is-catastrophic">&quot;Mean OoS return is positive but min is catastrophic&quot;</a></li>
-<li><a class="reference internal" href="#walk-forward-sharpe-is-much-lower-than-in-sample-sharpe">&quot;Walk-forward Sharpe is much lower than in-sample Sharpe&quot;</a></li>
-<li><a class="reference internal" href="#step-smaller-than-test-window">&quot;Step smaller than test_window&quot;</a></li>
+<li><a class="reference internal" href="#reading-the-result">解读结果</a></li>
+<li><a class="reference internal" href="#a-typical-workflow">典型工作流</a></li>
+<li><a class="reference internal" href="#choosing-the-windows">如何选择窗口</a></li>
+<li><a class="reference internal" href="#common-pitfalls">常见坑</a><ul>
+<li><a class="reference internal" href="#oos-hit-rate-is-0-5">「OoS 命中率是 0.5」</a></li>
+<li><a class="reference internal" href="#mean-oos-return-is-positive-but-min-is-catastrophic">「OoS 均值是正的但最差窗口惨不忍睹」</a></li>
+<li><a class="reference internal" href="#walk-forward-sharpe-is-much-lower-than-in-sample-sharpe">「Walk-forward Sharpe 比样本内 Sharpe 低很多」</a></li>
+<li><a class="reference internal" href="#step-smaller-than-test-window">「Step 小于 test_window」</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#see-also">See also</a></li>
+<li><a class="reference internal" href="#see-also">另请参考</a></li>
 </ul>
 </li>
 </ul>

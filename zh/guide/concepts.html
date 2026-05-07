@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Multi-asset / portfolio backtests" href="multi_asset.html"><link rel="prev" title="快速开始" href="getting_started.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="多资产 / 投资组合回测" href="multi_asset.html"><link rel="prev" title="快速开始" href="getting_started.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Concepts - QTrade</title>
+        <title>核心概念 - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,17 +198,17 @@
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">核心概念</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward 优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissions.html">佣金与滑点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -262,12 +262,10 @@
         </div>
         <article role="main" id="furo-main-content">
           <section id="concepts">
-<h1>Concepts<a class="headerlink" href="#concepts" title="Link to this heading">¶</a></h1>
-<p>QTrade is a small library, but understanding how its components fit
-together makes both the API and the source code easier to navigate.
-This page is the mental model.</p>
+<h1>核心概念<a class="headerlink" href="#concepts" title="Link to this heading">¶</a></h1>
+<p>QTrade 体量不大，但理清各组件之间的关系会让 API 和源码都好读得多。本页提供整体的心智模型。</p>
 <section id="the-pieces">
-<h2>The pieces<a class="headerlink" href="#the-pieces" title="Link to this heading">¶</a></h2>
+<h2>组件构成<a class="headerlink" href="#the-pieces" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>        ┌─────────────────────────────────────────────────┐
         │                    Backtest                     │
         │  (orchestrates a full run; iterates the bars)   │
@@ -295,158 +293,124 @@ This page is the mental model.</p>
         └──────────────────┘         └─────────────────────┘
 </pre></div>
 </div>
-<p>For RL workflows, replace <code class="docutils literal notranslate"><span class="pre">Backtest</span></code> with <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> — same <code class="docutils literal notranslate"><span class="pre">Broker</span></code>
-underneath, just driven by Gymnasium's <code class="docutils literal notranslate"><span class="pre">step()</span></code> instead of a Python
-<code class="docutils literal notranslate"><span class="pre">for</span></code> loop.</p>
+<p>做强化学习时，把 <code class="docutils literal notranslate"><span class="pre">Backtest</span></code> 换成 <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> —— 底层是相同的 <code class="docutils literal notranslate"><span class="pre">Broker</span></code>，只是驱动方式从 Python <code class="docutils literal notranslate"><span class="pre">for</span></code> 循环换成了 Gymnasium 的 <code class="docutils literal notranslate"><span class="pre">step()</span></code>。</p>
 </section>
 <section id="what-each-component-does">
-<h2>What each component does<a class="headerlink" href="#what-each-component-does" title="Link to this heading">¶</a></h2>
+<h2>每个组件做什么<a class="headerlink" href="#what-each-component-does" title="Link to this heading">¶</a></h2>
 <section id="broker">
 <h3>Broker<a class="headerlink" href="#broker" title="Link to this heading">¶</a></h3>
-<p>The simulation core. You don't usually instantiate it directly — both
-<code class="docutils literal notranslate"><span class="pre">Backtest</span></code> and <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> create one for you.</p>
-<p>The Broker:</p>
+<p>模拟核心。你通常不会直接实例化它 —— <code class="docutils literal notranslate"><span class="pre">Backtest</span></code> 和 <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> 都会自动创建。</p>
+<p>Broker 负责：</p>
 <ul class="simple">
-<li><p>Holds the OHLCV data (single asset or <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">DataFrame]</span></code> for portfolios)</p></li>
-<li><p>Tracks <code class="docutils literal notranslate"><span class="pre">cash</span></code>, computes <code class="docutils literal notranslate"><span class="pre">equity</span></code>, <code class="docutils literal notranslate"><span class="pre">unrealized_pnl</span></code>, <code class="docutils literal notranslate"><span class="pre">available_margin</span></code></p></li>
-<li><p>Maintains queues of pending / executing / filled / closed orders</p></li>
-<li><p>Triggers SL / TP exits per bar</p></li>
-<li><p>Owns one <code class="docutils literal notranslate"><span class="pre">Position</span></code> per asset</p></li>
-<li><p>Records the portfolio-level <code class="docutils literal notranslate"><span class="pre">equity_history</span></code> Series</p></li>
+<li><p>保存 OHLCV 数据（单资产或多资产的 <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">DataFrame]</span></code>）</p></li>
+<li><p>跟踪 <code class="docutils literal notranslate"><span class="pre">cash</span></code>，计算 <code class="docutils literal notranslate"><span class="pre">equity</span></code>、<code class="docutils literal notranslate"><span class="pre">unrealized_pnl</span></code>、<code class="docutils literal notranslate"><span class="pre">available_margin</span></code></p></li>
+<li><p>维护 pending / executing / filled / closed 几个订单队列</p></li>
+<li><p>每个 bar 检查止损 / 止盈触发</p></li>
+<li><p>每个资产持有一个 <code class="docutils literal notranslate"><span class="pre">Position</span></code></p></li>
+<li><p>记录组合级别的 <code class="docutils literal notranslate"><span class="pre">equity_history</span></code> Series</p></li>
 </ul>
 </section>
 <section id="order">
 <h3>Order<a class="headerlink" href="#order" title="Link to this heading">¶</a></h3>
-<p>A trade <em>intention</em> — what you'd like to do. Created with a signed size
-(positive = buy, negative = sell), optional <code class="docutils literal notranslate"><span class="pre">limit</span></code> / <code class="docutils literal notranslate"><span class="pre">stop</span></code> / <code class="docutils literal notranslate"><span class="pre">sl</span></code> /
-<code class="docutils literal notranslate"><span class="pre">tp</span></code> / <code class="docutils literal notranslate"><span class="pre">tag</span></code>, and an <code class="docutils literal notranslate"><span class="pre">asset</span></code> symbol. Orders go through the broker's
-queues and either fill or get rejected (typically for insufficient margin).</p>
+<p>交易 <em>意图</em> —— 你想做什么。用带符号的 size 创建（正 = 买，负 = 卖），可选 <code class="docutils literal notranslate"><span class="pre">limit</span></code> / <code class="docutils literal notranslate"><span class="pre">stop</span></code> / <code class="docutils literal notranslate"><span class="pre">sl</span></code> / <code class="docutils literal notranslate"><span class="pre">tp</span></code> / <code class="docutils literal notranslate"><span class="pre">tag</span></code> 以及 <code class="docutils literal notranslate"><span class="pre">asset</span></code> 资产代码。订单进入 broker 的队列后，要么成交，要么被拒（通常是保证金不足）。</p>
 </section>
 <section id="trade">
 <h3>Trade<a class="headerlink" href="#trade" title="Link to this heading">¶</a></h3>
-<p>A <em>filled</em> position. Each Order that fills opens (or partially closes)
-a Trade. While open, the Trade has <code class="docutils literal notranslate"><span class="pre">entry_price</span></code>, <code class="docutils literal notranslate"><span class="pre">entry_date</span></code>, <code class="docutils literal notranslate"><span class="pre">size</span></code>,
-optional <code class="docutils literal notranslate"><span class="pre">sl</span></code> / <code class="docutils literal notranslate"><span class="pre">tp</span></code>. When the Trade is closed (by an opposite-side
-order, an SL/TP trigger, or end-of-backtest), it gets <code class="docutils literal notranslate"><span class="pre">exit_price</span></code>,
-<code class="docutils literal notranslate"><span class="pre">exit_date</span></code>, <code class="docutils literal notranslate"><span class="pre">profit</span></code>, and an <code class="docutils literal notranslate"><span class="pre">exit_reason</span></code>.</p>
+<p>一笔已<em>成交</em>的仓位。每笔成交 Order 会开仓（或部分平仓）一个 Trade。开仓时 Trade 有 <code class="docutils literal notranslate"><span class="pre">entry_price</span></code>、<code class="docutils literal notranslate"><span class="pre">entry_date</span></code>、<code class="docutils literal notranslate"><span class="pre">size</span></code>，可选 <code class="docutils literal notranslate"><span class="pre">sl</span></code> / <code class="docutils literal notranslate"><span class="pre">tp</span></code>。Trade 平仓后（由反向订单、SL/TP 触发或回测结束触发），会得到 <code class="docutils literal notranslate"><span class="pre">exit_price</span></code>、<code class="docutils literal notranslate"><span class="pre">exit_date</span></code>、<code class="docutils literal notranslate"><span class="pre">profit</span></code> 和 <code class="docutils literal notranslate"><span class="pre">exit_reason</span></code>。</p>
 </section>
 <section id="position">
 <h3>Position<a class="headerlink" href="#position" title="Link to this heading">¶</a></h3>
-<p>A holder for trades on one asset. <code class="docutils literal notranslate"><span class="pre">active_trades</span></code> are open; <code class="docutils literal notranslate"><span class="pre">closed_trades</span></code>
-are closed. <code class="docutils literal notranslate"><span class="pre">position.size</span></code> is the net signed size across all active
-trades on that asset.</p>
-<p>For multi-asset, the Broker holds <code class="docutils literal notranslate"><span class="pre">positions:</span> <span class="pre">dict[str,</span> <span class="pre">Position]</span></code> —
-one per asset. <code class="docutils literal notranslate"><span class="pre">broker.position</span></code> (singular) is a convenience accessor
-that only works in single-asset mode.</p>
+<p>某个资产上 trades 的容器。<code class="docutils literal notranslate"><span class="pre">active_trades</span></code> 是开仓中的，<code class="docutils literal notranslate"><span class="pre">closed_trades</span></code> 是已平仓的。<code class="docutils literal notranslate"><span class="pre">position.size</span></code> 是该资产所有 active trades 的净有符号 size。</p>
+<p>多资产模式下，Broker 持有 <code class="docutils literal notranslate"><span class="pre">positions:</span> <span class="pre">dict[str,</span> <span class="pre">Position]</span></code> —— 每个资产一个。<code class="docutils literal notranslate"><span class="pre">broker.position</span></code>（单数）是单资产模式专用的便捷访问器。</p>
 </section>
 <section id="strategy">
 <h3>Strategy<a class="headerlink" href="#strategy" title="Link to this heading">¶</a></h3>
-<p>The piece you write. Subclass <code class="docutils literal notranslate"><span class="pre">qtrade.backtest.Strategy</span></code> and implement:</p>
+<p>你需要自己写的那部分。继承 <code class="docutils literal notranslate"><span class="pre">qtrade.backtest.Strategy</span></code> 并实现：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">prepare()</span></code> — runs once before the bar loop. Add indicators here.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">on_bar_close()</span></code> — called on every bar. Place orders, manage positions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">prepare()</span></code> —— 在 bar 循环开始前调用一次。在这里加指标。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_bar_close()</span></code> —— 每根 bar 调用一次。下单和管理仓位的地方。</p></li>
 </ul>
-<p>Inside <code class="docutils literal notranslate"><span class="pre">on_bar_close()</span></code> you have:</p>
+<p>在 <code class="docutils literal notranslate"><span class="pre">on_bar_close()</span></code> 内部你可以使用：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">self.data</span></code> (single-asset) / <code class="docutils literal notranslate"><span class="pre">self.data_by_asset[asset]</span></code> (multi-asset)
-— the OHLCV slice up to the current bar.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">self.position</span></code> / <code class="docutils literal notranslate"><span class="pre">self.positions[asset]</span></code> — current holdings.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">self.equity</span></code>, <code class="docutils literal notranslate"><span class="pre">self.unrealized_pnl</span></code> — portfolio-level snapshots.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">self.buy(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">self.sell(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">self.close(...)</span></code> — order helpers.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.data</span></code>（单资产）/ <code class="docutils literal notranslate"><span class="pre">self.data_by_asset[asset]</span></code>（多资产）—— 从开始到当前 bar 的 OHLCV 切片。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.position</span></code> / <code class="docutils literal notranslate"><span class="pre">self.positions[asset]</span></code> —— 当前持仓。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.equity</span></code>、<code class="docutils literal notranslate"><span class="pre">self.unrealized_pnl</span></code> —— 组合级快照。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.buy(...)</span></code>、<code class="docutils literal notranslate"><span class="pre">self.sell(...)</span></code>、<code class="docutils literal notranslate"><span class="pre">self.close(...)</span></code> —— 下单辅助方法。</p></li>
 </ul>
 </section>
 <section id="backtest">
 <h3>Backtest<a class="headerlink" href="#backtest" title="Link to this heading">¶</a></h3>
-<p>The driver. Given <code class="docutils literal notranslate"><span class="pre">data</span></code>, a <code class="docutils literal notranslate"><span class="pre">Strategy</span></code> class, cash, commission, and
-margin settings, it:</p>
+<p>驱动器。给定 <code class="docutils literal notranslate"><span class="pre">data</span></code>、<code class="docutils literal notranslate"><span class="pre">Strategy</span></code> 类、现金、佣金、保证金设置后，它会：</p>
 <ol class="arabic simple">
-<li><p>Constructs a <code class="docutils literal notranslate"><span class="pre">Broker</span></code> and a <code class="docutils literal notranslate"><span class="pre">Strategy</span></code> instance.</p></li>
-<li><p>Calls <code class="docutils literal notranslate"><span class="pre">strategy.prepare()</span></code>.</p></li>
-<li><p>Loops over bars, calling <code class="docutils literal notranslate"><span class="pre">broker.process_bar(ts)</span></code> then
-<code class="docutils literal notranslate"><span class="pre">strategy.on_bar_close()</span></code>.</p></li>
-<li><p>Closes open positions at the end.</p></li>
+<li><p>构造一个 <code class="docutils literal notranslate"><span class="pre">Broker</span></code> 和一个 <code class="docutils literal notranslate"><span class="pre">Strategy</span></code> 实例。</p></li>
+<li><p>调用 <code class="docutils literal notranslate"><span class="pre">strategy.prepare()</span></code>。</p></li>
+<li><p>逐根 bar 循环，依次调用 <code class="docutils literal notranslate"><span class="pre">broker.process_bar(ts)</span></code> 和 <code class="docutils literal notranslate"><span class="pre">strategy.on_bar_close()</span></code>。</p></li>
+<li><p>结束时关闭所有未平仓位。</p></li>
 </ol>
-<p>Plus utilities: <code class="docutils literal notranslate"><span class="pre">optimize</span></code>, <code class="docutils literal notranslate"><span class="pre">walk_forward_optimize</span></code>, <code class="docutils literal notranslate"><span class="pre">show_stats</span></code>,
-<code class="docutils literal notranslate"><span class="pre">get_trade_history</span></code>, <code class="docutils literal notranslate"><span class="pre">plot</span></code>.</p>
+<p>以及工具方法：<code class="docutils literal notranslate"><span class="pre">optimize</span></code>、<code class="docutils literal notranslate"><span class="pre">walk_forward_optimize</span></code>、<code class="docutils literal notranslate"><span class="pre">show_stats</span></code>、<code class="docutils literal notranslate"><span class="pre">get_trade_history</span></code>、<code class="docutils literal notranslate"><span class="pre">plot</span></code>。</p>
 </section>
 <section id="tradingenv-rl">
-<h3>TradingEnv (RL)<a class="headerlink" href="#tradingenv-rl" title="Link to this heading">¶</a></h3>
-<p>A Gymnasium environment wrapping the same <code class="docutils literal notranslate"><span class="pre">Broker</span></code>. Composes three
-pluggable schemes:</p>
+<h3>TradingEnv（强化学习）<a class="headerlink" href="#tradingenv-rl" title="Link to this heading">¶</a></h3>
+<p>一个包装相同 <code class="docutils literal notranslate"><span class="pre">Broker</span></code> 的 Gymnasium 环境。由三个可插拔的 scheme 组合而成：</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>Scheme</p></th>
-<th class="head"><p>Decides</p></th>
+<th class="head"><p>决定</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ActionScheme</span></code></p></td>
-<td><p>Action space + how an action becomes Orders</p></td>
+<td><p>动作空间 + 一个动作如何转换为 Orders</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ObserverScheme</span></code></p></td>
-<td><p>Observation space + what the agent sees</p></td>
+<td><p>观测空间 + 智能体每步看到什么</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">RewardScheme</span></code></p></td>
-<td><p>The scalar reward each step</p></td>
+<td><p>每步返回的标量奖励</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>See <a class="reference internal" href="customize_environment.html"><span class="std std-doc">Customizing Trading Environment</span></a> for the
-full story.</p>
+<p>完整内容见<a class="reference internal" href="customize_environment.html"><span class="std std-doc">自定义交易环境</span></a>。</p>
 </section>
 </section>
 <section id="lifecycle-of-a-backtest">
-<h2>Lifecycle of a backtest<a class="headerlink" href="#lifecycle-of-a-backtest" title="Link to this heading">¶</a></h2>
-<p>For a typical bar, in this order:</p>
+<h2>回测的生命周期<a class="headerlink" href="#lifecycle-of-a-backtest" title="Link to this heading">¶</a></h2>
+<p>对于一根典型的 bar，按以下顺序执行：</p>
 <ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Backtest.run</span></code> advances to bar <em>i</em>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Broker.process_bar(ts)</span></code> fires:</p>
+<li><p><code class="docutils literal notranslate"><span class="pre">Backtest.run</span></code> 推进到第 <em>i</em> 根 bar。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Broker.process_bar(ts)</span></code> 触发：</p>
 <ul class="simple">
-<li><p>Drop cancelled / rejected orders from the pending queue.</p></li>
-<li><p>Process executing orders (queued for fill at the next bar's open).</p></li>
-<li><p>Check SL / TP on every active trade — close any that triggered.</p></li>
-<li><p>Process pending stop / limit orders.</p></li>
-<li><p>Update <code class="docutils literal notranslate"><span class="pre">equity_history</span></code> with the new bar's equity.</p></li>
+<li><p>从 pending 队列中清除已取消 / 已拒绝的订单。</p></li>
+<li><p>处理 executing 队列订单（排队等下一根 bar 开盘成交）。</p></li>
+<li><p>对每笔 active trade 检查 SL / TP —— 触发的就平仓。</p></li>
+<li><p>处理 pending 队列里的 stop / limit 订单。</p></li>
+<li><p>用新 bar 的 equity 更新 <code class="docutils literal notranslate"><span class="pre">equity_history</span></code>。</p></li>
 </ul>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Strategy.on_bar_close()</span></code> runs — you can read <code class="docutils literal notranslate"><span class="pre">self.data</span></code> (truncated
-to <em>i</em>) and place new orders. New orders fill immediately if
-<code class="docutils literal notranslate"><span class="pre">trade_on_close=True</span></code>, otherwise queue for next bar's open.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Strategy.on_bar_close()</span></code> 运行 —— 你可以读 <code class="docutils literal notranslate"><span class="pre">self.data</span></code>（截到 <em>i</em>）并下新单。如果 <code class="docutils literal notranslate"><span class="pre">trade_on_close=True</span></code>，新单立即成交；否则进入队列等下一根 bar 开盘。</p></li>
 </ol>
-<p>After the final bar, <code class="docutils literal notranslate"><span class="pre">Broker.close_all_positions()</span></code> flushes everything
-at the last bar's close.</p>
+<p>最后一根 bar 之后，<code class="docutils literal notranslate"><span class="pre">Broker.close_all_positions()</span></code> 用最后一根 bar 的 close 价清掉所有未平仓位。</p>
 </section>
 <section id="key-design-choices-and-why">
-<h2>Key design choices (and why)<a class="headerlink" href="#key-design-choices-and-why" title="Link to this heading">¶</a></h2>
+<h2>关键设计选择（以及原因）<a class="headerlink" href="#key-design-choices-and-why" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Event-loop, not vectorized.</strong> Strategy code reads like real trading
-logic (<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">x</span> <span class="pre">then</span> <span class="pre">buy</span></code>). Easier to write, easier to debug. Slower
-than vectorbt for huge sweeps — see <a class="reference external" href="https://github.com/gguan/qtrade/blob/main/COMPARISON.md">COMPARISON.md</a>.</p></li>
-<li><p><strong>No look-ahead by construction.</strong> <code class="docutils literal notranslate"><span class="pre">self.data</span></code> is sliced to
-<code class="docutils literal notranslate"><span class="pre">[:current_time]</span></code>. You literally cannot read future bars from inside
-<code class="docutils literal notranslate"><span class="pre">on_bar_close()</span></code>.</p></li>
-<li><p><strong>One cash pool, per-asset positions.</strong> Multi-asset backtests get
-realistic portfolio behavior (margin shared across assets) without
-having to manage N independent brokers.</p></li>
-<li><p><strong>Strategy + RL share one Broker.</strong> Same accounting code, same SL/TP
-logic, same fill semantics. An RL agent in <code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> is governed
-by exactly the same rules as a <code class="docutils literal notranslate"><span class="pre">Strategy</span></code> in <code class="docutils literal notranslate"><span class="pre">Backtest</span></code>.</p></li>
+<li><p><strong>事件循环，而非向量化</strong>。策略代码读起来就是真实的交易逻辑（<code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">x</span> <span class="pre">then</span> <span class="pre">buy</span></code>）。更好写、更好调试。在大规模参数扫描场景比 vectorbt 慢 —— 参见 <a class="reference external" href="https://github.com/gguan/qtrade/blob/main/COMPARISON.md">COMPARISON.md</a>。</p></li>
+<li><p><strong>结构上杜绝未来函数</strong>。<code class="docutils literal notranslate"><span class="pre">self.data</span></code> 被切片到 <code class="docutils literal notranslate"><span class="pre">[:current_time]</span></code>，你在 <code class="docutils literal notranslate"><span class="pre">on_bar_close()</span></code> 里根本读不到未来 bar。</p></li>
+<li><p><strong>一个现金池 + 各资产独立持仓</strong>。多资产回测获得真实的组合行为（保证金跨资产共享），不必管理 N 个独立的 broker。</p></li>
+<li><p><strong>Strategy 和 RL 共用一个 Broker</strong>。相同的账户逻辑、相同的 SL/TP 行为、相同的成交语义。<code class="docutils literal notranslate"><span class="pre">TradingEnv</span></code> 里的 RL 智能体和 <code class="docutils literal notranslate"><span class="pre">Backtest</span></code> 里的 <code class="docutils literal notranslate"><span class="pre">Strategy</span></code> 受完全一样的规则约束。</p></li>
 </ul>
 </section>
 <section id="where-to-read-next">
-<h2>Where to read next<a class="headerlink" href="#where-to-read-next" title="Link to this heading">¶</a></h2>
+<h2>下一步读什么<a class="headerlink" href="#where-to-read-next" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> — the canonical Strategy /
-Backtest workflow on a single asset.</p></li>
-<li><p><a class="reference internal" href="multi_asset.html"><span class="std std-doc">Multi-asset / portfolio backtests</span></a> — passing dict data
-and using the multi-asset Strategy API.</p></li>
-<li><p><a class="reference internal" href="walk_forward.html"><span class="std std-doc">Walk-forward optimization</span></a> — sample-out parameter
-selection.</p></li>
-<li><p><a class="reference internal" href="stats_glossary.html"><span class="std std-doc">Stats glossary</span></a> — what every metric means.</p></li>
-<li><p><a class="reference internal" href="trading_environment.html"><span class="std std-doc">Trading environment</span></a> — the RL workflow.</p></li>
-<li><p><a class="reference internal" href="faq.html"><span class="std std-doc">FAQ</span></a> — common pitfalls.</p></li>
+<li><p><a class="reference internal" href="getting_started.html"><span class="std std-doc">快速开始</span></a> —— 单资产的标准 Strategy / Backtest 工作流。</p></li>
+<li><p><a class="reference internal" href="multi_asset.html"><span class="std std-doc">多资产 / 投资组合回测</span></a> —— 传入 dict 数据并使用多资产 Strategy API。</p></li>
+<li><p><a class="reference internal" href="walk_forward.html"><span class="std std-doc">Walk-forward 优化</span></a> —— 样本外参数选择。</p></li>
+<li><p><a class="reference internal" href="stats_glossary.html"><span class="std std-doc">统计指标词汇表</span></a> —— 每个指标的含义。</p></li>
+<li><p><a class="reference internal" href="trading_environment.html"><span class="std std-doc">交易环境</span></a> —— 强化学习工作流。</p></li>
+<li><p><a class="reference internal" href="faq.html"><span class="std std-doc">FAQ</span></a> —— 常见坑。</p></li>
 </ul>
 </section>
 </section>
@@ -461,7 +425,7 @@ selection.</p></li>
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Multi-asset / portfolio backtests</div>
+                <div class="title">多资产 / 投资组合回测</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -506,21 +470,21 @@ selection.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Concepts</a><ul>
-<li><a class="reference internal" href="#the-pieces">The pieces</a></li>
-<li><a class="reference internal" href="#what-each-component-does">What each component does</a><ul>
+<li><a class="reference internal" href="#">核心概念</a><ul>
+<li><a class="reference internal" href="#the-pieces">组件构成</a></li>
+<li><a class="reference internal" href="#what-each-component-does">每个组件做什么</a><ul>
 <li><a class="reference internal" href="#broker">Broker</a></li>
 <li><a class="reference internal" href="#order">Order</a></li>
 <li><a class="reference internal" href="#trade">Trade</a></li>
 <li><a class="reference internal" href="#position">Position</a></li>
 <li><a class="reference internal" href="#strategy">Strategy</a></li>
 <li><a class="reference internal" href="#backtest">Backtest</a></li>
-<li><a class="reference internal" href="#tradingenv-rl">TradingEnv (RL)</a></li>
+<li><a class="reference internal" href="#tradingenv-rl">TradingEnv（强化学习）</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#lifecycle-of-a-backtest">Lifecycle of a backtest</a></li>
-<li><a class="reference internal" href="#key-design-choices-and-why">Key design choices (and why)</a></li>
-<li><a class="reference internal" href="#where-to-read-next">Where to read next</a></li>
+<li><a class="reference internal" href="#lifecycle-of-a-backtest">回测的生命周期</a></li>
+<li><a class="reference internal" href="#key-design-choices-and-why">关键设计选择（以及原因）</a></li>
+<li><a class="reference internal" href="#where-to-read-next">下一步读什么</a></li>
 </ul>
 </li>
 </ul>
