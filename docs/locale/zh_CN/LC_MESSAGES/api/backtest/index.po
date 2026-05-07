@@ -1,0 +1,228 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../api/backtest/index.md:5 ../api/backtest/index.md:13
+#: 04999a5bf0254b8f9d676cda517a0886 17286ec0b8bd4a86a3c6d6cf46323f72
+msgid "Backtest"
+msgstr ""
+
+#: e58bb4831acd4a7ab9bc0c055f62ba73 of qtrade.backtest.backtest.Backtest:1
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: b9977e5c14d44290878c4a76516b5434 of qtrade.backtest.backtest.Backtest:1
+msgid "Run a strategy against historical data — single asset or a portfolio."
+msgstr ""
+
+#: 84a3c22c1df54a05a5e79ca8c503009d of qtrade.backtest.backtest.Backtest:3
+msgid ""
+"Pass a ``DataFrame`` for single-asset; pass ``dict[str, DataFrame]`` to "
+"run a portfolio strategy across multiple assets."
+msgstr ""
+
+#: ../api/backtest/index.md 077acee0222f4948bf443a420f8b2ac1
+#: 73f283dfc1014a57a1127142531bd76c ecc5a46ba822475f8a7e167f4493248a
+msgid "Parameters"
+msgstr ""
+
+#: 732f33941c954666bb0648b58adb54fa of qtrade.backtest.backtest.Backtest:6
+msgid ""
+"Single OHLCV DataFrame, or a dict mapping asset symbol to its OHLCV "
+"DataFrame (multi-asset). All DataFrames must have a DatetimeIndex and the"
+" same index for proper portfolio accounting."
+msgstr ""
+
+#: d8ae3c7e33404167a78c1e1612ccc95b of qtrade.backtest.backtest.Backtest:9
+msgid "Strategy class (subclass of Strategy) to instantiate."
+msgstr ""
+
+#: 1279ccec14e54daa94102366808190d6 of qtrade.backtest.backtest.Backtest:10
+msgid "Starting cash."
+msgstr ""
+
+#: 18160d4ec51145c98e76e4f687835fee of qtrade.backtest.backtest.Backtest:11
+msgid "Commission calculator (None ⇒ no commission)."
+msgstr ""
+
+#: c75dc3050a734372b2919397b5502daf of qtrade.backtest.backtest.Backtest:12
+msgid "Margin requirement (0 < ratio ≤ 1)."
+msgstr ""
+
+#: bd4cb42b3d1d428e91e7c0e774defa32 of qtrade.backtest.backtest.Backtest:13
+msgid ""
+"If True, market orders fill at the current bar's close price; otherwise "
+"at the next bar's open."
+msgstr ""
+
+#: ccc7a702e9964ef29b7c54b1832c4b2c of qtrade.backtest.backtest.Backtest:15
+msgid "Verbose logging."
+msgstr ""
+
+#: 4e0ef807d0a449e78141b32156921eb7 of
+#: qtrade.backtest.backtest.Backtest.get_trade_history:1
+msgid "Trade-by-trade DataFrame across all assets."
+msgstr ""
+
+#: 39714badb91048d1b353490b670e4c47 of
+#: qtrade.backtest.backtest.Backtest.optimize:1
+msgid "Grid-search strategy parameters and return the best."
+msgstr ""
+
+#: 7029c315b2124e5cbd198eb48ddb0f59 of
+#: qtrade.backtest.backtest.Backtest.optimize:3
+msgid "Metric name from `calculate_stats` to maximize."
+msgstr ""
+
+#: 4f44ef94edfc47a2a9855ca23b28ca55 of
+#: qtrade.backtest.backtest.Backtest.optimize:4
+msgid "Optional filter on parameter dicts (return False to skip)."
+msgstr ""
+
+#: 18a0538c650b4868b95786db2a8b3be2 of
+#: qtrade.backtest.backtest.Backtest.optimize:5
+msgid "Parameter ranges, e.g. ``n1=range(5, 30, 5)``."
+msgstr ""
+
+#: 4f825664954a4c9b812b6a144706d3e0 d809d17f10f241c7aaa96fe09c30a596 of
+#: qtrade.backtest.backtest.Backtest.optimize
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize
+msgid "Returns"
+msgstr ""
+
+#: 7da3493e9fa04fe4b3f9283e92f69c2d of
+#: qtrade.backtest.backtest.Backtest.optimize:7
+msgid "**``** (*best_params, best_stats, all_results*)"
+msgstr ""
+
+#: fcd63735ad464e9c8dfc4dca0850c840 of qtrade.backtest.backtest.Backtest.run:1
+msgid "Run the backtest end-to-end."
+msgstr ""
+
+#: 2cff826f34884777a76eaa23d6581af5 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:1
+msgid ""
+"Walk-forward optimization: rolling-window training + immediate out-of-"
+"sample test."
+msgstr ""
+
+#: 6889264746534ea88b942adcc03499d6 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:4
+msgid "For each (train, test) window pair:"
+msgstr ""
+
+#: 7551c4ec6e86456696fb424152db7e4d of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:6
+msgid "Run :meth:`optimize` on the train slice to pick the best params."
+msgstr ""
+
+#: e17c3346a07b4fcfae0b0131c6262bcf of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:7
+msgid "Run a fresh backtest on the test slice using those params."
+msgstr ""
+
+#: f0353a5ab4314768bb526e24c5e85162 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:8
+msgid "Record the out-of-sample (OoS) statistics."
+msgstr ""
+
+#: 2410c36752af41e79ce34f5782a4a786 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:10
+msgid ""
+"This is the standard antidote to the in-sample overfitting that bare "
+":meth:`optimize` produces — every reported metric is on data the strategy"
+" was never tuned on."
+msgstr ""
+
+#: 96e0699375034cb98f4ab380be95b6c7 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:14
+msgid "Number of bars in each training window."
+msgstr ""
+
+#: f423d11bcb9e43f1b679a63a1fb0552a of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:15
+msgid "Number of bars in the test window immediately after."
+msgstr ""
+
+#: f440d573f15d4901910553ac3e71e206 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:16
+msgid ""
+"Metric name to maximize within each train window (same as "
+":meth:`optimize`)."
+msgstr ""
+
+#: 616d4a1ef2a743cbb28fc1da9dda2bc9 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:18
+msgid ""
+"How many bars to advance between successive train starts. Defaults to "
+"``test_window`` (non-overlapping test windows)."
+msgstr ""
+
+#: 2c0018da111a4262ab9c1da17546151a of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:20
+msgid "Optional filter on parameter dicts."
+msgstr ""
+
+#: ffe67632a13f488fa0bb7792cc8d0ff9 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:21
+msgid "Parameter ranges, same as :meth:`optimize`."
+msgstr ""
+
+#: 3df1f69c2d884900b47eaaf986d6ddf3 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:23
+#, python-brace-format
+msgid "**``{'windows': [...], 'summary': {...}}``.**"
+msgstr ""
+
+#: 558d93c2afed44d8a4a9c67181830b79 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:24
+msgid "**Each entry in ``windows`` is a dict with ``train_start``,**"
+msgstr ""
+
+#: 9f25356f125b49f29f648a5a67b8d0df of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:25
+msgid "**``train_end``, ``test_start``, ``test_end``, ``best_params``,**"
+msgstr ""
+
+#: 9a826a3344c14aa8ad7c381d7bf20022 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:26
+msgid "**``train_stats``, ``test_stats``, and ``test_equity``**"
+msgstr ""
+
+#: 5fb5bf7e74a9491c83fd6b5a898b93fd of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:27
+msgid "**(the test-window equity Series).**"
+msgstr ""
+
+#: 63e3f6796f724814b2be8d86aedce58f of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:28
+msgid "**``summary`` contains aggregate OoS metrics** -- ``n_windows``,"
+msgstr ""
+
+#: ed67f38dd78f49e9a6de50a23c8ec68f of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:29
+msgid "**``mean_oos_return``, ``hit_rate``, ``min_oos_return``,**"
+msgstr ""
+
+#: b63c8254ad5d4acb9aa59203161c20b2 of
+#: qtrade.backtest.backtest.Backtest.walk_forward_optimize:30
+msgid "**``max_oos_return``.**"
+msgstr ""
+

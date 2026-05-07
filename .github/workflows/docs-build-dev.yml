@@ -26,16 +26,42 @@ jobs:
           pip install -r docs/requirements.txt
           pip install .
 
-      - name: Build Documentation
+      - name: Build English documentation
         run: |
-          cd docs
-          make html SPHINXOPTS="-W --keep-going"
+          sphinx-build -W --keep-going -b html \
+            -D language=en \
+            docs docs/_build/html_combined/en
+
+      - name: Build Chinese documentation
+        run: |
+          sphinx-build -W --keep-going -b html \
+            -D language=zh_CN \
+            docs docs/_build/html_combined/zh
+
+      - name: Add root-level redirect to English
+        run: |
+          cat > docs/_build/html_combined/index.html <<'HTML'
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta http-equiv="refresh" content="0; url=en/">
+            <link rel="canonical" href="en/">
+            <title>QTrade documentation</title>
+          </head>
+          <body>
+            <p>Redirecting to <a href="en/">English documentation</a>… (<a href="zh/">中文</a>)</p>
+          </body>
+          </html>
+          HTML
 
       - name: Remove .doctrees
-        run: rm -r docs/_build/doctrees
+        run: |
+          rm -rf docs/_build/html_combined/en/.doctrees
+          rm -rf docs/_build/html_combined/zh/.doctrees
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/_build/html
+          publish_dir: docs/_build/html_combined

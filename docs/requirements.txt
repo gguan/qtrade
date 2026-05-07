@@ -7,4 +7,5 @@ sphinx-design
 sphinx-inline-tabs
 sphinx-tabs
 sphinx_github_changelog
+sphinx-intl
 furo

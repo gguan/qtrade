@@ -1,0 +1,139 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../api/backtest/Strategy.md:5 a6a2065c198f49db982602cc8be94783
+msgid "Strategy"
+msgstr ""
+
+#: f2686ab8069643f4bf756a4b80fa09db of qtrade.backtest.strategy.Strategy:1
+msgid "Base class for trading strategies."
+msgstr ""
+
+#: 3f7ce1d1f1714bad8ec470cd9f4b4cab of qtrade.backtest.strategy.Strategy:3
+msgid ""
+"Single-asset strategies use the legacy attribute-style API "
+"(``self.data``, ``self.position``, ``self.buy(size=10)``); multi-asset "
+"strategies use ``self.data_by_asset[asset]``, ``self.positions[asset]``, "
+"and pass an asset symbol to ``self.buy(\"AAPL\", size=10)``."
+msgstr ""
+
+#: ../api/backtest/Strategy.md 555edd84a90141f6b3e0ac85cb48da46
+#: 6959e96e1ae645bda43243f41ebffdd1 b80d59d8e5674fc9a7bb512de762c2ae
+#: ebb57c2781294b67addc28103db36127
+msgid "Parameters"
+msgstr ""
+
+#: a93ea37a9aaa47a6a8e46a83c7ba45e3 of qtrade.backtest.strategy.Strategy:8
+msgid "The Broker instance."
+msgstr ""
+
+#: e76948e6895d4f0e8a4d4698cbf523ed of qtrade.backtest.strategy.Strategy:9
+msgid ""
+"Either a single DataFrame (single-asset, kept under the key "
+"``\"default\"``) or a dict[str, DataFrame] (multi-asset)."
+msgstr ""
+
+#: cbae257cba054a9d8d1c5e26219a5e60 of qtrade.backtest.strategy.Strategy:11
+msgid "Strategy parameters dict; entries are also bound as attributes."
+msgstr ""
+
+#: ../api/backtest/Strategy.md:11 4668869f3af34dd0937c9dd9dde8d58a
+msgid "Lifecycle methods"
+msgstr ""
+
+#: e9f9c8dfcdda465a9272c8629214da12 of
+#: qtrade.backtest.strategy.Strategy.prepare:1
+msgid "Initialize the strategy (e.g., declare indicators)."
+msgstr ""
+
+#: ee2a3db137754b0aba44ab4f7b5f83fb of
+#: qtrade.backtest.strategy.Strategy.on_bar_close:1
+msgid "Called on each bar (time step) to generate trading signals."
+msgstr ""
+
+#: ../api/backtest/Strategy.md:17 857b8d8b958e4897a0b6933ac1ab8c4a
+msgid "Order placement"
+msgstr ""
+
+#: f8db6f9fbd7740d1ab0c4cf131105c80 of qtrade.backtest.strategy.Strategy.buy:1
+msgid "Place a buy order."
+msgstr ""
+
+#: 045f317196824a188eddfb50e6ab241f ab805515e44249ba98cef37c783fffec of
+#: qtrade.backtest.strategy.Strategy.buy:3
+#: qtrade.backtest.strategy.Strategy.sell:3
+msgid ""
+"Asset symbol (positional). Required when the strategy is running on more "
+"than one asset; optional otherwise."
+msgstr ""
+
+#: f87d8960869d43bb9198b5b71c87e5aa of qtrade.backtest.strategy.Strategy.buy:5
+msgid ""
+"Order size. If omitted, defaults to the maximum size that fits in current"
+" available margin at the most recent close."
+msgstr ""
+
+#: 5880645c43d44bc09f86025e97811fc8 db868964067d47bb855342ee60e1f582 of
+#: qtrade.backtest.strategy.Strategy.buy:7
+#: qtrade.backtest.strategy.Strategy.sell:7
+msgid "standard order fields."
+msgstr ""
+
+#: 3f11a625629f4484bdc4b9c45a7e6a68 of qtrade.backtest.strategy.Strategy.sell:1
+msgid "Place a sell order."
+msgstr ""
+
+#: 69498bc5c2574fee8c990dd1d074c56d of qtrade.backtest.strategy.Strategy.sell:5
+msgid ""
+"Order size. If omitted, defaults to the current position size on that "
+"asset (used for closing longs)."
+msgstr ""
+
+#: 2a355a802d9b4b859ad0855c659da05a of
+#: qtrade.backtest.strategy.Strategy.close:1
+msgid "Close all open positions."
+msgstr ""
+
+#: 3851062935674a7aa3c9a9e8892df17a of
+#: qtrade.backtest.strategy.Strategy.close:3
+msgid ""
+"If provided, close only that asset's position. Otherwise close every "
+"asset's position."
+msgstr ""
+
+#: ../api/backtest/Strategy.md:24 3bd660d083c64cb8b7bc33246298c427
+msgid "Read accessors"
+msgstr ""
+
+#: ../api/backtest/Strategy.md:26 50013bc0b5874e25a16f222e114cc9b5
+msgid ""
+"Single-asset shorthand: `data`, `position`, `equity`, `unrealized_pnl`, "
+"`active_trades`, `closed_trades`, `pending_orders`."
+msgstr ""
+
+#: ../api/backtest/Strategy.md:29 dba3bef064804e52a309fb20d9813f95
+msgid ""
+"Multi-asset accessors: `assets` (list of symbols), `positions` (dict), "
+"`data_by_asset` (dict of truncated DataFrames). The single-asset "
+"shorthand properties (`data`, `position`) raise `AttributeError` with a "
+"clear message when the strategy is running on more than one asset."
+msgstr ""
+

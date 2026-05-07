@@ -1,0 +1,412 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/stats_glossary.md:1 d5a9b2858b3e4e4e90d7a868d8f307a9
+msgid "Stats glossary"
+msgstr ""
+
+#: ../guide/stats_glossary.md:3 682665cecc364009aa8146b37b5a04bb
+msgid ""
+"`Backtest.show_stats()` and `qtrade.utils.stats.calculate_stats()` print "
+"a dict with ~25 metrics. This page explains what each one means, how it's"
+" computed, and a rough guide to interpretation."
+msgstr ""
+
+#: ../guide/stats_glossary.md:7 8121dc31ef414ac69e5f00e8c58ff513
+msgid ""
+"For per-asset breakdowns in a portfolio backtest, see "
+"`calculate_stats_per_asset(broker)` — it returns the trade-level subset "
+"of these metrics keyed by asset symbol."
+msgstr ""
+
+#: ../guide/stats_glossary.md:11 25121fd447054966bc162a81b2ebff2e
+msgid "Time / value"
+msgstr ""
+
+#: ../guide/stats_glossary.md 1362cbb8ab00425d843968809e62c7eb
+#: 32d87a7121c646ecacfc9b488095ba25 6b6f277b4dbb43c5ab1978b0f63735f0
+#: 999ca4bb61594c5389752e2c28256512
+msgid "Metric"
+msgstr ""
+
+#: ../guide/stats_glossary.md 53518fcf1a634aeab665bf59189de6a9
+msgid "Meaning"
+msgstr ""
+
+#: ../guide/stats_glossary.md d9c4015efc7a4c9aaf4fe504ab5a4e12
+msgid "**Start**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 49d247e7b0b04899a4fe9180a750e25e
+msgid "First bar timestamp (from `equity_history.index[0]`)."
+msgstr ""
+
+#: ../guide/stats_glossary.md 39d9d0224e814c0fa63e4ef53bc6fa9d
+msgid "**End**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 696a7f785def4a22ae60dee2e720f0b4
+msgid "Last bar processed (`broker.current_time`)."
+msgstr ""
+
+#: ../guide/stats_glossary.md 2241b24ecf3d44c8b76ae63b68ff4dea
+msgid "**Duration**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 376ea2487d354d4783418cdb1a1651f5
+msgid "`End - Start` as a `pd.Timedelta`."
+msgstr ""
+
+#: ../guide/stats_glossary.md 43c9879918b94080ba329c2a4225408c
+msgid "**Start Value**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 3690b6c47c56499d94366dae008c2820
+msgid "Initial equity (typically equal to starting cash)."
+msgstr ""
+
+#: ../guide/stats_glossary.md 6dc590fe31414082a5273002bd36ce60
+msgid "**End Value**"
+msgstr ""
+
+#: ../guide/stats_glossary.md de073460e041437099d9ab85657e546e
+msgid "Equity at the end of the backtest."
+msgstr ""
+
+#: ../guide/stats_glossary.md:21 ea994b906615457589d87dd70e935819
+msgid "Returns"
+msgstr ""
+
+#: ../guide/stats_glossary.md 5b06dc2a8b894fba9e4f5a953dd9b0a1
+#: c3c4fbdaafc140fba479a49a3b646798
+msgid "Formula"
+msgstr ""
+
+#: ../guide/stats_glossary.md 3a4c7e50086f463db2973644ce9430e9
+#: dae8b13e588b4704be14dae72d7b2ada edea0542e1194a889b3912f79d48b61d
+msgid "Notes"
+msgstr ""
+
+#: ../guide/stats_glossary.md a22b82eda4e74519b193512e9f6b6e69
+msgid "**Total Return [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md fc77ca93505343dd8c27dbe52a261881
+msgid "`(End - Start) / Start × 100`"
+msgstr ""
+
+#: ../guide/stats_glossary.md 8fbba21016c149979c2363a5a37fb1e2
+msgid "Raw, not annualized."
+msgstr ""
+
+#: ../guide/stats_glossary.md 2451b699590b42c885e6489736fb3ddb
+msgid "**Total Commission Cost[%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 09f9e4add18543378c3a4571269ab84c
+msgid "Sum of all commissions paid over the run"
+msgstr ""
+
+#: ../guide/stats_glossary.md 34fe60fb3e0045288694e7f1f4e51181
+msgid "Helpful for spotting strategies that bleed on fees."
+msgstr ""
+
+#: ../guide/stats_glossary.md 5633b82779a746ac80fb845d23bb5f4d
+msgid "**Buy & Hold Return [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 3075e2b2f56a4f9cb0312505410c911a
+msgid ""
+"`(close[-1] - close[0]) / close[0] × 100` for the asset (single) or "
+"**equal-weighted average** across assets (multi)"
+msgstr ""
+
+#: ../guide/stats_glossary.md 355cc261e29b4a5982ceeae8271af89f
+msgid ""
+"Benchmark to beat. Strategies losing to B&H typically aren't worth "
+"running over passive holding."
+msgstr ""
+
+#: ../guide/stats_glossary.md 04f42439697a456fad1cc8f6a5f55a9e
+msgid "**Return (Ann.) [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md bc969c58ac6e4ec5bf6a1dd9b8e9ef85
+msgid ""
+"Geometric mean of daily returns, annualized to 252 (stocks) or 365 "
+"(crypto/FX) days"
+msgstr ""
+
+#: ../guide/stats_glossary.md 58b011a0399b4f158ce3a1f04d13827b
+msgid "Compounded annual growth rate."
+msgstr ""
+
+#: ../guide/stats_glossary.md ddb6c357743e481c88b6d5969a4ee64b
+msgid "**Volatility (Ann.) [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 8533da1a5e9047778b85642f7f64ada5
+msgid "`std(daily_returns) × √annual_days × 100`"
+msgstr ""
+
+#: ../guide/stats_glossary.md 61df3f824acf499ea8fdc52a019ace49
+msgid "Standard deviation of returns, scaled to a year."
+msgstr ""
+
+#: ../guide/stats_glossary.md:31 1fe90f2a3d264ddf8bf2b042dc645230
+msgid ""
+"The 252 vs 365 annualization factor is auto-detected: if the equity curve"
+" includes weekends as trading days (`>≈ 60%` of weekend bars are filled),"
+" it's treated as 365-day; otherwise 252."
+msgstr ""
+
+#: ../guide/stats_glossary.md:35 861ced3cb2754aa79ac92fd6ee169e8b
+msgid "Risk"
+msgstr ""
+
+#: ../guide/stats_glossary.md dbb58f8a74454eed864d153ef42fab3e
+msgid "**Max Drawdown [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 80fdaae3cbec43bcb3801a9ca20210ee
+msgid "`min((equity - cummax(equity)) / cummax(equity)) × 100`"
+msgstr ""
+
+#: ../guide/stats_glossary.md 17c438c41ed34374862b91ccd9548563
+msgid "The biggest peak-to-trough decline. Always ≤ 0."
+msgstr ""
+
+#: ../guide/stats_glossary.md 993e2ab687584d71b940a12bead71674
+msgid "**Max Drawdown Duration**"
+msgstr ""
+
+#: ../guide/stats_glossary.md b5dfafac091642e49c31b41e55c4b562
+msgid "Length of the longest contiguous \"below peak\" period"
+msgstr ""
+
+#: ../guide/stats_glossary.md dbc88846db664df6a71d23ac23821439
+msgid ""
+"Returned as a `pd.Timedelta`. The drawdown that took longest to recover "
+"from, not the deepest one."
+msgstr ""
+
+#: ../guide/stats_glossary.md:42 6111b5afa23f442d87762a450d2d921f
+msgid "Trade statistics"
+msgstr ""
+
+#: ../guide/stats_glossary.md 2cc1fd5222a24518a82b3b81890822d1
+msgid "**Total Trades**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 03772b06cecd4d8591b85016a73140e7
+msgid "Count of closed trades across all assets."
+msgstr ""
+
+#: ../guide/stats_glossary.md 9fd86759bc7745e586671f98d32441e7
+msgid "**Win Rate [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 1f969389027741efbf9ed3dd31695efa
+msgid "Percentage of closed trades with positive profit."
+msgstr ""
+
+#: ../guide/stats_glossary.md f65fcd1f01a84b89913b4c50fcd2d4a3
+msgid "**Best Trade [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 4f38ec9f6bf24872a684444d23249775
+msgid ""
+"Largest single trade profit (in account currency, not %). The label says "
+"\"[%]\" for legacy reasons — it's a P&L value."
+msgstr ""
+
+#: ../guide/stats_glossary.md 361afb4cf72940fc8d22a9fc331d2d65
+msgid "**Worst Trade [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 70f17ed7c3b245c7a7e56d6deb8bd591
+msgid "Same, but the most negative profit."
+msgstr ""
+
+#: ../guide/stats_glossary.md 819dcd6a6f474d01a69e99bcb12625ca
+msgid "**Avg Winning Trade [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md e06339c0647d421fa261a1a5bf33e218
+msgid "Mean profit of winning trades."
+msgstr ""
+
+#: ../guide/stats_glossary.md 331d5096724347119edfb5b9ce83595c
+msgid "**Avg Losing Trade [%]**"
+msgstr ""
+
+#: ../guide/stats_glossary.md e0590b93f6d14efaa547d54a77be46ee
+msgid "Mean profit of losing trades (negative)."
+msgstr ""
+
+#: ../guide/stats_glossary.md 0f430f343c5242d19e1bb22e011b7592
+msgid "**Avg Winning Trade Duration**"
+msgstr ""
+
+#: ../guide/stats_glossary.md 2bfc19d6075449578f26a859233d8935
+msgid "Mean time-in-market for winners."
+msgstr ""
+
+#: ../guide/stats_glossary.md e151c1f5d6bd400a883abf32e18950c0
+msgid "**Avg Losing Trade Duration**"
+msgstr ""
+
+#: ../guide/stats_glossary.md fce0863e03964532958f78c9a8afeff3
+msgid "Mean time-in-market for losers."
+msgstr ""
+
+#: ../guide/stats_glossary.md:55 c5f5091055344b8bb143bc1011d6f012
+msgid ""
+"If \"winners hold longer than losers\" you have a \"let winners run, cut "
+"losers short\" pattern. Reverse means you're cutting winners early."
+msgstr ""
+
+#: ../guide/stats_glossary.md:58 a277ac0b592c441a81f09c66d8cde797
+msgid "Performance ratios"
+msgstr ""
+
+#: ../guide/stats_glossary.md:60 a3380b8b2e124a88ad621fde13397b05
+msgid ""
+"These compress return-and-risk into a single number. Different ratios "
+"penalize different things."
+msgstr ""
+
+#: ../guide/stats_glossary.md:63 c82c68660603494faca5e0677954b8a9
+msgid "Profit Factor"
+msgstr ""
+
+#: ../guide/stats_glossary.md:69 49d8709f0b2145fc8cb0895786b6c37b
+msgid ""
+"Higher is better. > 1 means you're net positive. > 2 is rare and good. "
+"NaN if there are no losing trades."
+msgstr ""
+
+#: ../guide/stats_glossary.md:72 2eaea16122b94a52b4061fe3e351e425
+msgid "Expectancy"
+msgstr ""
+
+#: ../guide/stats_glossary.md:78 da33ce6c1b704c1b91e62fd3e45ec0c6
+msgid ""
+"Average dollar profit per trade. Positive expectancy means each trade is "
+"worth taking on average."
+msgstr ""
+
+#: ../guide/stats_glossary.md:81 39adcafa98da4e3eb59844d3dbcb4bcd
+msgid "Sharpe Ratio"
+msgstr ""
+
+#: ../guide/stats_glossary.md:87 49a2d51c003f46c2bb81342c61f7b49e
+msgid ""
+"Risk-free rate is assumed to be 0 (override by editing "
+"`__calculate_performance_ratios` in `stats.py` if you need otherwise). "
+"Rough guide:"
+msgstr ""
+
+#: ../guide/stats_glossary.md:91 5eab923c2fb249bdae31eceb7856f673
+msgid "**< 0**: losing strategy."
+msgstr ""
+
+#: ../guide/stats_glossary.md:92 122a6696e5de4b54a5e6fc835912351a
+msgid "**0–1**: marginal; might be in-sample noise."
+msgstr ""
+
+#: ../guide/stats_glossary.md:93 2de898c07b5c49f3b0cbb08ccf09eb9f
+msgid "**1–2**: solid."
+msgstr ""
+
+#: ../guide/stats_glossary.md:94 76315288351a44078d070996f3701a2d
+msgid ""
+"**> 2**: excellent (and usually too good — check for overfitting or look-"
+"ahead bias)."
+msgstr ""
+
+#: ../guide/stats_glossary.md:97 6602d92a78f34c778505cd8b6d50660b
+msgid "Sortino Ratio"
+msgstr ""
+
+#: ../guide/stats_glossary.md:103 0f9012ccc63646d8912ddaa6f3fe4caa
+msgid ""
+"Like Sharpe, but only penalizes downside volatility. Strategies with "
+"asymmetric return distributions (most positive trend-followers) score "
+"better here than on Sharpe."
+msgstr ""
+
+#: ../guide/stats_glossary.md:107 a090432bd0c44a009870c20892e4e6fc
+msgid "Calmar Ratio"
+msgstr ""
+
+#: ../guide/stats_glossary.md:113 72b5067ccfbe432597f4fe038ac2d51e
+msgid ""
+"How much annual return per unit of worst-case drawdown. > 1 is decent "
+"(your annual gains exceed your worst dip)."
+msgstr ""
+
+#: ../guide/stats_glossary.md:116 f64088400fd546d98b71567244a403c1
+msgid "Omega Ratio"
+msgstr ""
+
+#: ../guide/stats_glossary.md:122 30deb27018a74a8eab0a49d7dc94b69f
+msgid ""
+"Threshold is 0 (so: gains divided by losses, summed across all daily "
+"return observations). Captures the full distribution of returns rather "
+"than mean/std summary. > 1 is positive."
+msgstr ""
+
+#: ../guide/stats_glossary.md:126 8a0824c8633345d3965b2c6da3fd031c
+msgid "Sanity-checking your stats"
+msgstr ""
+
+#: ../guide/stats_glossary.md:128 9d685e63bf4743b7b7b6e680d7269c19
+msgid "A few things to verify before getting excited about a backtest:"
+msgstr ""
+
+#: ../guide/stats_glossary.md:130 3af2eee1313d4e20b5afb6eff011e1f2
+msgid ""
+"**Total Trades is reasonable** — single-digit trade counts can produce "
+"Sharpe = 5 by accident. You want enough trades for the metrics to be "
+"statistically meaningful."
+msgstr ""
+
+#: ../guide/stats_glossary.md:133 7d9d118b020d4507954229635a9448e0
+msgid ""
+"**Total Return > Buy & Hold** — beating B&H is the bar. Losing to it on a"
+" long-only strategy means your timing is hurting more than helping."
+msgstr ""
+
+#: ../guide/stats_glossary.md:135 9d79f573c7784cf9a7bba7cde7ccce64
+msgid ""
+"**Win Rate × Avg Win > (1 - Win Rate) × |Avg Loss|** — the basic "
+"expectancy condition. If this fails, your strategy is structurally "
+"losing."
+msgstr ""
+
+#: ../guide/stats_glossary.md:138 e6f534abcdc841aea216d2126abe80ba
+msgid ""
+"**Use `walk_forward_optimize` before trusting `optimize` results** — in-"
+"sample Sharpe is almost always too high. See [Walk-forward "
+"optimization](walk_forward.md)."
+msgstr ""
+

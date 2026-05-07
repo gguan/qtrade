@@ -17,6 +17,8 @@ htmlcov/*
 
 doc/build/*
 docs/_build/
+docs/_gettext/
+docs/locale/**/*.mo
 
 .idea/*
 .vscode/

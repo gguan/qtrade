@@ -37,7 +37,17 @@ extensions = [
 ]
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', '404.md']
+exclude_patterns = ['_build', '404.md', 'locale']
+
+# -- Internationalization ----------------------------------------------------
+# Build the docs in either English (default) or Chinese with
+# ``-D language=zh_CN``. Untranslated strings fall back to the English
+# source, so the Chinese build starts useful from day one and improves
+# as ``locale/zh_CN/LC_MESSAGES/*.po`` files are filled in.
+language = 'en'
+locale_dirs = ['locale/']
+gettext_compact = False  # one .pot template per source file
+gettext_uuid = True      # stable msgid hashes across regenerations
 
 # Napoleon settings
 napoleon_use_ivar = True
@@ -70,3 +80,15 @@ def setup(app):
 html_theme = 'furo'
 html_title = "QTrade"
 html_static_path = ['_static']
+html_js_files = ['lang_switcher.js']
+
+# Furo's announcement banner is a thin strip at the top of every page.
+# We use it to host a language switcher link; the JS in lang_switcher.js
+# rewrites the href / label based on the URL ("/en/" → "/zh/" and vice
+# versa).
+html_theme_options = {
+    "announcement": (
+        '<a id="lang-switcher-link" href="#" '
+        'style="color: inherit; text-decoration: underline;">中文 / EN</a>'
+    ),
+}
