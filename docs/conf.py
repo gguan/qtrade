@@ -18,7 +18,7 @@ sys.path.insert(0, root_path)
 project = 'QTrade'
 copyright = f'{time.localtime().tm_year}, Guan Guan'
 author = 'Guan Guan'
-release = '0.1.0'
+release = '0.2.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -37,7 +37,7 @@ extensions = [
 ]
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['_build', '404.md']
 
 # Napoleon settings
 napoleon_use_ivar = True

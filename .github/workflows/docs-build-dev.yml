@@ -27,7 +27,7 @@ jobs:
       - name: Build Documentation
         run: |
           cd docs
-          make html
+          make html SPHINXOPTS="-W --keep-going"
 
       - name: Remove .doctrees
         run: rm -r docs/_build/doctrees
