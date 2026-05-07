@@ -20,10 +20,22 @@ With features ranging from traditional signal-based strategies to reinforcement 
 :hidden:
 
 guide/getting_started
+guide/concepts
 guide/multi_asset
+guide/walk_forward
+guide/commissions
+guide/plot
 guide/trading_environment
 guide/customize_environment
+```
 
+```{toctree}
+:caption: Reference
+:maxdepth: 1
+:hidden:
+
+guide/stats_glossary
+guide/faq
 ```
 
 ```{toctree}
