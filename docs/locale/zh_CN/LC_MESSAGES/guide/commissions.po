@@ -1,18 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
+# Chinese translation of QTrade docs.
 # Copyright (C) 2026, Guan Guan
-# This file is distributed under the same license as the QTrade package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: QTrade \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-05-08 02:38+0800\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"PO-Revision-Date: 2026-05-08 03:00+0800\n"
+"Last-Translator: \n"
 "Language: zh_CN\n"
-"Language-Team: zh_CN <LL@li.org>\n"
+"Language-Team: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -21,7 +18,7 @@ msgstr ""
 
 #: ../guide/commissions.md:1 9cc2b1923eb3444ca2fd4fb6b35e9a09
 msgid "Commissions and slippage"
-msgstr ""
+msgstr "佣金与滑点"
 
 #: ../guide/commissions.md:3 0b6bf192ef0340a69a460e10ce53e9a7
 msgid ""
@@ -29,22 +26,27 @@ msgid ""
 " strategies need. All live in `qtrade.core.commission` and share the "
 "abstract base `Commission`."
 msgstr ""
+"QTrade 内置四种 `Commission` 实现，覆盖大多数策略需要的模式。"
+"全部位于 `qtrade.core.commission`，共享抽象基类 `Commission`。"
 
 #: ../guide/commissions.md:16 149cb340ca8740d78523c0da4162bf95
 msgid ""
 "Pass an instance to `Backtest(..., commission=...)` or `TradingEnv(..., "
 "commission=...)`. `commission=None` is equivalent to `NoCommission()`."
 msgstr ""
+"把实例传给 `Backtest(..., commission=...)` 或 `TradingEnv(..., commission=...)`。"
+"`commission=None` 等价于 `NoCommission()`。"
 
 #: ../guide/commissions.md:20 ae378138f40e4cf5b2a0d4b2bbd54c25
 msgid "The interface"
-msgstr ""
+msgstr "接口"
 
 #: ../guide/commissions.md:22 0195556d9fc54bed8a271a24d18b45da
 msgid ""
 "`Commission.calculate_commission(order_size: int, fill_price: float) -> "
 "float`"
 msgstr ""
+"`Commission.calculate_commission(order_size: int, fill_price: float) -> float`"
 
 #: ../guide/commissions.md:24 9fa182c2f2924602be8e0234bb47e768
 msgid ""
@@ -53,18 +55,20 @@ msgid ""
 "— use `abs(order_size)` inside if you want symmetric fees on buys and "
 "sells."
 msgstr ""
+"返回一笔成交的佣金（账户币种）。Broker 在成交时从 `cash` 扣除。"
+"`order_size` 的符号保留 —— 如果想买卖对称收费，在内部用 `abs(order_size)`。"
 
 #: ../guide/commissions.md:29 7eab0e478d214778af61e6854e7ce164
 msgid "To roll your own:"
-msgstr ""
+msgstr "自定义实现："
 
 #: ../guide/commissions.md:43 66a6132aa9264c93aa3d6c477b87f773
 msgid "Built-in implementations"
-msgstr ""
+msgstr "内置实现"
 
 #: ../guide/commissions.md:45 b7d01575197644a0b621aaff022cd54f
 msgid "NoCommission"
-msgstr ""
+msgstr "NoCommission"
 
 #: ../guide/commissions.md:51 2d0d1704230c40479d9293757637049a
 msgid ""
@@ -72,24 +76,28 @@ msgid ""
 "clean comparisons against Buy & Hold, or when modeling commission-free "
 "brokers."
 msgstr ""
+"始终返回 `0.0`。不传任何参数时的默认值。用于和 Buy & Hold 做干净对比，"
+"或者建模零佣金券商。"
 
 #: ../guide/commissions.md:55 3b3f5f0724f8483a875f09308fa1f468
 msgid "PercentageCommission"
-msgstr ""
+msgstr "PercentageCommission"
 
 #: ../guide/commissions.md:61 b3519dbea7ee49348f10b015ede3903b
 msgid "Charges `abs(order_size) * fill_price * percentage`."
-msgstr ""
+msgstr "按 `abs(order_size) * fill_price * percentage` 收费。"
 
 #: ../guide/commissions.md:63 082f82db95174cbe9373aa0b4da36666
 msgid ""
 "The standard model for **stocks** (commissions quoted as bps of notional)"
 " and **crypto spot** (taker fees are typically 0.05–0.1%)."
 msgstr ""
+"**股票**（佣金按名义本金的 bps 报价）和**加密现货**（taker 费率通常 0.05–0.1%）"
+"的标准模型。"
 
 #: ../guide/commissions.md:66 de0be0bea8c64ea0ba8df3038630995a
 msgid "FixedCommission"
-msgstr ""
+msgstr "FixedCommission"
 
 #: ../guide/commissions.md:72 07839273f9b14af4a1d1d269ac0d9300
 msgid ""
@@ -97,16 +105,20 @@ msgid ""
 " (where the exchange charges per-contract) and for **discount brokers** "
 "that quote a flat ticket charge."
 msgstr ""
+"无论 size 和价格如何，返回固定费用。适合 **期货**（交易所按合约计费）和"
+"按笔收单一费用的**折扣券商**。"
 
 #: ../guide/commissions.md:76 6e221c0aa3624645ac005b2219579595
 msgid ""
 "For futures with multiple commission components (exchange + clearing + "
 "broker), sum them up: `FixedCommission(fixed_fee=2.50)`."
 msgstr ""
+"对于含多个佣金组件（交易所 + 清算 + 券商）的期货，加总后传入："
+"`FixedCommission(fixed_fee=2.50)`。"
 
 #: ../guide/commissions.md:79 8307916f17aa46369bb0c648a719cdb4
 msgid "SlippageCommission"
-msgstr ""
+msgstr "SlippageCommission"
 
 #: ../guide/commissions.md:85 fe73250a09c54050887e9f3c1cfa88c1
 msgid ""
@@ -114,76 +126,79 @@ msgid ""
 "different — this models the *price impact* of crossing the spread, not a "
 "venue fee. Use it when:"
 msgstr ""
+"数学上与 `PercentageCommission` 相同，但意图不同 —— 这个建模的是穿越买卖价差的"
+"*价格冲击*，不是交易所费用。适用场景："
 
 #: ../guide/commissions.md:89 42ed7965fa2a4a9db1091d4f65ca400a
 msgid "You want to add slippage **on top of** an explicit commission."
-msgstr ""
+msgstr "想在显式佣金**之上**额外加上滑点。"
 
 #: ../guide/commissions.md:90 c86e86351f6e43a089ca12477d998d83
 msgid ""
 "You want the cost to scale with notional but separate from \"fees\" in "
 "reporting."
 msgstr ""
+"想让成本按名义本金缩放，但在报表中和「佣金」分开统计。"
 
 #: ../guide/commissions.md:104 7ef9c391a676427eb4d954807c0db30d
 msgid "Picking the right model"
-msgstr ""
+msgstr "如何选择合适的模型"
 
 #: ../guide/commissions.md 8e7193a1595f41749cd11cdf8723022b
 msgid "Asset class"
-msgstr ""
+msgstr "资产类别"
 
 #: ../guide/commissions.md 12ca2a1df25e431686ea1ddcc2402842
 msgid "Typical setup"
-msgstr ""
+msgstr "典型设置"
 
 #: ../guide/commissions.md 55b22e22c37d4509a9675d24f377befb
 msgid "US equities (retail)"
-msgstr ""
+msgstr "美股（零售）"
 
 #: ../guide/commissions.md 6976ad12d9e6443a81d353951638b946
 msgid "`NoCommission()` (most brokers are zero now) + small `SlippageCommission`"
-msgstr ""
+msgstr "`NoCommission()`（大多数券商已零佣）+ 小额 `SlippageCommission`"
 
 #: ../guide/commissions.md f49cf1f127c2484aa5393e69066a61f7
 msgid "US equities (institutional)"
-msgstr ""
+msgstr "美股（机构）"
 
 #: ../guide/commissions.md df8607371dbc4bbab24ddff2667cb0f0
 msgid "`PercentageCommission(0.0005)` (~5 bps blended)"
-msgstr ""
+msgstr "`PercentageCommission(0.0005)`（综合约 5 bps）"
 
 #: ../guide/commissions.md 4bfeba29d46843ccae48bc31a35b2cea
 msgid "Futures"
-msgstr ""
+msgstr "期货"
 
 #: ../guide/commissions.md 4d2c9c6eab4d447c89b168e19417cbb0
 msgid "`FixedCommission(2.5)` per contract + slippage"
-msgstr ""
+msgstr "`FixedCommission(2.5)` 每合约 + 滑点"
 
 #: ../guide/commissions.md 8d2f29b46f5c4d81a508b12a1aa95ac4
 msgid "FX"
-msgstr ""
+msgstr "外汇"
 
 #: ../guide/commissions.md 663a48ff72bf4cf496c66409b43b70f5
 msgid "`PercentageCommission(0.0001)` (1 pip on majors)"
-msgstr ""
+msgstr "`PercentageCommission(0.0001)`（主要货币对约 1 个点）"
 
 #: ../guide/commissions.md e6b7f91e24d047ca8df695e88e8e7554
 msgid "Crypto spot"
-msgstr ""
+msgstr "加密现货"
 
 #: ../guide/commissions.md 3d5f37477fe847c8b53e39d712795153
 msgid "`PercentageCommission(0.001)` (taker) or `(0.0005)` (maker)"
-msgstr ""
+msgstr "`PercentageCommission(0.001)`（taker）或 `(0.0005)`（maker）"
 
 #: ../guide/commissions.md 34761751a66249e7be655b9f2284a995
 msgid "Crypto perps"
-msgstr ""
+msgstr "加密永续合约"
 
 #: ../guide/commissions.md a2b03bda858b4599bfb0710339e9684e
 msgid "`PercentageCommission(0.0005)` taker + funding (modeled separately)"
-msgstr ""
+msgstr "`PercentageCommission(0.0005)` taker + 资金费率（单独建模）"
 
 #: ../guide/commissions.md:115 1f251258cf944c9192cb3c6d20491069
 msgid ""
@@ -191,10 +206,12 @@ msgid ""
 " tells you how cost-sensitive your strategy is — high-turnover strategies"
 " often look great pre-cost and lose money post-cost."
 msgstr ""
+"不确定的话，**回测时分别带和不带佣金跑一遍**。差距告诉你策略的成本敏感度 —— "
+"高换手率策略经常成本前看起来很美，扣掉成本就亏钱。"
 
 #: ../guide/commissions.md:119 3969a8a232494872884d4a2fa80d7b4e
 msgid "What's not modeled"
-msgstr ""
+msgstr "未建模的部分"
 
 #: ../guide/commissions.md:121 644e4edbf87d4ac0821b498457f9c723
 msgid ""
@@ -202,6 +219,8 @@ msgid ""
 "maker fees on limit orders, write a custom `Commission` and branch on "
 "whether the order has a `limit` price."
 msgstr ""
+"**Maker / taker 不对称**。所有成交按单一费率收费。如需对限价单按 maker 费率收费，"
+"写一个自定义 `Commission` 并根据订单是否有 `limit` 价格分支。"
 
 #: ../guide/commissions.md:124 e42f3012317d45478cd504a7ab793e06
 msgid ""
@@ -209,6 +228,8 @@ msgid ""
 "The bid/ask spread isn't modeled — `SlippageCommission` is the closest "
 "approximation."
 msgstr ""
+"**买卖价差**。Broker 用 `Close`（或下一根 `Open`）成交市价单。"
+"买卖价差未建模 —— `SlippageCommission` 是最接近的近似。"
 
 #: ../guide/commissions.md:127 523836eb5ad248f7be0cdadf50142462
 msgid ""
@@ -216,6 +237,8 @@ msgid ""
 "positions or perp funding, you'd need to subtract from `cash` manually in"
 " your strategy's `on_bar_close`."
 msgstr ""
+"**资金费率 / 借券成本**。未建模。对于长期空仓或永续合约资金费率，需要在策略的 "
+"`on_bar_close` 里手动扣 `cash`。"
 
 #: ../guide/commissions.md:130 dc40a1e528ab419bbec9d84104884f94
 msgid ""
@@ -224,4 +247,6 @@ msgid ""
 "write a custom `Commission` that branches on the order's `_fill_price` or"
 " wrap it in your strategy logic."
 msgstr ""
-
+"**按资产收费**。多资产回测中单个 `Commission` 实例应用到所有资产。"
+"如需按资产差异化费率，写一个根据订单 `_fill_price` 分支的自定义 `Commission`，"
+"或在策略逻辑里包装。"
