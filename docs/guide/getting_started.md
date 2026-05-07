@@ -4,30 +4,38 @@ This guide will help you get started with backtesting trading strategies using Q
 
 ## Strategy
 
-Let's create a simple SMA strategy to backtest. Our custome strategy need inherit from qtrade.Strategy and implement init() and next() method
+Let's create a simple SMA-crossover strategy. Custom strategies inherit from `qtrade.Strategy` and implement `prepare()` (one-time setup) and `on_bar_close()` (called on every bar):
 
 ```python
 from qtrade.backtest import Strategy
 
 class SMAStrategy(Strategy):
 
-    def init(self):
-        return super().init()
+    def prepare(self):
+        # Indicators are computed up-front so on_bar_close can read them cheaply.
+        # self._data is the full DataFrame; mutate it freely here.
+        self._data['SMA3'] = self._data['Close'].rolling(3).mean()
+        self._data['SMA10'] = self._data['Close'].rolling(10).mean()
 
     def on_bar_close(self):
-        if self.data.SMA3[-2] < self.data.SMA10[-2] and \
-            self.data.SMA3[-1] > self.data.SMA10[-1]:
+        # self.data is the slice up to the current bar (no look-ahead).
+        sma3 = self.data['SMA3']
+        sma10 = self.data['SMA10']
+        # Golden cross → go long
+        if sma3.iloc[-2] < sma10.iloc[-2] and sma3.iloc[-1] > sma10.iloc[-1]:
             self.buy()
-        if self.data.SMA10[-2] > self.data.SMA10[-2] and \
-            self.data.SMA10[-1] < self.data.SMA10[-1]:
+        # Death cross → flatten
+        elif sma3.iloc[-2] > sma10.iloc[-2] and sma3.iloc[-1] < sma10.iloc[-1]:
             self.close()
 ```
 
 ## Data
 
-For simplicity, the QTrade library does not provide a data processing component. Users need to prepare OHLC data as a `pandas.DataFrame` with the required columns: `Open`, `High`, `Low`, `Close`, and optionally `Volume`. The dataframe should also include any indicators that will be used.
+QTrade doesn't ship data loaders — bring your own OHLCV `pandas.DataFrame`
+with `Open`, `High`, `Low`, `Close` (plus optional `Volume`) columns and a
+`DatetimeIndex`. Column names are case-insensitive (`open`, `Open`, etc.).
 
-In this guide, we'll use `yfinance` to obtain the data:
+In this guide, we'll use `yfinance`:
 
 ```bash
 $ pip install yfinance
@@ -38,15 +46,17 @@ import yfinance as yf
 
 # Download gold data with daily intervals
 data = yf.download(
-    "GC=F", 
-    start="2023-01-01", 
-    end="2024-01-01", 
-    interval="1d", 
-    multi_level_index=False
+    "GC=F",
+    start="2023-01-01",
+    end="2024-01-01",
+    interval="1d",
+    multi_level_index=False,
 )
-data['SMA3'] = data['Close'].rolling(3).mean()
-data['SMA10'] = data['Close'].rolling(10).mean()
 ```
+
+Indicators can be added in the strategy's `prepare()` (as shown above) or
+on the DataFrame before passing it to `Backtest`. Indicators added to the
+input DataFrame are visible to the strategy via `self.data`.
 
 ## Backtest
 
@@ -118,20 +128,11 @@ print(trade_details)
 ```
 
 ```text
-    Type  Size  Entry Price   Exit Price Entry Time  Exit Date      Profit   Tag Exit Reason Duration
-0   Long   2.0  1833.500000  1812.699951 2023-03-02 2023-03-08  -41.600098  None      signal   6 days
-1   Long   2.0  1862.000000  2007.400024 2023-03-10 2023-04-18  290.800049  None      signal  39 days
-2   Long   2.0  2014.300049  2014.500000 2023-05-02 2023-05-12    0.399902  None      signal  10 days
-3   Long   2.0  1978.000000  1965.500000 2023-06-01 2023-06-06  -25.000000  None      signal   5 days
-4   Long   2.0  1963.599976  1962.199951 2023-06-08 2023-06-09   -2.800049  None      signal   1 days
-5   Long   2.0  1955.300049  1944.599976 2023-06-12 2023-06-13  -21.400146  None      signal   1 days
-6   Long   2.0  1958.400024  1935.500000 2023-06-16 2023-06-20  -45.800049  None      signal   4 days
-7   Long   2.0  1919.599976  1962.099976 2023-07-05 2023-07-25   85.000000  None      signal  20 days
-8   Long   2.0  1918.500000  1917.500000 2023-08-23 2023-09-07   -2.000000  None      signal  15 days
-9   Long   2.0  1931.500000  1916.599976 2023-09-18 2023-09-25  -29.800049  None      signal   7 days
-10  Long   2.0  1861.000000  1985.599976 2023-10-10 2023-11-02  249.199951  None      signal  23 days
-11  Long   2.0  1991.500000  1966.800049 2023-11-03 2023-11-07  -49.399902  None      signal   4 days
-12  Long   2.0  1983.900024  2030.500000 2023-11-16 2023-12-06   93.199951  None      signal  20 days
-13  Long   2.0  2021.099976  2062.399902 2023-12-15 2023-12-29   82.599854  None         end  14 days
-
+     Asset  Type  Size  Entry Price   Exit Price Entry Time  Exit Date      Profit   Tag Exit Reason Duration
+0  default  Long   2.0  1833.500000  1812.699951 2023-03-02 2023-03-08  -41.600098  None      signal   6 days
+1  default  Long   2.0  1862.000000  2007.400024 2023-03-10 2023-04-18  290.800049  None      signal  39 days
+... (rows omitted)
 ```
+
+The `Asset` column is `"default"` for single-asset backtests and the
+asset symbol when running on a portfolio (see [Multi-asset / portfolio backtests](multi_asset.md)).
