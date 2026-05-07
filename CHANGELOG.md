@@ -7,6 +7,8 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 
 ## [Unreleased]
 
+## [0.4.1]
+
 ### Added
 - Automated PyPI releases via GitHub Actions trusted publishing
   ([.github/workflows/release.yml](.github/workflows/release.yml)). Push
@@ -111,7 +113,8 @@ Initial development versions: single-asset Broker / Strategy / Backtest,
 basic Gymnasium TradingEnv, Bokeh plotting, stats calculation. See git
 history for details.
 
-[Unreleased]: https://github.com/gguan/qtrade/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/gguan/qtrade/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/gguan/qtrade/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/gguan/qtrade/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/gguan/qtrade/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/gguan/qtrade/compare/v0.1.3...v0.2.0
