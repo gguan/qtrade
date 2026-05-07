@@ -1,0 +1,186 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/multi_asset.md:1 ad5e89a4a53349ee870d74619370c81f
+msgid "Multi-asset / portfolio backtests"
+msgstr ""
+
+#: ../guide/multi_asset.md:3 f77352144dbb4ecd819af3a120f3d919
+msgid ""
+"QTrade supports portfolio backtests where a single strategy trades "
+"multiple assets sharing one cash pool. The single-asset workflow from "
+"[Getting Started](getting_started.md) is unchanged — multi-asset is "
+"enabled by passing a dict of DataFrames instead of a single one."
+msgstr ""
+
+#: ../guide/multi_asset.md:8 507cfb07caf0466ba9d21ce59a9a69b0
+msgid "Data"
+msgstr ""
+
+#: ../guide/multi_asset.md:10 15447882b0cd4f499a40daac238cb323
+msgid ""
+"Pass a `dict[str, pd.DataFrame]` keyed by asset symbol. Every DataFrame "
+"needs the standard OHLCV columns and **must share an identical "
+"`DatetimeIndex`** (align/reindex up-front if your sources don't):"
+msgstr ""
+
+#: ../guide/multi_asset.md:31 11d4b118ce48472b889c5469ae5d6848
+msgid ""
+"`Backtest` validates each DataFrame independently and raises a clear "
+"error if the indexes diverge."
+msgstr ""
+
+#: ../guide/multi_asset.md:34 2820c56a9e5645fbbfe790f864d282c4
+msgid "Strategy"
+msgstr ""
+
+#: ../guide/multi_asset.md:36 f2bf53a35e904d30948eaefb2c40038e
+msgid ""
+"In multi-asset mode the strategy must specify which asset each order "
+"targets. Iterate `self.assets` and use `self.positions[symbol]` / "
+"`self.data_by_asset[symbol]`:"
+msgstr ""
+
+#: ../guide/multi_asset.md:68 bb5711c8ce9446ffa7a9b20e334d3c7d
+msgid "API overview when running multi-asset:"
+msgstr ""
+
+#: ../guide/multi_asset.md 504547c1ce79406f94a42367b4cdd8c5
+msgid "Single-asset shorthand"
+msgstr ""
+
+#: ../guide/multi_asset.md 83208e2a093a4ee6b5af0f9b88d26503
+msgid "Multi-asset equivalent"
+msgstr ""
+
+#: ../guide/multi_asset.md 2fcae2c920024cbfaeacdc51fff35ae9
+msgid "`self.buy(size=10)`"
+msgstr ""
+
+#: ../guide/multi_asset.md f81beeeefa394108831e2da38573a5bb
+msgid "`self.buy(\"AAPL\", size=10)`"
+msgstr ""
+
+#: ../guide/multi_asset.md 91a756fe2f4642ca9e02769beabf2cc4
+msgid "`self.sell(size=5)`"
+msgstr ""
+
+#: ../guide/multi_asset.md 1164224a244444d98f7e8c9e6e6a5843
+msgid "`self.sell(\"AAPL\", size=5)`"
+msgstr ""
+
+#: ../guide/multi_asset.md 495041a35d92449c9d9ef73a729aa03d
+msgid "`self.close()`"
+msgstr ""
+
+#: ../guide/multi_asset.md c72554342f624b15aaa77098571c71ac
+msgid "`self.close()` — closes every asset, or `self.close(\"AAPL\")` for one"
+msgstr ""
+
+#: ../guide/multi_asset.md 920ae3ab3c234f44b32753bc802b386d
+msgid "`self.position`"
+msgstr ""
+
+#: ../guide/multi_asset.md 4e85b5a520234ca4b806ded01b08dc6a
+msgid "`self.positions[\"AAPL\"]`"
+msgstr ""
+
+#: ../guide/multi_asset.md 65b048727cd846c1a8ca488a844d5627
+msgid "`self.data`"
+msgstr ""
+
+#: ../guide/multi_asset.md 79e4809245b04f1ab080399f588255b5
+msgid "`self.data_by_asset[\"AAPL\"]`"
+msgstr ""
+
+#: ../guide/multi_asset.md:78 3ec6167a2426441f86ca676e846088d1
+msgid ""
+"`self.position` and `self.data` raise `AttributeError` in multi-asset "
+"mode with a message pointing at the dict accessor."
+msgstr ""
+
+#: ../guide/multi_asset.md:81 9d256fd78a9f4b41a859bcb03e6a8935
+msgid "Running it"
+msgstr ""
+
+#: ../guide/multi_asset.md:100 b35ffb1b935a4a52a6e0c306d60d87ed
+msgid ""
+"The `Buy & Hold Return [%]` shown in `show_stats()` is the **equal-"
+"weighted average** across all assets — a sensible default benchmark for "
+"portfolio strategies."
+msgstr ""
+
+#: ../guide/multi_asset.md:104 e8d4b855b8a348759992eb9b56331c06
+msgid "Per-asset breakdown"
+msgstr ""
+
+#: ../guide/multi_asset.md:106 45a7f78ecdb844b9813f1f65e6f3ee92
+msgid "For trade-level statistics on each asset:"
+msgstr ""
+
+#: ../guide/multi_asset.md:119 6ceb2c87172f496bb65adfa540eb2d89
+msgid ""
+"Aggregate metrics (Sharpe, Sortino, drawdown, equity curve) are "
+"inherently portfolio-wide and only available via "
+"`calculate_stats(broker)` — attribution to individual assets requires "
+"extra accounting that QTrade intentionally doesn't try to do."
+msgstr ""
+
+#: ../guide/multi_asset.md:124 7ad831b0f16641e2a1309629db46a1f6
+msgid "Plot"
+msgstr ""
+
+#: ../guide/multi_asset.md:126 8c223160e41e49e1a2ed66d7306ecc67
+msgid "`bt.plot()` renders a multi-panel layout:"
+msgstr ""
+
+#: ../guide/multi_asset.md:127 c2ea46096acd4d1b88087777eeda9361
+msgid ""
+"**Top:** portfolio equity vs equal-weighted Buy & Hold (with drawdown "
+"overlay)."
+msgstr ""
+
+#: ../guide/multi_asset.md:128 52b35787f8ee43ed8062860d30fa8fcb
+msgid "**Middle:** trade-returns scatter across all assets."
+msgstr ""
+
+#: ../guide/multi_asset.md:129 167740825109408fb1da9e8ba7d8ab44
+msgid ""
+"**Bottom:** one OHLC panel per asset, stacked vertically with linked "
+"x-axes."
+msgstr ""
+
+#: ../guide/multi_asset.md:131 ac67612384334407abfbb13b6ecc0563
+msgid ""
+"Each per-asset panel shows the win/lose trade boxes and buy/sell markers "
+"filtered to that asset's trades only."
+msgstr ""
+
+#: ../guide/multi_asset.md:134 7695ebb950ee45719234798119d65686
+msgid "Trade history"
+msgstr ""
+
+#: ../guide/multi_asset.md:136 17f55d86384e466487dc47a34cb7a5eb
+msgid ""
+"`bt.get_trade_history()` returns a DataFrame with an `Asset` column so "
+"you can filter or group by symbol downstream:"
+msgstr ""
+

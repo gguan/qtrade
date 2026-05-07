@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/customize_environment.md:1 b29c41977d1340cda7747bd9b0d8ca2a
+msgid "Customizing Trading Environment"
+msgstr ""
+
+#: ../guide/customize_environment.md:3 1242e50f8c0b462dbd56c8a9adcdb9a5
+msgid "`TradingEnv` is composed of three pluggable pieces:"
+msgstr ""
+
+#: ../guide/customize_environment.md 7d94052067224fe8b77d322aa75911a5
+msgid "Scheme"
+msgstr ""
+
+#: ../guide/customize_environment.md 8163b938e74f465d8dd3d70410bfc653
+msgid "Decides"
+msgstr ""
+
+#: ../guide/customize_environment.md 1b654061049e47f7b7448dab723928e3
+msgid "Default"
+msgstr ""
+
+#: ../guide/customize_environment.md 802eea81bcf14351ab7286dc3b26b337
+msgid "`ActionScheme`"
+msgstr ""
+
+#: ../guide/customize_environment.md 1c3de57b364d47c097cdd1c19044dc18
+msgid "The agent's action space and how an action turns into orders"
+msgstr ""
+
+#: ../guide/customize_environment.md d261472963224ed68ca30cb08805418b
+msgid "`DefaultAction`: 3-discrete (long / short / flat)"
+msgstr ""
+
+#: ../guide/customize_environment.md 5553dd2fa08044d6834f2c2d32ddce3a
+msgid "`ObserverScheme`"
+msgstr ""
+
+#: ../guide/customize_environment.md 6f64197d376a428fa5c9b87326aca73b
+msgid "The observation space and what the agent sees each step"
+msgstr ""
+
+#: ../guide/customize_environment.md 354e8e3f28744339846b53016f64bbf8
+msgid "`DefaultObserver`: trailing-window of selected feature columns"
+msgstr ""
+
+#: ../guide/customize_environment.md c19f3a5ca12849bf94244d3c8f14c923
+msgid "`RewardScheme`"
+msgstr ""
+
+#: ../guide/customize_environment.md a2e506fa20b849e894e6b7245bb024d1
+msgid "The scalar reward returned by `env.step`"
+msgstr ""
+
+#: ../guide/customize_environment.md 6a018363da5d481d8251ef2d828ec9f6
+msgid "`DefaultReward`: log-return of trades closed this step, minus commission"
+msgstr ""
+
+#: ../guide/customize_environment.md:11 c81fc92d66c747928b654176b8e271c2
+msgid ""
+"Subclass the abstract base for any of them and pass your instance to "
+"`TradingEnv(...)`:"
+msgstr ""
+
+#: ../guide/customize_environment.md:26 a291ca23d410435c8cfc4533f30c69fb
+msgid ""
+"If you don't pass one, the corresponding default is used. You can mix "
+"custom and default schemes freely."
+msgstr ""
+
+#: ../guide/customize_environment.md:31 2ecc7ebdd6ef415ab7c0032708e530fe
+msgid "ActionScheme"
+msgstr ""
+
+#: ../guide/customize_environment.md:33 ../guide/customize_environment.md:107
+#: cb39139a2ba94147853746a199566343 f9670f6a3b3540c9b7031d36fc4eab8b
+msgid "Two methods to implement:"
+msgstr ""
+
+#: ../guide/customize_environment.md:35 cf3af88d14a7482587b63cd0981ec9d8
+msgid ""
+"`action_space` — a `gymnasium.spaces.Space` describing what the agent can"
+" output."
+msgstr ""
+
+#: ../guide/customize_environment.md:37 03f79008ca1441cfaa42a055180ed45e
+msgid ""
+"`get_orders(action, env) -> list[Order]` — translate the chosen action "
+"into actual `Order` objects to place. Return `[]` for \"do nothing.\""
+msgstr ""
+
+#: ../guide/customize_environment.md:40 a4a310ddddf84f6d9603f5ee88c0cccb
+msgid ""
+"`env` exposes `env.position`, `env.equity`, `env.data`, "
+"`env.current_time`, and the underlying `env._broker` if you need more."
+msgstr ""
+
+#: ../guide/customize_environment.md:43 b3dfefad6d8d4104a3fb60d72c77a658
+msgid "Example: position-sized actions"
+msgstr ""
+
+#: ../guide/customize_environment.md:45 e47c9f397bf541cc96ab6d8013c10ece
+msgid ""
+"The default action scheme uses fixed `size=1`. Here's one that lets the "
+"agent pick a position scale (small / medium / large) along with "
+"direction:"
+msgstr ""
+
+#: ../guide/customize_environment.md:76 db51b9f99c3943dc9e34b403503c2265
+msgid "Example: continuous (Box) action space"
+msgstr ""
+
+#: ../guide/customize_environment.md:78 16fb5ff5395d4ccfa50071515d1baccb
+msgid ""
+"Useful for PPO / SAC if you want the agent to pick a target position "
+"fraction directly."
+msgstr ""
+
+#: ../guide/customize_environment.md:105 ab3f5a3f5c7e4c59aeb9c7f74da1aab3
+msgid "ObserverScheme"
+msgstr ""
+
+#: ../guide/customize_environment.md:109 782a14409a814a01bba4782b8cf37b0e
+msgid ""
+"`observation_space` — a `gymnasium.spaces.Space`. Make sure its `shape` /"
+" `dtype` match what `get_observation` actually returns."
+msgstr ""
+
+#: ../guide/customize_environment.md:111 689975c1a7b044c09c38a2981fc45f3c
+msgid ""
+"`get_observation(env) -> np.ndarray | dict[str, np.ndarray]` — pull "
+"whatever you want out of `env.data`, `env.position`, `env._broker`, etc.,"
+" shaped to match `observation_space`."
+msgstr ""
+
+#: ../guide/customize_environment.md:115 f79d66b2d47546dbb012c913ec5f028e
+msgid ""
+"The default observer returns a trailing window of feature columns. You "
+"can subclass to return raw OHLCV, technical indicators, position state, "
+"or a `Dict` space combining several modalities."
+msgstr ""
+
+#: ../guide/customize_environment.md:119 3eb4af18728a4746b200824d3f3eb4a7
+msgid "Example: include position state"
+msgstr ""
+
+#: ../guide/customize_environment.md:121 fcc3295536144cb7a484131a131e243a
+msgid ""
+"A common need is letting the agent know its current position size and "
+"unrealized PnL alongside market data:"
+msgstr ""
+
+#: ../guide/customize_environment.md:160 b26d883db30441c78330e3ef5abdfb88
+msgid ""
+"A `Dict` observation space requires a `MultiInputPolicy` in `stable-"
+"baselines3`. For most off-the-shelf policies, stick to a flat `Box`."
+msgstr ""
+
+#: ../guide/customize_environment.md:164 24304ec59d83440996c22b99832cecd0
+msgid "Example: returns instead of prices"
+msgstr ""
+
+#: ../guide/customize_environment.md:166 9535d50ab94f420e995a2eb7fb04573f
+msgid "Raw price series are non-stationary. Most RL papers feed log-returns:"
+msgstr ""
+
+#: ../guide/customize_environment.md:192 60a51bc388fa4e4b889ccb7080884b0f
+msgid "RewardScheme"
+msgstr ""
+
+#: ../guide/customize_environment.md:194 306fd1e2932a4694a9d257c04fe8ed43
+msgid "One required method, one optional:"
+msgstr ""
+
+#: ../guide/customize_environment.md:196 1aa4545dc46047798cb2401580130650
+msgid "`get_reward(env) -> float` — the scalar reward for the current step."
+msgstr ""
+
+#: ../guide/customize_environment.md:197 6697d65a72664f9c91641f46fcc6524e
+msgid ""
+"`reset()` — optional. Called from `env.reset()`. Use it to clear any per-"
+"episode state your reward function tracks."
+msgstr ""
+
+#: ../guide/customize_environment.md:200 961cf54d598b402b808ab13b1a81ba70
+msgid ""
+"The default rewards realized log-returns of trades closed this step "
+"(minus commission). Three other patterns come up a lot:"
+msgstr ""
+
+#: ../guide/customize_environment.md:203 45190a11dd3f462aaa5c45d102cc027b
+msgid "Example: equity-based reward (every step)"
+msgstr ""
+
+#: ../guide/customize_environment.md:227 e0a7096850324d6ebf1430d57286f12e
+msgid "Example: differential Sharpe ratio"
+msgstr ""
+
+#: ../guide/customize_environment.md:229 547ddf21d0d4402797661a030ed097c1
+msgid ""
+"Rewards risk-adjusted returns rather than raw PnL — see Moody & Saffell "
+"(1998):"
+msgstr ""
+
+#: ../guide/customize_environment.md:263 b2a0c477ffba4bdbbe073dbb44ea480b
+msgid "Example: drawdown penalty (composes another reward)"
+msgstr ""
+
+#: ../guide/customize_environment.md:265 6477323ceeeb45949142e98a12787eb9
+msgid ""
+"A risk-aware reward that wraps any base scheme and adds a penalty "
+"proportional to current drawdown:"
+msgstr ""
+
+#: ../guide/customize_environment.md:288 ba7aaea708b64f7aa19d19d1e9b2cabb
+msgid "Putting it together"
+msgstr ""
+
+#: ../guide/customize_environment.md:320 ff0885b1bbdb4e7894885b8a050c9901
+msgid ""
+"For training the resulting environment with `stable-baselines3`, see [Gym"
+" Trading Environment](trading_environment.md)."
+msgstr ""
+

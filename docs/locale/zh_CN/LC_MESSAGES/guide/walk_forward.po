@@ -1,0 +1,338 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/walk_forward.md:1 073a348ad5614bcdb2b7d380ed965fb3
+msgid "Walk-forward optimization"
+msgstr ""
+
+#: ../guide/walk_forward.md:3 10e8734da6ab4d708c05cd5acda21c46
+msgid ""
+"`Backtest.optimize()` picks the best parameter combination over the "
+"*entire* dataset — and reports its in-sample performance. This is the "
+"classic recipe for fitting noise. The \"best Sharpe 2.4\" you see almost "
+"never holds up live."
+msgstr ""
+
+#: ../guide/walk_forward.md:8 47bb4890fd3c442fa9132032f3ee6439
+msgid ""
+"`Backtest.walk_forward_optimize()` runs the same grid search inside "
+"rolling windows and reports performance on data the strategy was never "
+"tuned on:"
+msgstr ""
+
+#: ../guide/walk_forward.md:20 89062e85e6124e63aeb3bf4639e1d98a
+msgid ""
+"For every window pair, QTrade picks the best params on the train slice "
+"and evaluates them on the immediately following test slice. The aggregate"
+" of the test slices is your honest, out-of-sample (OoS) estimate of how "
+"the strategy actually performs."
+msgstr ""
+
+#: ../guide/walk_forward.md:25 894beb82172a4992a9e076906ee55d40
+msgid "API"
+msgstr ""
+
+#: ../guide/walk_forward.md:39 cc25375a4c684e64965caf4deea3522d
+msgid "Required:"
+msgstr ""
+
+#: ../guide/walk_forward.md:41 c5ceb8cc460547de9982b05a8ebec200
+msgid "**`train_window`**: bars per training slice."
+msgstr ""
+
+#: ../guide/walk_forward.md:42 7e4bc2e57c4f4f24a61b84384dadb1d6
+msgid ""
+"**`test_window`**: bars per test slice (immediately follows the train "
+"slice)."
+msgstr ""
+
+#: ../guide/walk_forward.md:43 b3def600d1c646709208a767bf253f22
+msgid ""
+"**`maximize`**: name of the metric from `calculate_stats()` to maximize "
+"within each train slice. Common choices: `Sharpe Ratio`, `Total Return "
+"[%]`, `Calmar Ratio`. See the [stats glossary](stats_glossary.md) for "
+"what each means."
+msgstr ""
+
+#: ../guide/walk_forward.md:47 07ed5199fdc44b24bdc12c10be184a48
+msgid ""
+"**`**params_grid`**: same syntax as `optimize()` — keyword arguments "
+"whose values are iterables of candidates."
+msgstr ""
+
+#: ../guide/walk_forward.md:50 7a09aaeaff2f410f8618e5dc0aec1ac3
+msgid "Optional:"
+msgstr ""
+
+#: ../guide/walk_forward.md:52 7ce19bbed8364437a00c7d2cba9a25cb
+msgid ""
+"**`step`**: how many bars to advance between consecutive train starts. "
+"Defaults to `test_window` (non-overlapping test windows). Smaller values "
+"give overlapping (correlated) test windows; larger values leave gaps."
+msgstr ""
+
+#: ../guide/walk_forward.md:56 8394e356843f4e7c8f7abfc716fe1d24
+msgid ""
+"**`constraint`**: filter `lambda p: bool` applied to each parameter dict "
+"before evaluating. Use this to skip nonsensical combinations (e.g. fast "
+"SMA window > slow SMA window)."
+msgstr ""
+
+#: ../guide/walk_forward.md:60 a18f6295e057490ea1bf812687d9e759
+msgid "Reading the result"
+msgstr ""
+
+#: ../guide/walk_forward.md:62 6f8f08b970114954bde131ec0ca3af86
+msgid "`result` is a dict:"
+msgstr ""
+
+#: ../guide/walk_forward.md:69 f399dbdcb3ab4151913a14e11628c4b1
+msgid "Each window dict contains:"
+msgstr ""
+
+#: ../guide/walk_forward.md 9dede8b9cf904c1190e2ef6f6e09fedf
+#: a1ded72a5d2d4efa9aea4605f61b96e5
+msgid "Key"
+msgstr ""
+
+#: ../guide/walk_forward.md 1333b39ce78242c1a64412407b99d607
+msgid "Value"
+msgstr ""
+
+#: ../guide/walk_forward.md f8a55069ed7e462dac9d66c2f228bc78
+msgid "`train_start`, `train_end`"
+msgstr ""
+
+#: ../guide/walk_forward.md 40a245f1dcab44aa93de8a993d4192c9
+msgid "Timestamps of the train slice."
+msgstr ""
+
+#: ../guide/walk_forward.md 0bb82164040b4cf09b4de06c9d5dea90
+msgid "`test_start`, `test_end`"
+msgstr ""
+
+#: ../guide/walk_forward.md 4e132b7f29b34c0d8fa98e95e5f0d486
+msgid "Timestamps of the test slice."
+msgstr ""
+
+#: ../guide/walk_forward.md 4207ce68c5fe401c9c4c0d721e0a9491
+msgid "`best_params`"
+msgstr ""
+
+#: ../guide/walk_forward.md c52b7fd0f3f2409d9dd70884ff62a7a4
+msgid "The parameter combo that maximized `maximize` on the train slice."
+msgstr ""
+
+#: ../guide/walk_forward.md 2b75e39adc6140268e01710dd098a003
+msgid "`train_stats`"
+msgstr ""
+
+#: ../guide/walk_forward.md 00e5ea396dda4518b6f9010ee2f20b01
+msgid "Full stats dict from the train run with `best_params`."
+msgstr ""
+
+#: ../guide/walk_forward.md a39e03933e6c4c209b3f03d576133436
+msgid "`test_stats`"
+msgstr ""
+
+#: ../guide/walk_forward.md d1d1f87491c34d1c9b73a3fc8c23ca55
+msgid "Full stats dict from the test run."
+msgstr ""
+
+#: ../guide/walk_forward.md 711c526dea604561a9720a24997f58a2
+msgid "`test_equity`"
+msgstr ""
+
+#: ../guide/walk_forward.md a27a71563b5646abbbb1230c43a9a449
+msgid "The test slice's `equity_history` Series."
+msgstr ""
+
+#: ../guide/walk_forward.md:80 e866de20aa644236ba2ec00d9917fcbf
+msgid "The summary:"
+msgstr ""
+
+#: ../guide/walk_forward.md 590bfc0976ad45a8a8df4d75758c2e6c
+msgid "Meaning"
+msgstr ""
+
+#: ../guide/walk_forward.md 6f4f8b2990014669a567fe5d0616d69c
+msgid "`n_windows`"
+msgstr ""
+
+#: ../guide/walk_forward.md 69f3b0ebfe7144e39d0a8c927919f8bc
+msgid "Total number of train/test pairs evaluated."
+msgstr ""
+
+#: ../guide/walk_forward.md 85e76739f16a4c3d8467c1e321c8941c
+msgid "`mean_oos_return`"
+msgstr ""
+
+#: ../guide/walk_forward.md 393fa7ec88374bc5b7666480103ae97e
+msgid "Average `Total Return [%]` across test windows."
+msgstr ""
+
+#: ../guide/walk_forward.md 47d9f461f3554c51a13479efb565364b
+msgid "`hit_rate`"
+msgstr ""
+
+#: ../guide/walk_forward.md 04458f47888c41739ba444c3524125e3
+msgid "Fraction of test windows with positive return."
+msgstr ""
+
+#: ../guide/walk_forward.md d80c7307cfe24c439aa1a97551a985b3
+msgid "`min_oos_return`, `max_oos_return`"
+msgstr ""
+
+#: ../guide/walk_forward.md 92632b87d0f8462ba566aef880dd3971
+msgid "Best and worst test windows."
+msgstr ""
+
+#: ../guide/walk_forward.md:89 cf460ed7521549bfa0d638c8ce9e7716
+msgid "A typical workflow"
+msgstr ""
+
+#: ../guide/walk_forward.md:125 38b88c403b154537a42fbd0bef01a85f
+msgid ""
+"If the in-sample Sharpe and OoS mean are wildly different, you've found "
+"your overfit. The OoS number is the one to trust."
+msgstr ""
+
+#: ../guide/walk_forward.md:128 48664a1f27124c30a7b650615055df1f
+msgid "Choosing the windows"
+msgstr ""
+
+#: ../guide/walk_forward.md:130 cf4e8429a84a4d8ba4ef9be5296581e1
+msgid "The right `train_window` and `test_window` depend on:"
+msgstr ""
+
+#: ../guide/walk_forward.md:132 98869032a26e4875ab525bdbaf27eb22
+msgid ""
+"**Strategy \"memory\"**: how many bars does the strategy need to fit a "
+"parameter? A 20-bar SMA needs at least ~50 bars to give the system some "
+"room. A 200-bar lookback model needs a much larger train_window."
+msgstr ""
+
+#: ../guide/walk_forward.md:135 f308095b0a984277904e550442477454
+msgid ""
+"**Market regime length**: a train window that's too small only sees one "
+"regime; too large straddles multiple regimes (averaging conflicting "
+"optima). 6–12 months of daily bars is a typical starting point."
+msgstr ""
+
+#: ../guide/walk_forward.md:138 ac35969c2fe34cf9839ada2301625534
+msgid ""
+"**Number of windows you can afford**: longer windows = fewer windows, but"
+" more data per fit; shorter windows = more windows but each is noisier. "
+"Aim for **at least 5–10 windows** so the summary statistics are "
+"meaningful."
+msgstr ""
+
+#: ../guide/walk_forward.md:143 810f520229474ec890ca4bc727417157
+msgid "Rule of thumb: `train_window ≈ 4–10 × test_window` is a common ratio."
+msgstr ""
+
+#: ../guide/walk_forward.md:145 5e74dc9672824d23b3669f7e6b621fe4
+msgid "Common pitfalls"
+msgstr ""
+
+#: ../guide/walk_forward.md:147 1516f12bc6c4402fb056f3eac993b01b
+msgid "\"OoS hit rate is 0.5\""
+msgstr ""
+
+#: ../guide/walk_forward.md:149 e22bc53ba0b242b585a8a0b35ae6ac24
+msgid ""
+"Coin flip. Either the strategy genuinely doesn't have edge, or your "
+"parameter grid doesn't cover the meaningful space. Try:"
+msgstr ""
+
+#: ../guide/walk_forward.md:152 4c0e1b53c5d84a278a4cc0f3407e1540
+msgid ""
+"Look at *which* params win in each window — if they're wildly different "
+"across windows, the strategy isn't stable."
+msgstr ""
+
+#: ../guide/walk_forward.md:154 298f42ef73df44d3a3a2e3d68bd1173a
+msgid ""
+"Widen the grid. If the optimum keeps landing at the edge, you're not "
+"exploring far enough."
+msgstr ""
+
+#: ../guide/walk_forward.md:156 74cf87d2aa99418491939ee1cc29bfac
+msgid "Try a longer `train_window`."
+msgstr ""
+
+#: ../guide/walk_forward.md:158 53ae793c7614425a883dd086d3a1ed07
+msgid "\"Mean OoS return is positive but min is catastrophic\""
+msgstr ""
+
+#: ../guide/walk_forward.md:160 e1d20e71c38846c6a1bdf937f9f372bf
+msgid ""
+"A common signature of strategies that work most of the time but blow up "
+"periodically (e.g. martingale-like betting, undefended short vol). The "
+"mean hides the tail."
+msgstr ""
+
+#: ../guide/walk_forward.md:164 5924011ea84c44dd869042afbe533d99
+msgid "Always look at the per-window list, not just the summary."
+msgstr ""
+
+#: ../guide/walk_forward.md:166 44dfe04fc90548f8bbf6c1434d6745a6
+msgid "\"Walk-forward Sharpe is much lower than in-sample Sharpe\""
+msgstr ""
+
+#: ../guide/walk_forward.md:168 6187fe03261a447f80ddf4f4b76fb514
+msgid ""
+"Expected and normal. The gap is your overfit. A 2:1 ratio (in-sample 2.0 "
+"→ OoS 1.0) is fine; 5:1 means you're fitting noise. Reduce parameter "
+"freedom (smaller grid) or extend the strategy's inductive bias (use a "
+"constraint, share parameters across assets, etc.)."
+msgstr ""
+
+#: ../guide/walk_forward.md:173 a39bb5f583b7444ca7daa94577d65289
+msgid "\"Step smaller than test_window\""
+msgstr ""
+
+#: ../guide/walk_forward.md:175 f2fca09fbb55417f82dcd004686ec6b6
+msgid ""
+"This produces *overlapping* test windows. The summary metrics double-"
+"count bars and inflate `n_windows`. Sometimes you want this (e.g. for "
+"adaptive walk-forward that retrains weekly), but understand that the "
+"windows aren't statistically independent."
+msgstr ""
+
+#: ../guide/walk_forward.md:180 a00f273afeaf43cd8f1211e4c43b289c
+msgid "See also"
+msgstr ""
+
+#: ../guide/walk_forward.md:182 993d676e7be44a1c90aa3aa58383e466
+msgid "[Stats glossary](stats_glossary.md) — pick the right `maximize` metric."
+msgstr ""
+
+#: ../guide/walk_forward.md:183 0b3e1ba6ec49478eb493725de949bd21
+msgid "[Getting Started](getting_started.md) — basic Backtest workflow."
+msgstr ""
+
+#: ../guide/walk_forward.md:184 5ec1c952c15e4fa2a46b02284af06eef
+msgid ""
+"[`examples/portfolio_strategy.py`](https://github.com/gguan/qtrade/blob/main/examples/portfolio_strategy.py)"
+" — multi-asset walk-forward in a runnable file."
+msgstr ""
+

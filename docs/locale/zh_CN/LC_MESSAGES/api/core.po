@@ -1,0 +1,760 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../api/core.md:5 1e4387e058004e108a4134764685622b
+msgid "Core components"
+msgstr ""
+
+#: 202c7a01523d4789ac8c108dddc69729 7373a33be5b94992863ad6e5e0438d64
+#: c7c0d0282a024a2a98b1ab89aa64036d eacdfcab7959430f823cd5c63f6d3c3f of
+#: qtrade.core.broker.Broker:1 qtrade.core.order.Order:1
+#: qtrade.core.position.Position:1 qtrade.core.trade.Trade:1
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: 607f1b8d2e6b4442a458ff7eba9fcee9 of qtrade.core.broker.Broker:1
+msgid ""
+"The Broker class is responsible for executing orders and managing "
+"positions."
+msgstr ""
+
+#: 9ad98f4610ec4f87b6c36c1655dfb469 of qtrade.core.broker.Broker:3
+msgid ""
+"Internally Broker tracks positions and OHLCV data per asset (keyed by "
+"string symbol); a single-asset DataFrame passed to the constructor is "
+"wrapped under the key ``\"default\"`` for backwards compatibility, so "
+"existing single-asset workflows continue to use the same external API "
+"(``broker.data``, ``broker.position``)."
+msgstr ""
+
+#: ../api/core.md 9dea74cb49c84421a427f5310e904e80
+#: a5a10e7b0f9e467e883be9291a857f6f f5c5f4e5e69f479584abfaee7aa30630
+msgid "Variables"
+msgstr ""
+
+#: 2308909b70164da4ad69af96a6343943 of qtrade.core.broker.Broker:8
+msgid "Current shared cash balance across all assets."
+msgstr ""
+
+#: b60cf506bb7e433891e8de244a9d42d0 of qtrade.core.broker.Broker:10
+msgid ""
+"Instance for calculating trade commissions. If None, no commission is "
+"applied."
+msgstr ""
+
+#: 82e828d4ac8c4989a20c1bf007af0f05 87e07b79b10047a68f87dc3bb6753973 of
+#: qtrade.core.broker.Broker:12 qtrade.core.broker.Broker:39
+msgid "Margin ratio (0 < margin_ratio ≤ 1)."
+msgstr ""
+
+#: 8368d9bf1ef540f2a412d0f769e44af0 of qtrade.core.broker.Broker:14
+msgid ""
+"If True, orders are filled at the current close price. Otherwise, at the "
+"next open price."
+msgstr ""
+
+#: 5d05a7a533594ba6aa3ec8b873298c3d of qtrade.core.broker.Broker:16
+msgid "Timestamp of the current bar."
+msgstr ""
+
+#: 2a37fed5068e4ed881efede98f4ad0e8 of qtrade.core.broker.Broker:18
+msgid "Pending orders (e.g., stop/limit orders) awaiting execution."
+msgstr ""
+
+#: c07da8e966f44dfe8f271bac8ea97e15 of qtrade.core.broker.Broker:20
+msgid ""
+"Orders to be executed at the next bar's open price if trade_on_close is "
+"False."
+msgstr ""
+
+#: ada8912057ab4f06bbc540b5db2511ef of qtrade.core.broker.Broker:22
+msgid "List of filled orders."
+msgstr ""
+
+#: 1a1aa175e8a94284af9b6ba7dff4c31c of qtrade.core.broker.Broker:24
+msgid "List of rejected/canceled orders."
+msgstr ""
+
+#: cae37d6b4a314836adc7d3f270f6f7af of qtrade.core.broker.Broker:26
+msgid "Portfolio-level historical record of account equity."
+msgstr ""
+
+#: ../api/core.md 0e796b1586ae46059eb2fd02448bb79f
+#: 26e69d4784604d00bcb389426cbf4e8f 4c89a090e5164336bc1b215bd9788e73
+#: 5201272945d14ab98d163c17008f2a77 5b7c1c382f6d4b34a2bd4fa3ba3d4e23
+#: 5dcd94cd1c154848b1b8016b6544b7e1 603f169e210749eba0e5aae0caeaabbf
+#: 85f7777b45604ab2a66b8da16ab870db 8d36ceeb78684d27870c42c5de00763d
+#: aa6388d7172c4ffc963b29693868b9fd bc4018f84c714270a992f17b2767a814
+#: cc1c95dc85c44fc79d79e42e6a837714 ea0dfea646b847738866eb15ab52d72a
+msgid "Parameters"
+msgstr ""
+
+#: 490c3dee1cb24d88b5310356fb50cca4 of qtrade.core.broker.Broker:30
+#, python-brace-format
+msgid ""
+"Market data with ['Open', 'High', 'Low', 'Close'] columns. Pass a single "
+"DataFrame for a single-asset backtest (wrapped internally as "
+"``{\"default\": data}``) or a dict of DataFrames keyed by asset symbol "
+"for multi-asset."
+msgstr ""
+
+#: eceeef9074c04bd08c3da6a55b12ab6f of qtrade.core.broker.Broker:35
+msgid "Initial cash balance. Must be positive."
+msgstr ""
+
+#: 95ac5a75587c458eb199ec0d97f01c2d of qtrade.core.broker.Broker:37
+msgid "Commission calculator instance."
+msgstr ""
+
+#: b320f19ca9394aab94316bd674f403da of qtrade.core.broker.Broker:41
+msgid "Execution mode for orders."
+msgstr ""
+
+#: ../api/core.md 2bc5e558d00f43539f544a6d1dbb27e0
+#: 564f67d3cd1e4086be4aae6d96ed33df 5ad30ae4a3004f528ef51a01baeb9a6f
+#: 83eeddb216774a4ba502973037e7dc95 8b3de8d51ba14ebb8d114d3e5bec8900
+#: 941f4452ead44fc78aa481e929911ec4 b9547e91a3054b94a2ea9cf58679478a
+#: e9c5a630178643b0b1726a66848bc232
+msgid "Raises"
+msgstr ""
+
+#: a49f6c2bd43a4fc899d7bbb46c38c680 of qtrade.core.broker.Broker:44
+msgid "If cash is not positive or margin_ratio is out of bounds."
+msgstr ""
+
+#: 694a976b6ea44b398d04d7e821d38820 of qtrade.core.Broker.assets:1
+msgid "List of asset symbols this broker tracks."
+msgstr ""
+
+#: 65a574ffaaf94b13917bd7be0fcb1515 of qtrade.core.Broker.available_margin:1
+msgid "Available margin for new trades, summed across all assets."
+msgstr ""
+
+#: cf43d05f574e4c08b7bbe3592402aa07 of
+#: qtrade.core.broker.Broker.close_all_positions:1
+msgid "Close all open positions across every asset at the current bar's close."
+msgstr ""
+
+#: 2ef6c07f658b479b8a80d744171bd4af of qtrade.core.Broker.closed_orders:1
+msgid "Get a tuple of all closed orders."
+msgstr ""
+
+#: 40329f5b6085445ebefd193b1aa6235c of qtrade.core.Broker.closed_trades:1
+msgid ""
+"Closed trades across all assets (concatenated; per-asset access via "
+":attr:`positions`)."
+msgstr ""
+
+#: 93fbadf672364ce299bcd67332730c8c of qtrade.core.Broker.cumulative_returns:1
+msgid "Cumulative returns (equity / initial equity)."
+msgstr ""
+
+#: b78bdd62c12a463dbdf7f9a3a0c7568f of qtrade.core.Broker.data:1
+msgid "Single-asset access. For multi-asset, use :attr:`data_by_asset`."
+msgstr ""
+
+#: 85ce29d0f93048c9b409794418f91abc of qtrade.core.Broker.data_by_asset:1
+msgid "Per-asset OHLCV data."
+msgstr ""
+
+#: d698b3dc94ed45aab9d454f8e83ce095 of qtrade.core.Broker.equity:1
+msgid "Calculate the current equity of the account (cash + total unrealized P&L)."
+msgstr ""
+
+#: ba8fcbf2939d47bdbbf5d0432be30f8d of qtrade.core.Broker.equity_history:1
+msgid "Get a copy of the equity history (portfolio-level)."
+msgstr ""
+
+#: 7cfb583032fe432e87ec73c781a33bb5 of qtrade.core.Broker.filled_orders:1
+msgid "Get a tuple of all filled orders."
+msgstr ""
+
+#: 106e69575e354489a964c9c42c5ac5b9 of
+#: qtrade.core.broker.Broker.get_trade_history:1
+msgid "Trade-by-trade DataFrame across all assets."
+msgstr ""
+
+#: 9e8b3d7098114e32b533d0a9c0586f0c of qtrade.core.broker.Broker.place_orders:1
+msgid "Submit one or multiple orders."
+msgstr ""
+
+#: 15025c18951646f1ac5324edb17dd827 of qtrade.core.broker.Broker.place_orders:3
+msgid "A single order or a list of orders."
+msgstr ""
+
+#: 53e7af05fa6e499ebef0d184e1cf1877 of qtrade.core.broker.Broker.place_orders:6
+msgid "If orders is neither an Order instance nor a list of Orders."
+msgstr ""
+
+#: 7eb000baa8514e9291a86cee8624bc79 of qtrade.core.Broker.position:1
+msgid "Single-asset access. For multi-asset, use :attr:`positions`."
+msgstr ""
+
+#: 9420d95ce45c44a8b98ae6e6428a38b7 of qtrade.core.Broker.positions:1
+msgid "Per-asset Position objects."
+msgstr ""
+
+#: 0104498023f94d72be1d3be2f347b677 of qtrade.core.broker.Broker.process_bar:1
+msgid "Process the trading logic for the current bar."
+msgstr ""
+
+#: 9e0b31a46875402082759f5aa0686ee7 of qtrade.core.Broker.realized_pnl:1
+msgid "Sum of realized P&L from all closed trades across all assets."
+msgstr ""
+
+#: e824c589331b4690a179fffc25cd56d3 of qtrade.core.Broker.unrealized_pnl:1
+msgid "Sum of unrealized P&L across all active trades on every asset."
+msgstr ""
+
+#: 2adf3612d5cc43469fa925197ac42d76 of qtrade.core.Broker.unrealized_pnl_pct:1
+msgid ""
+"Unrealized P&L as a percentage of total initial margin (across all "
+"assets)."
+msgstr ""
+
+#: edabe3c67f3b42a9999260799ef599ec of qtrade.core.commission.Commission:1
+msgid "Bases: :py:class:`~abc.ABC`"
+msgstr ""
+
+#: 572f732c0b4146de8afb42764dffb363 of qtrade.core.commission.Commission:1
+msgid "Abstract base class for different commission schemes."
+msgstr ""
+
+#: a64fe45ab90c47a7ac372a6a2ad03f16 of
+#: qtrade.core.commission.Commission.calculate_commission:1
+msgid "Calculate the commission for an order."
+msgstr ""
+
+#: 497c538771594e1aa555be8d9688e72e 5bef9e06da0b4c7f822e95e471933ef1
+#: 70ab821a4a364066a8afe0a962b732f7 8cbf50cabb0b4c478d2f89440b817846
+#: fcbec382d2684952a46a93e4b1716564 of
+#: qtrade.core.commission.Commission.calculate_commission:3
+#: qtrade.core.commission.FixedCommission.calculate_commission:3
+#: qtrade.core.commission.NoCommission.calculate_commission:3
+#: qtrade.core.commission.PercentageCommission.calculate_commission:3
+#: qtrade.core.commission.SlippageCommission.calculate_commission:3
+msgid "Order size (positive for buy, negative for sell)"
+msgstr ""
+
+#: 54467b3d517545c986a0996c0166e926 991d17bdfb424803a5c7d127184f5574
+#: aca85e7972fa4493bb09ece07deb0ca2 e22b18da041c400daf9bc3f557abb9e6
+#: f4bc934a4e47434cbaae56b0fe239db0 of
+#: qtrade.core.commission.Commission.calculate_commission:4
+#: qtrade.core.commission.FixedCommission.calculate_commission:4
+#: qtrade.core.commission.NoCommission.calculate_commission:4
+#: qtrade.core.commission.PercentageCommission.calculate_commission:4
+#: qtrade.core.commission.SlippageCommission.calculate_commission:4
+msgid "Order fill price"
+msgstr ""
+
+#: ../api/core.md 009ba3037abb405f8a26e8ebc50d394f
+#: 52b2abeebb864312adf082c09d3ee6bf 58fa407699374fb0b2d6791d1c913ae1
+#: 64dcd4fa62454adeb2729b288d0a0e37 6d6fb8c43d7c4c4fa3d031ac9abb94b3
+#: 74d0f09f021e416f9b0151e27534cd24 cfcc3fe5e504438f843436a472aac467
+#: d56b8a2f46154bf2aafa3944ae09abcd e4bba948621646a69b819d618be072ee
+#: eaca7745ff1046aba6eb7f1af895f5ca of qtrade.core.Position.active_trades
+#: qtrade.core.Position.closed_trades qtrade.core.Trade.exit_reason
+#: qtrade.core.Trade.profit qtrade.core.trade.Trade.close
+msgid "Returns"
+msgstr ""
+
+#: ead12b06e53a4921a994ee0625b5fc56 of
+#: qtrade.core.commission.Commission.calculate_commission:5
+msgid "Commission fee"
+msgstr ""
+
+#: 02e5a12b13054fc6bdf9c1e96f70ff30 4daa0c7ae5cc43b2bddb8b0dee7827cc
+#: bd2408fa918a40fdaa20730ba19d96d7 e86c52cc1dcd4329978c599f5db3f45c of
+#: qtrade.core.commission.FixedCommission:1
+#: qtrade.core.commission.NoCommission:1
+#: qtrade.core.commission.PercentageCommission:1
+#: qtrade.core.commission.SlippageCommission:1
+msgid "Bases: :py:class:`~qtrade.core.commission.Commission`"
+msgstr ""
+
+#: 428cb63ab8a14c0da12c8caae66be6d1 of qtrade.core.commission.FixedCommission:1
+msgid "Commission scheme with a fixed fee per order."
+msgstr ""
+
+#: dcb40f6c4be148628e896417b31cae68 of qtrade.core.commission.FixedCommission:3
+msgid "Fixed commission fee per order"
+msgstr ""
+
+#: 2815aec4e85e435e9d0c152452ab85bc of qtrade.core.commission.FixedCommission:4
+msgid "If fixed_fee is negative."
+msgstr ""
+
+#: 84eb9198d3304ec38a0d9b0065336a81 of
+#: qtrade.core.commission.FixedCommission.calculate_commission:1
+msgid "Calculate commission as a fixed fee per order."
+msgstr ""
+
+#: 170198117c094b53b558af84a3bc97d6 of
+#: qtrade.core.commission.FixedCommission.calculate_commission:5
+msgid "Fixed commission fee"
+msgstr ""
+
+#: c5bc1c7c0dd5476b9d262ed881924546 of qtrade.core.commission.NoCommission:1
+msgid "Commission scheme with no fees."
+msgstr ""
+
+#: 575ec2a5c1d24275a608b81ad7360f0f of
+#: qtrade.core.commission.NoCommission.calculate_commission:1
+msgid "Returns zero commission."
+msgstr ""
+
+#: 72738ce7d55a420e9cfaa5e28d1659cb of
+#: qtrade.core.commission.NoCommission.calculate_commission:5
+msgid "0.0"
+msgstr ""
+
+#: 425245a293144a5da6617a28dfbf7480 of qtrade.core.order.Order:1
+msgid ""
+"Represents a trading order with optional limit, stop, stop loss, and take"
+" profit prices."
+msgstr ""
+
+#: bcec74050d6c4f7598be8254b37e886f c47ea948aced409fb1d6767990b11034 of
+#: qtrade.core.order.Order:3 qtrade.core.order.Order:25
+msgid "Order size (positive for buy, negative for sell)."
+msgstr ""
+
+#: 43c208ab4c344afb8cb8bdf3e0103902 of qtrade.core.order.Order:5
+msgid "Limit price for limit orders."
+msgstr ""
+
+#: aaa1a7eed7a847e897af163450ddbbc9 of qtrade.core.order.Order:7
+msgid "Stop price for stop orders."
+msgstr ""
+
+#: 69d5d067f7354efdbf222ed63dee409e abbddf1b6c564c1794d83fd4dd6b42dd
+#: b01c7a219bc94de1930050a1964cff7a e098ed53a19f41f1adad03582180a55a of
+#: qtrade.core.Order.sl:1 qtrade.core.Trade.sl:1 qtrade.core.order.Order:9
+#: qtrade.core.trade.Trade:9
+msgid "Stop loss price."
+msgstr ""
+
+#: 98138c12e48248779e22a05dd410cf59 c16f4c8142e941ce9c1a1b7ee00bce42
+#: cc2f5086fd4645c7ab0faf37438903eb dd5926d6d0884904ac7bc0b02cd462d9 of
+#: qtrade.core.Order.tp:1 qtrade.core.Trade.tp:1 qtrade.core.order.Order:11
+#: qtrade.core.trade.Trade:11
+msgid "Take profit price."
+msgstr ""
+
+#: c13e6d46c78144849bfde6262e8e579d of qtrade.core.order.Order:13
+msgid "Tag for identifying the order."
+msgstr ""
+
+#: be459304615842b384de0871ff8e2160 of qtrade.core.order.Order:15
+msgid "Indicates if the order has been filled."
+msgstr ""
+
+#: 2ef9a1c629d74edf83d9e15101643895 of qtrade.core.order.Order:17
+msgid "Indicates if the order has been canceled or rejected."
+msgstr ""
+
+#: d4a9426c5b9e42e799c7e232efc8421e of qtrade.core.order.Order:19
+msgid "Price at which the order was filled."
+msgstr ""
+
+#: e0654247d0cb4c9e91031c5ed067a1a9 of qtrade.core.order.Order:21
+msgid "Date when the order was filled."
+msgstr ""
+
+#: 405f5f9eb8f549a59a45964f6c95dae2 of qtrade.core.order.Order:27
+msgid "Limit price for limit orders. Defaults to None."
+msgstr ""
+
+#: fc4513aad2fc43ceb145553e7bca3f6f of qtrade.core.order.Order:29
+msgid "Stop price for stop orders. Defaults to None."
+msgstr ""
+
+#: bc5f6eb5ec134926b507df3dbc18e7b2 c25382328ac0414d84dd07b59ef0ece4 of
+#: qtrade.core.order.Order:31 qtrade.core.trade.Trade:31
+msgid "Stop loss price. Defaults to None."
+msgstr ""
+
+#: 1d1bc6d3686d47219e7cebd4ddb64bef df2f0f8a1b4f42189d2968dc0b2e1631 of
+#: qtrade.core.order.Order:33 qtrade.core.trade.Trade:33
+msgid "Take profit price. Defaults to None."
+msgstr ""
+
+#: 8a1edd3d88774ffb862a85b9cbdbe90e of qtrade.core.order.Order:35
+msgid "Tag for identification. Defaults to None."
+msgstr ""
+
+#: 7c65df6c6fd349818aacbd974390afd6 of qtrade.core.order.Order:37
+msgid ""
+"Asset symbol this order targets. Defaults to \"default\" for single-asset"
+" backtests. Multi-asset support is layered on this field."
+msgstr ""
+
+#: d1ded9b7316c46de8ae1627945bfd1d6 of qtrade.core.order.Order:41
+msgid "If the order size is zero."
+msgstr ""
+
+#: d212240ab4184eb1a3c646ae0eac17d0 of qtrade.core.Order.asset:1
+msgid "Asset symbol this order targets."
+msgstr ""
+
+#: 05c4dbfd0c0846bf8d5047cdef741d85 0c79319c925e4ae9bafb61941f646c9e
+#: 16b735539b7e4644b949d231b0684d3c 1aa013cad0394ce1ae6db427970f837f
+#: 337edfb33a3640cd9b2a508836fe039e 37287096e0844ec488181be5c8f0e25c
+#: 3d438d79f78c4b879363d2ff878cf25e 41191c17475848278254d3e849340423
+#: 4c3f1f44c632404a914791629bbbbf66 5141628b898e4c55918a9008cf230260
+#: 525a7a4459234f82bc1d33d5f8474da4 57720d2eebfb4134a8bc8d1a5166bc17
+#: 5ba102aa168449ec8534f084f6254dbd 6e57942a9f544ad485132f7d424e9a87
+#: 712a7cab0a8f41bda2958bab9106e55f 75169310d1374b44bf2667a721c2a9d9
+#: 7b538f4c37c34002ba2424a8dcb8e813 8ca98bc2c711410a9b0e38fd1275d9f3
+#: 8d88530e92854a469e26a3415a13346d 94110e1f325346609f68e1b226ff17be
+#: a2e93d2f3c01470e81e3063ccfcdfb37 b6056dde07af41709b717d1282a88730
+#: b7f5d135002c4260b0d44ccfd8808769 b9c0a8238ea142e3a735f85d1adc7226
+#: b9d4f042d3824299a0abecf69c716802 caf72ce919a14993821d3ceed0ea9ccc
+#: cecfb1c128c446109a4ae416e17ed750 e61731f033cd449ea433d7e941179e3e
+#: f763511e178e4094b6e16e5189b1e375 of qtrade.core.Order.asset
+#: qtrade.core.Order.fill_date qtrade.core.Order.fill_price
+#: qtrade.core.Order.is_closed qtrade.core.Order.is_filled
+#: qtrade.core.Order.is_long qtrade.core.Order.is_short qtrade.core.Order.limit
+#: qtrade.core.Order.size qtrade.core.Order.sl qtrade.core.Order.stop
+#: qtrade.core.Order.tag qtrade.core.Order.tp qtrade.core.Trade.asset
+#: qtrade.core.Trade.entry_date qtrade.core.Trade.entry_index
+#: qtrade.core.Trade.entry_price qtrade.core.Trade.exit_date
+#: qtrade.core.Trade.exit_index qtrade.core.Trade.exit_price
+#: qtrade.core.Trade.exit_reason qtrade.core.Trade.is_closed
+#: qtrade.core.Trade.is_long qtrade.core.Trade.is_short
+#: qtrade.core.Trade.profit qtrade.core.Trade.size qtrade.core.Trade.sl
+#: qtrade.core.Trade.tag qtrade.core.Trade.tp
+msgid "type"
+msgstr ""
+
+#: 816e6b89b2984dc58713af528bd7519f 8bb44ee9920b4d3baf713dcf2bb1f23b of
+#: qtrade.core.Order.asset:3 qtrade.core.Trade.asset:3
+msgid "str"
+msgstr ""
+
+#: c3f39e3df4ae4154ab1d3ff7d70cfb94 of qtrade.core.order.Order.cancel:1
+msgid "Cancel the order."
+msgstr ""
+
+#: 1c08bfad96ed42b0bb4358aaeaf84772 of qtrade.core.Order.fill_date:1
+msgid "Fill date."
+msgstr ""
+
+#: 0f0d8bc91e4340ffa18e94c027a70d79 104fecb6b6304459a51dc711ab2d94b5 of
+#: qtrade.core.Order.fill_date:3 qtrade.core.Trade.exit_date:3
+msgid "Optional[pd.Timestamp]"
+msgstr ""
+
+#: c7ab89db1481408f8d23f8af360a9b0e of qtrade.core.Order.fill_price:1
+msgid "Fill price."
+msgstr ""
+
+#: 1376a93e6e484b52ad477b50da9c9b6b 2c1bd8da7ce44d1798675023a0c8ea57
+#: 56b5e958bdad476d84c9054a7ef19d59 637139f274eb4af686fbbacb24032a64
+#: 63ae35dbf3b949579a95f27715916eb2 b03e1d670e7746a6bb8ff35f2b370e66
+#: d2b8fc8bbbf1407481e2f8b5134f4c6c ebc9030f8cee431cac974893b66c5536
+#: fd1c32eee6e045af878c2e9e0221f518 of qtrade.core.Order.fill_price:3
+#: qtrade.core.Order.limit:3 qtrade.core.Order.sl:3 qtrade.core.Order.stop:3
+#: qtrade.core.Order.tp:3 qtrade.core.Trade.exit_price:3
+#: qtrade.core.Trade.profit:5 qtrade.core.Trade.sl:3 qtrade.core.Trade.tp:3
+msgid "Optional[float]"
+msgstr ""
+
+#: 50e823ebf5b644a59ce09d3e65151d4e of qtrade.core.Order.is_closed:1
+msgid "Indicates if the order is canceled or rejected."
+msgstr ""
+
+#: 1748942268da4ebbac5caefd1ef44d55 54e5303e11a84aa4825bd4bd0e1ef642
+#: 76278d915c18456c8f8af81228629948 8d13af919697404d9c4e034d6bb497c7
+#: a65efb7c03ba44a6b154a421eadd8e27 b3ef445d5c984973966051e0307afedb
+#: e7fb4bf2972e48848b1afc97e880323a of qtrade.core.Order.is_closed:3
+#: qtrade.core.Order.is_filled:3 qtrade.core.Order.is_long:3
+#: qtrade.core.Order.is_short:3 qtrade.core.Trade.is_closed:3
+#: qtrade.core.Trade.is_long:3 qtrade.core.Trade.is_short:3
+msgid "bool"
+msgstr ""
+
+#: ccc1bce9ff3e485db844ca81d0edefcd of qtrade.core.Order.is_filled:1
+msgid "Indicates if the order is filled."
+msgstr ""
+
+#: bbbad09bc3cc42ae917e9bab01403bb9 of qtrade.core.Order.is_long:1
+msgid "True if the order is a long position."
+msgstr ""
+
+#: 37ffe58feace4417891a2c92082c71b8 of qtrade.core.Order.is_short:1
+msgid "True if the order is a short position."
+msgstr ""
+
+#: b3092d57c94d4ceabcc8b765cf8f6c36 of qtrade.core.Order.limit:1
+msgid "Limit price."
+msgstr ""
+
+#: 26600b64a6b84f3783bbc911cc9c1f8f of qtrade.core.Order.size:1
+msgid "Order size."
+msgstr ""
+
+#: 19fc335d2d2047dba9e64162abdd0ab9 4994cecffad047ff8ad81259043b2472
+#: 6991308e9e484f4688c7f0c38d6ce5ac of qtrade.core.Order.size:3
+#: qtrade.core.Trade.entry_index:3 qtrade.core.Trade.size:3
+msgid "int"
+msgstr ""
+
+#: 7420c91a02e048dc8351b478b1eee912 of qtrade.core.Order.stop:1
+msgid "Stop price."
+msgstr ""
+
+#: d24619a4750345a08ba0b3a97761e5b1 of qtrade.core.Order.tag:1
+msgid "Order tag."
+msgstr ""
+
+#: 4aa668b5ff134fa3b409ba4d0f661335 71658092297145c486fb95b906fa5617 of
+#: qtrade.core.Order.tag:3 qtrade.core.Trade.tag:3
+msgid "Optional[object]"
+msgstr ""
+
+#: 810aa729fb1e44faa2d3428cc50923a4 of
+#: qtrade.core.commission.PercentageCommission:1
+msgid "Commission scheme based on a percentage of the order value."
+msgstr ""
+
+#: 596da0ceb0114ed3840e42a6d48105e2 of
+#: qtrade.core.commission.PercentageCommission:3
+msgid "Commission percentage (e.g., 0.001 for 0.1%)"
+msgstr ""
+
+#: cf7ec4a53acd4ed8b57b9fb02a864ed5 of
+#: qtrade.core.commission.PercentageCommission:4
+msgid "If percentage is negative."
+msgstr ""
+
+#: a8723b7953394e63913bbadb5afe73c1 of
+#: qtrade.core.commission.PercentageCommission.calculate_commission:1
+msgid "Calculate commission as a percentage of the order value."
+msgstr ""
+
+#: b81d14a254904142ae548daa92983c3f of
+#: qtrade.core.commission.PercentageCommission.calculate_commission:5
+msgid "Calculated commission fee"
+msgstr ""
+
+#: 440f8f90b9934335acdffdc4fb7bfdd4 of qtrade.core.position.Position:1
+msgid "Represents a trading position containing active and closed trades."
+msgstr ""
+
+#: 24437d0972c04600857e91bd0f8f06bc of qtrade.core.position.Position:3
+msgid "Initialize the Position with empty lists for active and closed trades."
+msgstr ""
+
+#: 057de577502e42229a73ee56bc98649f of qtrade.core.Position.active_trades:1
+msgid "Get a tuple of all active trades."
+msgstr ""
+
+#: fd79d30482474eb79ea5d8f73e34c5f3 of qtrade.core.Position.active_trades:3
+msgid "**Tuple[Trade, ...]** -- Active trades."
+msgstr ""
+
+#: 30d43b9f498348138f58d7bf0d2e8e47 of qtrade.core.Position.closed_trades:1
+msgid "Get a tuple of all closed trades."
+msgstr ""
+
+#: 7a00a0d34adf4480a736f837814e01ca of qtrade.core.Position.closed_trades:3
+msgid "**Tuple[Trade, ...]** -- Closed trades."
+msgstr ""
+
+#: 26e9f5d89b604493908c2b12c24d3d9a of qtrade.core.Position.size:1
+msgid "Calculates the total size of all active trades."
+msgstr ""
+
+#: 3ece993d02d2459e97195e2df576a7b2 of
+#: qtrade.core.commission.SlippageCommission:1
+msgid ""
+"Commission scheme that accounts for slippage as a percentage of the order"
+" value."
+msgstr ""
+
+#: 2d4bd16866224c8082149bc794d1d9d7 of
+#: qtrade.core.commission.SlippageCommission:3
+msgid "Slippage percentage (e.g., 0.001 for 0.1%)"
+msgstr ""
+
+#: ef1f01d1dccf4697adf2ba59b12f2cad of
+#: qtrade.core.commission.SlippageCommission:4
+msgid "If slippage_percentage is negative."
+msgstr ""
+
+#: 9d1a64bfdfc741acb43bae61288063dd of
+#: qtrade.core.commission.SlippageCommission.calculate_commission:1
+msgid "Calculate slippage as a percentage of the order value."
+msgstr ""
+
+#: 95b29d01951b4edd993d8fa2bcbe1834 of
+#: qtrade.core.commission.SlippageCommission.calculate_commission:5
+msgid "Calculated slippage fee"
+msgstr ""
+
+#: 05c7b789adbc42a0a7a50d5bad1811a2 of qtrade.core.trade.Trade:1
+msgid ""
+"Represents an individual trade with entry and exit details, profit "
+"calculations, and trade status."
+msgstr ""
+
+#: adcb90eb412e4bfea8d1b2e0f59e9bb1 f1ee2115b7b04835b35454424750e6d3 of
+#: qtrade.core.trade.Trade:3 qtrade.core.trade.Trade:29
+msgid "Trade size (positive for long, negative for short)."
+msgstr ""
+
+#: 31eefe89b5034c4fb407f0e56502d298 7cc290b5f0914191b1216f7bde03af05
+#: d9b388e571cd4cecba3620c5794b411d of qtrade.core.Trade.entry_price:1
+#: qtrade.core.trade.Trade:5 qtrade.core.trade.Trade:25
+msgid "Price at which the trade was entered."
+msgstr ""
+
+#: 96e0c0265d6a4972aa7366dc3bb5885b f0b6f8806eaf4fd98d2867255c85df1a
+#: f4b0a65cea134f9089bee1e1fb5032db of qtrade.core.Trade.entry_date:1
+#: qtrade.core.trade.Trade:7 qtrade.core.trade.Trade:27
+msgid "Date when the trade was entered."
+msgstr ""
+
+#: 37ba53d009f84b188ad8fa87d49f307a 76730db3037544e78208a0513093fb58 of
+#: qtrade.core.Trade.tag:1 qtrade.core.trade.Trade:13
+msgid "Tag for identifying the trade."
+msgstr ""
+
+#: 2d874cd1b31e4da586ab4f8c6ee8fca7 9f3cc194a49f4355827b8184bfcc1167 of
+#: qtrade.core.Trade.exit_price:1 qtrade.core.trade.Trade:15
+msgid "Price at which the trade was exited."
+msgstr ""
+
+#: 93ee547ae2f540a58a8333cd7eab6da5 e36418a1201a4e9aa309ee498c9c04a1 of
+#: qtrade.core.Trade.exit_date:1 qtrade.core.trade.Trade:17
+msgid "Date when the trade was exited."
+msgstr ""
+
+#: 4a68ce5f9964456cbdb05d4fae0871a3 fafdf33876a54fc1ad3befd3ee36edda of
+#: qtrade.core.Trade.profit:1 qtrade.core.trade.Trade:19
+msgid "Profit or loss from the trade."
+msgstr ""
+
+#: 5b65903778a94ff1b7c30ff71a7e591b of qtrade.core.trade.Trade:21
+msgid "Reason for exiting the trade ('signal', 'sl', 'tp', 'end')."
+msgstr ""
+
+#: 533687e89e2846a1ae2290d9639f3ac8 of qtrade.core.trade.Trade:35
+msgid "Tag for identifying the trade. Defaults to None."
+msgstr ""
+
+#: 57412aa19b4041feb7e4d3eee065ec70 of qtrade.core.trade.Trade:37
+msgid ""
+"Asset symbol this trade is on. Defaults to \"default\" for single-asset "
+"backtests. Multi-asset support is layered on this field."
+msgstr ""
+
+#: 286d2a4d711c48d7a8d593d1cc2f2f76 of qtrade.core.trade.Trade:41
+msgid "If the trade size is zero."
+msgstr ""
+
+#: b33f639704824458850d689f677db508 of qtrade.core.Trade.asset:1
+msgid "Asset symbol this trade is on."
+msgstr ""
+
+#: b6f9b893c88a4dda9ce077141b8cae88 of qtrade.core.trade.Trade.close:1
+msgid "Closes a portion or full of the trade and records exit details."
+msgstr ""
+
+#: 88119989ac5c4c8fbe5ca7b4c08cb230 of qtrade.core.trade.Trade.close:3
+msgid "Size to close (must not exceed current trade size)."
+msgstr ""
+
+#: 39c22e8916d742fe83f30784aded47ed of qtrade.core.trade.Trade.close:5
+msgid "Price at which the trade is closed."
+msgstr ""
+
+#: b93fcef621834a90a55292f2158a6330 of qtrade.core.trade.Trade.close:7
+msgid "Date when the trade is closed."
+msgstr ""
+
+#: f56dbad4dd934c25bdb7ea61f19f3941 of qtrade.core.trade.Trade.close:9
+msgid "Reason for closing ('signal', 'sl', 'tp', 'end')."
+msgstr ""
+
+#: c804dc0963df44239e8362a128ea90e0 of qtrade.core.trade.Trade.close:12
+msgid "**Trade** -- A new Trade instance representing the closed portion."
+msgstr ""
+
+#: 4caef69020e946e4aff5bd2b72d0be92 of qtrade.core.trade.Trade.close:14
+msgid ""
+"If attempting to close more than the current trade size or if the trade "
+"is already fully closed."
+msgstr ""
+
+#: c19e9a0659f4484facdbc152ebdad15c of qtrade.core.Trade.entry_date:3
+msgid "pd.Timestamp"
+msgstr ""
+
+#: f2271c5fa37c44afa20fc39e8dba4c56 of qtrade.core.Trade.entry_index:1
+msgid "Index when the trade was entered."
+msgstr ""
+
+#: 54f0b2cdbb4f40438b47ce913c6d294c of qtrade.core.Trade.entry_price:3
+msgid "float"
+msgstr ""
+
+#: 23adaf4f26d84f5faedbfe47648d8898 of qtrade.core.Trade.exit_index:1
+msgid "Index when the trade was exited."
+msgstr ""
+
+#: 212de69da07c4644b4be9bc3aa4afe14 of qtrade.core.Trade.exit_index:3
+msgid "Optional[int]"
+msgstr ""
+
+#: 3e34244a29e94fa68476b38ef0617430 of qtrade.core.Trade.exit_reason:1
+msgid "Reason for exiting the trade."
+msgstr ""
+
+#: 5bb594eeb5d54ea4b465044ef6d1cedc of qtrade.core.Trade.exit_reason:3
+msgid "**Optional[str]** -- Exit reason if the trade is closed, otherwise None."
+msgstr ""
+
+#: e084e44012f84774ac1ff0fe50f1d205 of qtrade.core.Trade.exit_reason:5
+msgid "Optional[str]"
+msgstr ""
+
+#: 573e9fc67b0f4c92846798092168e990 of qtrade.core.Trade.is_closed:1
+msgid "True if the trade has been fully closed."
+msgstr ""
+
+#: 7d921541594346f0bf726b469a44dff6 of qtrade.core.Trade.is_long:1
+msgid "True if the trade is a long position."
+msgstr ""
+
+#: c5d0a885527e49539290b6977587f88c of qtrade.core.Trade.is_short:1
+msgid "True if the trade is a short position."
+msgstr ""
+
+#: ad6d2ed891544b77ad8e8c01a3a1d6f3 of qtrade.core.Trade.profit:3
+msgid "**Optional[float]** -- Profit if the trade is closed, otherwise None."
+msgstr ""
+
+#: 2c4643d32bb742f6b8875605f8d2c53d of qtrade.core.Trade.size:1
+msgid "Current size of the trade."
+msgstr ""
+

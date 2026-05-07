@@ -1,0 +1,132 @@
+# Chinese translation of QTrade docs.
+# Copyright (C) 2026, Guan Guan
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: 2026-05-08 03:00+0800\n"
+"Last-Translator: \n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/getting_started.md:1 f19a347445ac43c0989e1512c2c05e61
+msgid "Getting Started"
+msgstr "快速开始"
+
+#: ../guide/getting_started.md:3 d984476ddae741258f3a225f9541bd6f
+msgid ""
+"This guide will help you get started with backtesting trading strategies "
+"using QTrade."
+msgstr "本指南帮你用 QTrade 上手回测交易策略。"
+
+#: ../guide/getting_started.md:5 5cac509238514927acaf9f069498fab2
+msgid "Strategy"
+msgstr "策略"
+
+#: ../guide/getting_started.md:7 1075eefae67b4da5b55bd3bd6cc8386b
+msgid ""
+"Let's create a simple SMA-crossover strategy. Custom strategies inherit "
+"from `qtrade.Strategy` and implement `prepare()` (one-time setup) and "
+"`on_bar_close()` (called on every bar):"
+msgstr ""
+"我们写一个简单的 SMA 交叉策略。自定义策略继承自 `qtrade.Strategy`，"
+"实现 `prepare()`（一次性初始化）和 `on_bar_close()`（每根 bar 调用）："
+
+#: ../guide/getting_started.md:34 426927b8abfa40c5b5355d19dce1c953
+msgid "Data"
+msgstr "数据"
+
+#: ../guide/getting_started.md:36 dde91aac80a54fac92f4f238e5271eb9
+msgid ""
+"QTrade doesn't ship data loaders — bring your own OHLCV "
+"`pandas.DataFrame` with `Open`, `High`, `Low`, `Close` (plus optional "
+"`Volume`) columns and a `DatetimeIndex`. Column names are case-"
+"insensitive (`open`, `Open`, etc.)."
+msgstr ""
+"QTrade 不内置数据源 —— 你需要自备 OHLCV 的 `pandas.DataFrame`，"
+"包含 `Open`、`High`、`Low`、`Close` 列（`Volume` 可选），索引为 `DatetimeIndex`。"
+"列名大小写不敏感（`open`、`Open` 都行）。"
+
+#: ../guide/getting_started.md:40 d7526fcb86334ef4946e896e86201332
+msgid "In this guide, we'll use `yfinance`:"
+msgstr "本指南使用 `yfinance` 获取数据："
+
+#: ../guide/getting_started.md:59 d2dd2098e8f542d89efc1c5c4e9b7047
+msgid ""
+"Indicators can be added in the strategy's `prepare()` (as shown above) or"
+" on the DataFrame before passing it to `Backtest`. Indicators added to "
+"the input DataFrame are visible to the strategy via `self.data`."
+msgstr ""
+"指标可以在策略的 `prepare()` 中添加（如上所示），也可以在传入 `Backtest` "
+"之前直接加到 DataFrame 上。无论哪种方式，指标都能在策略里通过 `self.data` 访问。"
+
+#: ../guide/getting_started.md:63 3c46680a8f0943ec870e9aeb44442118
+msgid "Backtest"
+msgstr "回测"
+
+#: ../guide/getting_started.md:65 d0b3e10dbada4b638041bfd7400e1ac0
+msgid "Now let's backtest our stratgy on prepared data."
+msgstr "现在来用准备好的数据回测策略。"
+
+#: ../guide/getting_started.md:111 3fa51dde88e04cd4bf1937affda688f2
+msgid "Plot"
+msgstr "可视化"
+
+#: ../guide/getting_started.md:113 5977ee4ce3e348b5b9592846c9696097
+msgid ""
+"Qtrade uses Bokeh to plot result charts. You can generate a plot of your "
+"backtest results with the following command:"
+msgstr ""
+"QTrade 使用 Bokeh 绘制结果图表。用以下命令生成回测结果可视化："
+
+#: ../guide/getting_started.md:123 271e29c12a294daaafbbd9493b5676d7
+msgid "Trades"
+msgstr "交易明细"
+
+#: ../guide/getting_started.md:125 6b6a0d54fe65486ebb34588331f71d2c
+msgid "You can also check all trades by using the following commands:"
+msgstr "也可以查看所有交易明细："
+
+#: ../guide/getting_started.md:139 e02744f3607d4d30848d5b0741e078d2
+msgid ""
+"The `Asset` column is `\"default\"` for single-asset backtests and the "
+"asset symbol when running on a portfolio (see [Multi-asset / portfolio "
+"backtests](multi_asset.md))."
+msgstr ""
+"单资产回测下 `Asset` 列恒为 `\"default\"`；多资产组合回测时则为对应资产代码"
+"（详见[多资产 / 投资组合回测](multi_asset.md)）。"
+
+#: ../guide/getting_started.md:142 3211d1c4a29c4fa5b981d9fd841c8acd
+msgid "Optimizing parameters (and avoiding overfitting)"
+msgstr "参数优化（以及如何避免过拟合）"
+
+#: ../guide/getting_started.md:144 94eac7513644498f975a4fad49805e74
+msgid "`Backtest.optimize` runs a grid search across the parameter space:"
+msgstr "`Backtest.optimize` 在参数空间做网格搜索："
+
+#: ../guide/getting_started.md:155 deb6b942d73b465c8a2f027448f85494
+msgid ""
+"The catch: those \"best\" params are picked **on the same data they're "
+"evaluated on**. They will look great in the backtest and frequently "
+"disappoint live. Use `walk_forward_optimize` instead to get an out-of-"
+"sample estimate:"
+msgstr ""
+"陷阱在于：这些「最优」参数是**在同一份数据上既调参又评估**得到的。"
+"回测里看起来漂亮，实盘往往让人失望。使用 `walk_forward_optimize` "
+"获得真正的样本外估计："
+
+#: ../guide/getting_started.md:173 e2554e5a715a411cac3a760c0d18dfbb
+msgid ""
+"Each window picks its own best params on the train slice and is evaluated"
+" on the immediately following test slice; `summary` reports aggregate "
+"out-of-sample stats and `windows` has per-window details."
+msgstr ""
+"每个窗口在训练片段挑选自己的最优参数，并在紧接的测试片段评估；"
+"`summary` 给出整体的样本外统计，`windows` 含每个窗口的细节。"

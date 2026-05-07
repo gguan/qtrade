@@ -1,0 +1,227 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/commissions.md:1 9cc2b1923eb3444ca2fd4fb6b35e9a09
+msgid "Commissions and slippage"
+msgstr ""
+
+#: ../guide/commissions.md:3 0b6bf192ef0340a69a460e10ce53e9a7
+msgid ""
+"QTrade ships four `Commission` implementations covering the patterns most"
+" strategies need. All live in `qtrade.core.commission` and share the "
+"abstract base `Commission`."
+msgstr ""
+
+#: ../guide/commissions.md:16 149cb340ca8740d78523c0da4162bf95
+msgid ""
+"Pass an instance to `Backtest(..., commission=...)` or `TradingEnv(..., "
+"commission=...)`. `commission=None` is equivalent to `NoCommission()`."
+msgstr ""
+
+#: ../guide/commissions.md:20 ae378138f40e4cf5b2a0d4b2bbd54c25
+msgid "The interface"
+msgstr ""
+
+#: ../guide/commissions.md:22 0195556d9fc54bed8a271a24d18b45da
+msgid ""
+"`Commission.calculate_commission(order_size: int, fill_price: float) -> "
+"float`"
+msgstr ""
+
+#: ../guide/commissions.md:24 9fa182c2f2924602be8e0234bb47e768
+msgid ""
+"Returns the commission in account currency for a single fill. The Broker "
+"subtracts it from `cash` at fill time. Sign of `order_size` is preserved "
+"— use `abs(order_size)` inside if you want symmetric fees on buys and "
+"sells."
+msgstr ""
+
+#: ../guide/commissions.md:29 7eab0e478d214778af61e6854e7ce164
+msgid "To roll your own:"
+msgstr ""
+
+#: ../guide/commissions.md:43 66a6132aa9264c93aa3d6c477b87f773
+msgid "Built-in implementations"
+msgstr ""
+
+#: ../guide/commissions.md:45 b7d01575197644a0b621aaff022cd54f
+msgid "NoCommission"
+msgstr ""
+
+#: ../guide/commissions.md:51 2d0d1704230c40479d9293757637049a
+msgid ""
+"Returns `0.0` always. The default if you don't pass anything. Use it for "
+"clean comparisons against Buy & Hold, or when modeling commission-free "
+"brokers."
+msgstr ""
+
+#: ../guide/commissions.md:55 3b3f5f0724f8483a875f09308fa1f468
+msgid "PercentageCommission"
+msgstr ""
+
+#: ../guide/commissions.md:61 b3519dbea7ee49348f10b015ede3903b
+msgid "Charges `abs(order_size) * fill_price * percentage`."
+msgstr ""
+
+#: ../guide/commissions.md:63 082f82db95174cbe9373aa0b4da36666
+msgid ""
+"The standard model for **stocks** (commissions quoted as bps of notional)"
+" and **crypto spot** (taker fees are typically 0.05–0.1%)."
+msgstr ""
+
+#: ../guide/commissions.md:66 de0be0bea8c64ea0ba8df3038630995a
+msgid "FixedCommission"
+msgstr ""
+
+#: ../guide/commissions.md:72 07839273f9b14af4a1d1d269ac0d9300
+msgid ""
+"Returns a flat fee regardless of size or price. Realistic for **futures**"
+" (where the exchange charges per-contract) and for **discount brokers** "
+"that quote a flat ticket charge."
+msgstr ""
+
+#: ../guide/commissions.md:76 6e221c0aa3624645ac005b2219579595
+msgid ""
+"For futures with multiple commission components (exchange + clearing + "
+"broker), sum them up: `FixedCommission(fixed_fee=2.50)`."
+msgstr ""
+
+#: ../guide/commissions.md:79 8307916f17aa46369bb0c648a719cdb4
+msgid "SlippageCommission"
+msgstr ""
+
+#: ../guide/commissions.md:85 fe73250a09c54050887e9f3c1cfa88c1
+msgid ""
+"Mathematically identical to `PercentageCommission`, but the intent is "
+"different — this models the *price impact* of crossing the spread, not a "
+"venue fee. Use it when:"
+msgstr ""
+
+#: ../guide/commissions.md:89 42ed7965fa2a4a9db1091d4f65ca400a
+msgid "You want to add slippage **on top of** an explicit commission."
+msgstr ""
+
+#: ../guide/commissions.md:90 c86e86351f6e43a089ca12477d998d83
+msgid ""
+"You want the cost to scale with notional but separate from \"fees\" in "
+"reporting."
+msgstr ""
+
+#: ../guide/commissions.md:104 7ef9c391a676427eb4d954807c0db30d
+msgid "Picking the right model"
+msgstr ""
+
+#: ../guide/commissions.md 8e7193a1595f41749cd11cdf8723022b
+msgid "Asset class"
+msgstr ""
+
+#: ../guide/commissions.md 12ca2a1df25e431686ea1ddcc2402842
+msgid "Typical setup"
+msgstr ""
+
+#: ../guide/commissions.md 55b22e22c37d4509a9675d24f377befb
+msgid "US equities (retail)"
+msgstr ""
+
+#: ../guide/commissions.md 6976ad12d9e6443a81d353951638b946
+msgid "`NoCommission()` (most brokers are zero now) + small `SlippageCommission`"
+msgstr ""
+
+#: ../guide/commissions.md f49cf1f127c2484aa5393e69066a61f7
+msgid "US equities (institutional)"
+msgstr ""
+
+#: ../guide/commissions.md df8607371dbc4bbab24ddff2667cb0f0
+msgid "`PercentageCommission(0.0005)` (~5 bps blended)"
+msgstr ""
+
+#: ../guide/commissions.md 4bfeba29d46843ccae48bc31a35b2cea
+msgid "Futures"
+msgstr ""
+
+#: ../guide/commissions.md 4d2c9c6eab4d447c89b168e19417cbb0
+msgid "`FixedCommission(2.5)` per contract + slippage"
+msgstr ""
+
+#: ../guide/commissions.md 8d2f29b46f5c4d81a508b12a1aa95ac4
+msgid "FX"
+msgstr ""
+
+#: ../guide/commissions.md 663a48ff72bf4cf496c66409b43b70f5
+msgid "`PercentageCommission(0.0001)` (1 pip on majors)"
+msgstr ""
+
+#: ../guide/commissions.md e6b7f91e24d047ca8df695e88e8e7554
+msgid "Crypto spot"
+msgstr ""
+
+#: ../guide/commissions.md 3d5f37477fe847c8b53e39d712795153
+msgid "`PercentageCommission(0.001)` (taker) or `(0.0005)` (maker)"
+msgstr ""
+
+#: ../guide/commissions.md 34761751a66249e7be655b9f2284a995
+msgid "Crypto perps"
+msgstr ""
+
+#: ../guide/commissions.md a2b03bda858b4599bfb0710339e9684e
+msgid "`PercentageCommission(0.0005)` taker + funding (modeled separately)"
+msgstr ""
+
+#: ../guide/commissions.md:115 1f251258cf944c9192cb3c6d20491069
+msgid ""
+"If unsure, **run the backtest both with and without commission**. The gap"
+" tells you how cost-sensitive your strategy is — high-turnover strategies"
+" often look great pre-cost and lose money post-cost."
+msgstr ""
+
+#: ../guide/commissions.md:119 3969a8a232494872884d4a2fa80d7b4e
+msgid "What's not modeled"
+msgstr ""
+
+#: ../guide/commissions.md:121 644e4edbf87d4ac0821b498457f9c723
+msgid ""
+"**Maker/taker asymmetry.** All fills are charged at one rate. To model "
+"maker fees on limit orders, write a custom `Commission` and branch on "
+"whether the order has a `limit` price."
+msgstr ""
+
+#: ../guide/commissions.md:124 e42f3012317d45478cd504a7ab793e06
+msgid ""
+"**Spread.** The Broker fills market orders at `Close` (or next `Open`). "
+"The bid/ask spread isn't modeled — `SlippageCommission` is the closest "
+"approximation."
+msgstr ""
+
+#: ../guide/commissions.md:127 523836eb5ad248f7be0cdadf50142462
+msgid ""
+"**Funding rates / borrow costs.** Not modeled. For long-running short "
+"positions or perp funding, you'd need to subtract from `cash` manually in"
+" your strategy's `on_bar_close`."
+msgstr ""
+
+#: ../guide/commissions.md:130 dc40a1e528ab419bbec9d84104884f94
+msgid ""
+"**Per-asset commission.** A single `Commission` instance applies to all "
+"assets in a multi-asset backtest. If you need different rates per asset, "
+"write a custom `Commission` that branches on the order's `_fill_price` or"
+" wrap it in your strategy logic."
+msgstr ""
+

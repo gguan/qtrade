@@ -1,0 +1,333 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/trading_environment.md:1 6ec76a49d59e45fbbf702f5561466868
+msgid "Gym Trading Environment"
+msgstr ""
+
+#: ../guide/trading_environment.md:3 21b03473eaed4aa38ee6156f6a932b81
+msgid ""
+"QTrade ships a [Gymnasium](https://gymnasium.farama.org/) environment "
+"(`qtrade.env.TradingEnv`) that wraps the same `Broker` as `Backtest`. The"
+" agent steps through bars one at a time; same accounting, fill semantics,"
+" SL/TP behavior — just driven by `step()` instead of a Python loop."
+msgstr ""
+
+#: ../guide/trading_environment.md:9 98561b040366444c8894812943e70036
+msgid ""
+"For customizing the action / observation / reward, see [Customizing "
+"Trading Environment](customize_environment.md)."
+msgstr ""
+
+#: ../guide/trading_environment.md:12 f4c7b53f1beb4a298924137112612b32
+msgid "Initializing"
+msgstr ""
+
+#: ../guide/trading_environment.md:43 ddedbd1d6c1c435c9c6e059a05c05bcd
+msgid ""
+"The default `ObserverScheme` returns a `(window_size, n_features)` window"
+" of every column except OHLCV. So the indicators you add to the DataFrame"
+" become the observation features automatically."
+msgstr ""
+
+#: ../guide/trading_environment.md:47 8a93e6e26e804eadb4f8cfd2098e2e52
+msgid "The step API"
+msgstr ""
+
+#: ../guide/trading_environment.md:49 1fd387b1f5b0406bac70428531f49879
+msgid "`env.step(action)` returns the standard 5-tuple:"
+msgstr ""
+
+#: ../guide/trading_environment.md 636335f1fe6f41a4a5dba3896f85817f
+msgid "Field"
+msgstr ""
+
+#: ../guide/trading_environment.md 8aa627a14854412d9838e78a4ec88fa1
+#: cf1a9b3526fe4c70872db9fe8c18e62b
+msgid "Meaning"
+msgstr ""
+
+#: ../guide/trading_environment.md 93f4dc8235264d869de9090b74f40777
+msgid "`obs`"
+msgstr ""
+
+#: ../guide/trading_environment.md d088bdd3ab9d4fe39a45f59b0cb85d1a
+msgid ""
+"Whatever the `ObserverScheme` produces. Default: `np.ndarray` of shape "
+"`(window_size, n_features)`."
+msgstr ""
+
+#: ../guide/trading_environment.md 5d2617397be8440593b613379e678c2b
+msgid "`reward`"
+msgstr ""
+
+#: ../guide/trading_environment.md 7464ea24cee54f54b49a7e6b0c83819a
+msgid ""
+"`RewardScheme.get_reward(env)`. Default: log-return of trades closed this"
+" step minus commission."
+msgstr ""
+
+#: ../guide/trading_environment.md 8b00ae0e786c410598a12e9b89fb7eca
+msgid "`terminated`"
+msgstr ""
+
+#: ../guide/trading_environment.md a01e0bd37cbb464191541ced84f6b498
+msgid "`True` iff `current_step >= len(data) - 1` — the data ran out."
+msgstr ""
+
+#: ../guide/trading_environment.md 25893bf688e5428eae28c8a5d35d6500
+msgid "`truncated`"
+msgstr ""
+
+#: ../guide/trading_environment.md a930071e8dc941a29cdf21d5f43fd7ea
+msgid ""
+"`True` iff `current_step - start_idx >= max_steps` — the episode hit its "
+"time limit."
+msgstr ""
+
+#: ../guide/trading_environment.md 3fed357ba7854f9da1e44e7318a59735
+msgid "`info`"
+msgstr ""
+
+#: ../guide/trading_environment.md 7d83a4b366cb41ceb2faa4f1123fb082
+msgid "Dict (see below)."
+msgstr ""
+
+#: ../guide/trading_environment.md:63 9243887d64ac4eb09bdfb0a85a6f6eef
+msgid ""
+"When either `terminated` or `truncated` becomes True, the broker calls "
+"`close_all_positions()` automatically — the episode is \"settled\" before"
+" returning."
+msgstr ""
+
+#: ../guide/trading_environment.md:67 59cbbf1ad3cb4c169b0a7f069886795b
+msgid "What's in `info`?"
+msgstr ""
+
+#: ../guide/trading_environment.md:69 cd7478a90980461d9b7385a2a39ad8da
+msgid "Every step:"
+msgstr ""
+
+#: ../guide/trading_environment.md 99ca13da75f045f6b3d44c75fb415729
+msgid "Key"
+msgstr ""
+
+#: ../guide/trading_environment.md a3bc6a9a132942cbbe55302445199735
+msgid "`equity`"
+msgstr ""
+
+#: ../guide/trading_environment.md c58009bdb98d4fba8497b3b81d156b50
+msgid "`broker.equity` (cash + unrealized PnL)."
+msgstr ""
+
+#: ../guide/trading_environment.md 68303c60014e4005b736ebc7fa429f9d
+msgid "`unrealized_pnl`"
+msgstr ""
+
+#: ../guide/trading_environment.md cbc9a6b5c0d3486abaa6dee6a6d725d8
+msgid "`broker.unrealized_pnl`."
+msgstr ""
+
+#: ../guide/trading_environment.md 887af900c5ec48a3a22b118bbb3d77fc
+msgid "`cumulative_return`"
+msgstr ""
+
+#: ../guide/trading_environment.md a3bfcaa33a134199b0ed44d9174fa483
+msgid ""
+"`broker.cumulative_returns` — multiplicative growth since the episode "
+"start."
+msgstr ""
+
+#: ../guide/trading_environment.md d9da77d2d30943a5817dfee3976b017d
+msgid "`position`"
+msgstr ""
+
+#: ../guide/trading_environment.md d8757d6d549645d09f2bb5d717306583
+msgid "Net signed `position.size`."
+msgstr ""
+
+#: ../guide/trading_environment.md 168393e7cbcf45f0a1f40c5caed8cbbc
+msgid "`total_trades`"
+msgstr ""
+
+#: ../guide/trading_environment.md c5c131cecbab4a3582e92eabc4797546
+msgid "Count of closed trades so far this episode."
+msgstr ""
+
+#: ../guide/trading_environment.md c16852378a264cf7a53b6492fc9ede16
+msgid "`trades_profit`"
+msgstr ""
+
+#: ../guide/trading_environment.md 69fc6e6059b843099458103bb96af0eb
+msgid "Sum of `profit` across all closed trades."
+msgstr ""
+
+#: ../guide/trading_environment.md 6c0d53609def4bfd8c5093ff1d0f85e2
+msgid "`avg_trade_duration`"
+msgstr ""
+
+#: ../guide/trading_environment.md 9877ecc4825543a2ba41be618ef349c6
+msgid "Mean `exit_index − entry_index` in bars (0 if no trades)."
+msgstr ""
+
+#: ../guide/trading_environment.md e5f1412ecba9486baf3991659d796e1b
+msgid "`is_success`"
+msgstr ""
+
+#: ../guide/trading_environment.md 99bf7a41f435432e91448940109d4922
+msgid "`trades_profit > 0`. Useful for SB3's `EvalCallback` success-rate logging."
+msgstr ""
+
+#: ../guide/trading_environment.md:82 a9002a07c94c49dd8d7c32ea134ea5c1
+msgid ""
+"If you need additional fields (open trade count, drawdown so far, "
+"specific trade properties), subclass `TradingEnv` and override `step` to "
+"extend the dict."
+msgstr ""
+
+#: ../guide/trading_environment.md:86 c21f3ea9ff4a4524b7f23f87bdee0bc8
+msgid "Episodes: terminated vs truncated"
+msgstr ""
+
+#: ../guide/trading_environment.md:88 a0e051248f3d40c687bb53a183ba2621
+msgid "The Gymnasium convention is:"
+msgstr ""
+
+#: ../guide/trading_environment.md:90 c79e26b7d2ed40ad9ca1109c943d157e
+msgid ""
+"**`terminated`**: the episode reached a *natural* end (won, lost, or ran "
+"out of valid states)."
+msgstr ""
+
+#: ../guide/trading_environment.md:92 65f20a7905cc49d4bc02d037a5a5a5bc
+msgid "**`truncated`**: the episode was *cut* by an artificial time limit."
+msgstr ""
+
+#: ../guide/trading_environment.md:94 1c95fb5bface42f4ae7f1af1b6916d1b
+msgid "In `TradingEnv`:"
+msgstr ""
+
+#: ../guide/trading_environment.md:96 f2c901fa80844088a05d5b6276eef7d9
+msgid ""
+"`terminated` fires when there's no more data (`current_step == len(data) "
+"- 1`). The episode is \"complete.\""
+msgstr ""
+
+#: ../guide/trading_environment.md:98 7770aa5ba828480d95690db3385c4d3d
+msgid ""
+"`truncated` fires when `max_steps` is reached. The episode could have "
+"continued but you set a budget."
+msgstr ""
+
+#: ../guide/trading_environment.md:101 5c053610252c4efcbd52a2ff77155d94
+msgid ""
+"`stable-baselines3`'s value bootstrapping treats them differently — make "
+"sure you set `max_steps` short enough that most episodes truncate (so the"
+" agent learns from many short episodes), but not so short that the "
+"strategy never has time to play out."
+msgstr ""
+
+#: ../guide/trading_environment.md:106 c5e963418aef4aa3bbc07e37f9562618
+msgid "`random_start` for episode diversity"
+msgstr ""
+
+#: ../guide/trading_environment.md:108 849690a069a74283abc220c3797e8ab5
+msgid ""
+"By default `random_start=False`: every episode starts at bar index "
+"`window_size`. With `random_start=True`, each `reset()` picks a random "
+"start in `[window_size, len(data) - max_steps)`, so episodes sample "
+"different market regimes."
+msgstr ""
+
+#: ../guide/trading_environment.md:113 f7e9967be0dd4c9290afabc341933eb9
+msgid ""
+"Required: `len(data) > window_size + max_steps`. The constructor raises a"
+" clear `ValueError` if not — keep `max_steps` < `len(data) - window_size`"
+" to leave room."
+msgstr ""
+
+#: ../guide/trading_environment.md:117 0f91bcb91b964f4394c63b2d2ff607bd
+msgid "A typical training loop"
+msgstr ""
+
+#: ../guide/trading_environment.md:136 c7fbe46fd5d24ae393b676628fbbc99a
+msgid ""
+"`env.show_stats()` and `env.plot()` work the same as on a `Backtest` "
+"instance — same metrics, same multi-panel Bokeh report — because they "
+"both delegate to the underlying `Broker`."
+msgstr ""
+
+#: ../guide/trading_environment.md:140 7e6ca5610b3f4654b8d3137385acdb2c
+msgid "Rendering"
+msgstr ""
+
+#: ../guide/trading_environment.md:142 32c129e78f6144ff9291668e2b738f12
+msgid ""
+"`env.render('human')` opens a live mplfinance candle chart updating every"
+" step:"
+msgstr ""
+
+#: ../guide/trading_environment.md:145 4ddd30a224874cc2bde7b7ee0c47e691
+msgid "![Trading Environment Render](../_static/render_rgb.gif)"
+msgstr ""
+
+#: ../guide/trading_environment.md:145 ce9c1da7e48c4b9680355e237b2b013b
+msgid "Trading Environment Render"
+msgstr ""
+
+#: ../guide/trading_environment.md:147 f1c89e9c163540149f1fb8bb9bb0de1e
+msgid "For RGB array output (e.g. SB3's `VecVideoRecorder`):"
+msgstr ""
+
+#: ../guide/trading_environment.md:154 6bb969e06a594fe386ed022bfc9a4950
+msgid ""
+"Heads up: rendering is slow. For training, leave it off "
+"(`render_mode='human'` is the default but you don't have to *call* "
+"`render()`) and only render during evaluation."
+msgstr ""
+
+#: ../guide/trading_environment.md:158 787896a9154343879b075f5dc88b20c3
+msgid "Common pitfalls"
+msgstr ""
+
+#: ../guide/trading_environment.md:160 6cb3baa834c042d09754e2baab61247f
+msgid ""
+"**Sparse reward**: the default reward only fires on bars where a trade "
+"closes. Long episodes with no closures train poorly. Either use an "
+"equity-based reward (see [Customizing Trading "
+"Environment](customize_environment.md)) or shorten episodes so end-of-"
+"episode auto-closure provides regular signal."
+msgstr ""
+
+#: ../guide/trading_environment.md:165 f51b3e9653274c139bd6b27eefb4ee26
+msgid ""
+"**Indicators with NaN at start**: any column you add to `data` is "
+"observed as-is. NaN in the observation crashes most policies. Drop the "
+"warmup rows with `data.dropna(inplace=True)` after computing indicators."
+msgstr ""
+
+#: ../guide/trading_environment.md:169 b1b99fdc095a491387800c1009571bcf
+msgid ""
+"**Action / observation drift**: if you change schemes mid-experiment and "
+"load an old model, you'll get shape mismatches. Save model and scheme "
+"together when you're going to load."
+msgstr ""
+

@@ -1,0 +1,286 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/plot.md:1 f99ca917268d4e23a2c454c94ac786b6
+msgid "Reading the Bokeh report"
+msgstr ""
+
+#: ../guide/plot.md:3 785f9d1ca4d74959bf4bcd526e7e9b34
+msgid ""
+"`Backtest.plot()` (and `TradingEnv.plot()`) renders an interactive Bokeh "
+"report combining equity, trade returns, and per-asset OHLC panels. This "
+"page explains what each panel shows and how to interpret it."
+msgstr ""
+
+#: ../guide/plot.md:8 9228e3b8243b476c98bfebed8abf9b0e
+msgid "Saving to file"
+msgstr ""
+
+#: ../guide/plot.md:10 4039c71148424a2b86d03125d4b6567b
+msgid ""
+"By default `plot()` calls `bokeh.io.show()` which opens the report in a "
+"browser. To save a self-contained HTML for sharing or archiving:"
+msgstr ""
+
+#: ../guide/plot.md:18 d0c3cbcf890147a0b7130fb12581d834
+msgid ""
+"The HTML has all data inlined — no Bokeh server, no external assets. "
+"Email it, commit it, drop it in a wiki."
+msgstr ""
+
+#: ../guide/plot.md:21 d3c30266718340eebcbe5b718111f41d
+msgid "Single-asset layout"
+msgstr ""
+
+#: ../guide/plot.md:23 284f545a7f3548d1b6317cf8bf637627
+msgid "Three stacked panels with linked x-axes:"
+msgstr ""
+
+#: ../guide/plot.md:38 d3b08f59f43c4eecb214b3b536d2366b
+msgid "Top: Equity panel"
+msgstr ""
+
+#: ../guide/plot.md:40 0bc3010c965a4090b14fd09a757f069e
+msgid ""
+"**Solid blue line**: portfolio equity (cumulative returns, normalized to "
+"1.0 at the start)."
+msgstr ""
+
+#: ../guide/plot.md:42 e2643ca75ee44d0cae022065ca507cd1
+msgid "**Gray dotted line**: Buy & Hold returns on the same scale."
+msgstr ""
+
+#: ../guide/plot.md:43 95892bb89dac4295ac7f72be25446afd
+msgid "**Purple dot**: peak equity point."
+msgstr ""
+
+#: ../guide/plot.md:44 41042eff1b504ac9839d6cefb4878cce
+msgid "**Blue dot**: final equity point (legend shows the final pct)."
+msgstr ""
+
+#: ../guide/plot.md:45 2b74e3753b0841e3994e13f73846a3b8
+msgid "**Gray dot**: final B&H point."
+msgstr ""
+
+#: ../guide/plot.md:46 553c68e118a44f09855aff5f473753c4
+msgid "**Red dot**: max drawdown trough."
+msgstr ""
+
+#: ../guide/plot.md:47 7d25487a4cc24482b77c5cb38e86e985
+msgid ""
+"**Red shaded area**: the drawdown region (gap between equity and its "
+"running max)."
+msgstr ""
+
+#: ../guide/plot.md:49 2660c859656e4e7eb7f953a7349dfd15
+msgid "**Red horizontal segment**: the longest drawdown duration."
+msgstr ""
+
+#: ../guide/plot.md:51 ../guide/plot.md:69 ../guide/plot.md:90
+#: 720249f646b74f0bbd7d07850f411818 a79e2a3309c54a6881d2af8bb64eb876
+#: f1a672a33bf045f1b8da9ddd2f28ce58
+msgid "What to look for:"
+msgstr ""
+
+#: ../guide/plot.md:53 91dc11baa63b49f6bc1e5bf6820c47b7
+msgid "Is the blue line above the gray? You're beating Buy & Hold."
+msgstr ""
+
+#: ../guide/plot.md:54 5e7438dfa93144ffb37d4edfd424c21a
+msgid ""
+"How \"smooth\" is the blue line vs gray? Smoother = lower volatility = "
+"better risk-adjusted return (the Sharpe story)."
+msgstr ""
+
+#: ../guide/plot.md:56 fecbd39d602542739c9bc41e9ce06527
+msgid ""
+"Is the red shaded area concentrated in one period or spread out? "
+"Concentrated = strategy has one weak regime; spread out = systemic drag."
+msgstr ""
+
+#: ../guide/plot.md:60 ac98700d321d47868a27320cb1b9b2e6
+msgid "Middle: Trade returns"
+msgstr ""
+
+#: ../guide/plot.md:62 408aae07d683497cbca22140615b78d5
+msgid "A scatter of every closed trade plotted at its exit time:"
+msgstr ""
+
+#: ../guide/plot.md:64 e6d68f5f7789422c8bc0b9417fe9f953
+msgid "**Green up-triangles**: long trades. y-axis is `(exit/entry − 1)`."
+msgstr ""
+
+#: ../guide/plot.md:65 8a5f0e0a46ec48708875efa5fa22ba85
+msgid "**Red down-triangles**: short trades. y-axis is the equivalent for shorts."
+msgstr ""
+
+#: ../guide/plot.md:66 73bdd64721364624a76059edf6914587
+msgid "**Marker size**: scaled to position size (bigger = larger trade)."
+msgstr ""
+
+#: ../guide/plot.md:67 64af8266fe7b4f3fbf5936e4b604b626
+msgid "**Dashed horizontal at 0**: break-even line."
+msgstr ""
+
+#: ../guide/plot.md:71 57a801a462464646bad3c739da8ea9bf
+msgid "Are most markers above the 0-line? That's your win rate eyeballed."
+msgstr ""
+
+#: ../guide/plot.md:72 59ca334c674e46eca3a6e5efa017cde0
+msgid ""
+"Is there a cluster of large-magnitude losses (way below 0)? That's where "
+"stop-losses (or lack thereof) hurt."
+msgstr ""
+
+#: ../guide/plot.md:74 0074bdcb51044100872bb7f83b5aee44
+msgid ""
+"Are big winners and big losers symmetric around 0? Asymmetric is good — "
+"small losses + large gains is the trend-following sweet spot."
+msgstr ""
+
+#: ../guide/plot.md:77 1d27b3ba283b4015907a964d8f2f300b
+msgid "Bottom: OHLC + volume + trade boxes"
+msgstr ""
+
+#: ../guide/plot.md:79 1c4ee5dc4c9b44119a7d0d298695d53c
+msgid "The price action with overlays:"
+msgstr ""
+
+#: ../guide/plot.md:81 a00410852d4e412f9ee58903442b285a
+msgid "**Black line**: closing prices."
+msgstr ""
+
+#: ../guide/plot.md:82 e6bbce283ca04d41869b8e4d33b54c30
+msgid ""
+"**Bottom bars (faint green/red)**: volume (right y-axis), color-coded by "
+"close ≥/< open."
+msgstr ""
+
+#: ../guide/plot.md:84 507c00814d60467795b5cb0a2afaae0e
+msgid ""
+"**Translucent green rectangles**: winning trades — left/right edges are "
+"entry/exit times, top/bottom are entry/exit prices."
+msgstr ""
+
+#: ../guide/plot.md:86 eb6304e58921449c897620c970fadcea
+msgid "**Translucent red rectangles**: losing trades, same convention."
+msgstr ""
+
+#: ../guide/plot.md:87 92833cc10f334556bd6398acc4fb52ac
+msgid ""
+"**Triangle markers**: order fills. Up = buy; down = sell. Size scaled to "
+"order magnitude."
+msgstr ""
+
+#: ../guide/plot.md:92 ebc0984e23d34bec811d679c3f8e57eb
+msgid ""
+"Trade boxes that span long horizontal stretches = you held through noise."
+" Short stretches = quick in-out trades."
+msgstr ""
+
+#: ../guide/plot.md:94 8f6023c3df7a4db7af60dcd49d789ee5
+msgid ""
+"Buy markers at local highs / sell markers at local lows = bad timing, "
+"possibly a sign of late signal generation."
+msgstr ""
+
+#: ../guide/plot.md:96 30fb6ec280f74a5d96700972d9f441c3
+msgid ""
+"Boxes piling up densely = high turnover. Watch the `Total Commission "
+"Cost` metric in `show_stats()`."
+msgstr ""
+
+#: ../guide/plot.md:99 0a259ddb8cf647a49fe44567791f8292
+msgid "Multi-asset layout"
+msgstr ""
+
+#: ../guide/plot.md:101 d1b4fb9a6ec44a59a325cec1b65da792
+msgid ""
+"The report adds one OHLC panel per asset, all stacked, all sharing the "
+"same x-axis:"
+msgstr ""
+
+#: ../guide/plot.md:118 6cf737c7c7c94faeb305e67274d0caa6
+msgid ""
+"Each per-asset OHLC panel shows trades and orders **filtered to that "
+"asset only**, so you can see exactly when the strategy moved in each "
+"name. The equity panel up top is portfolio-level (one curve, summing "
+"across all assets)."
+msgstr ""
+
+#: ../guide/plot.md:123 7f1b2e68317c4028b3da59e74a1ef288
+msgid ""
+"The Buy & Hold benchmark is the **equal-weighted average** of each "
+"asset's first-to-last return — a fair \"naive portfolio\" comparison."
+msgstr ""
+
+#: ../guide/plot.md:126 2dbb53ec380c4681bde7252ccc94ca44
+msgid "Interactive features"
+msgstr ""
+
+#: ../guide/plot.md:128 1b2f257197544993a09424206d8773fc
+msgid "**Drag the x-axis** on any panel to pan; **scroll** to zoom."
+msgstr ""
+
+#: ../guide/plot.md:129 c7f7c4caba674eddba57815aaaaa745e
+msgid "**Click a legend entry** to toggle that series on/off."
+msgstr ""
+
+#: ../guide/plot.md:130 b2555edbed4c4c6cbcec662a6773e275
+msgid "**Hover** for tooltips: dates, prices, returns, profit per trade."
+msgstr ""
+
+#: ../guide/plot.md:131 a3e666745f79455ba8fadaeaf81ba2ad
+msgid ""
+"**Auto-rescaling**: zooming the x-axis triggers a JS callback that "
+"rescales the y-axes for the visible range only (single-asset layout)."
+msgstr ""
+
+#: ../guide/plot.md:134 0355491c7ebf4f0092595a791754ac3b
+msgid "Common surprises"
+msgstr ""
+
+#: ../guide/plot.md:136 e034e5ec12ff42f6939777db78b1adbc
+msgid ""
+"**Trade-return scatter looks empty**: the strategy hasn't closed any "
+"trades yet. SL/TP not triggered + no signal exits = no closed trades."
+msgstr ""
+
+#: ../guide/plot.md:138 e12bcf2fc0104da88cdea1c7188ac5b3
+msgid ""
+"**OHLC shows a gap at the end with no buy/sell**: the "
+"`close_all_positions()` end-of-run sweep records exits at the last bar's "
+"close, which can produce a flurry of markers right at the right edge."
+msgstr ""
+
+#: ../guide/plot.md:142 630f191dfb7f4e7391a2dd17cd101cc0
+msgid ""
+"**Volume is missing**: your input data didn't have a `Volume` column. Add"
+" one (or accept volume bars don't show)."
+msgstr ""
+
+#: ../guide/plot.md:144 e0e345bff03d460faeb5053e4d5c798c
+msgid ""
+"**Equity line drops sharply with no visible trade**: you took a large "
+"mark-to-market loss without exiting. Check `unrealized_pnl` in your "
+"strategy logic."
+msgstr ""
+

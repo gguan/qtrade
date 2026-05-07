@@ -1,0 +1,150 @@
+# Chinese translation of QTrade documentation.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: 2026-05-08 03:00+0800\n"
+"Last-Translator: \n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../index.md:17
+msgid "User Guide"
+msgstr "用户指南"
+
+#: ../index.md:32
+msgid "Reference"
+msgstr "参考"
+
+#: ../index.md:41
+msgid "API"
+msgstr "API"
+
+#: ../index.md:50
+msgid "GitHub"
+msgstr "GitHub"
+
+#: ../index.md:50
+msgid "Development"
+msgstr "开发"
+
+#: ../index.md:7 006289de7dbc4d02aa9314a60c7d6330
+msgid "QTrade"
+msgstr "QTrade"
+
+#: ../index.md:9 1504ed90c6194901a1fa39bfeb2433cc
+msgid ""
+"QTrade is a simple, modular, and highly customizable trading interface "
+"capable of handling backtesting, reinforcement learning tasks."
+msgstr ""
+"QTrade 是一个简洁、模块化、高度可定制的交易框架，支持回测和强化学习任务。"
+
+#: ../index.md:11 872651388c554f4a9740ea082ba562fc
+msgid ""
+"With features ranging from traditional signal-based strategies to "
+"reinforcement learning-driven approaches, QTrade allows traders to focus "
+"on developing and testing strategies without the burden of implementation"
+" details."
+msgstr ""
+"涵盖传统信号策略到强化学习驱动的方法，QTrade 让交易者专注于策略开发与测试，"
+"而不必纠结于底层实现细节。"
+
+#: ../index.md:13 9bb0d47713ec484aa2fd305d899a0335
+msgid "Key Features"
+msgstr "核心功能"
+
+#: ../index.md:14 818accccc7ed4b6dae64473f5059349b
+msgid ""
+"**Backtesting**: Single-asset or multi-asset / portfolio strategies with "
+"shared cash and per-asset positions."
+msgstr ""
+"**回测**：支持单资产或多资产 / 投资组合策略，共享现金池、各资产独立持仓。"
+
+#: ../index.md:15 78cb9e0136a94c48886b7fe4b5e18aac
+msgid ""
+"**Reinforcement Learning**: A highly customizable Gymnasium environment "
+"for training and testing AI-driven trading agents."
+msgstr ""
+"**强化学习**：内置高度可定制的 Gymnasium 环境，用于训练和测试 AI 驱动的交易智能体。"
+
+#: ../index.md:59 8ab31897b3a742738a6c95a1e55120b6
+msgid "How to Use"
+msgstr "如何使用"
+
+#: ../index.md:61 812917b647834fb393d1a374ea544d9c
+msgid ""
+"**Install QTrade** Follow the instructions in the [Installation "
+"Guide](#installation) to set up QTrade in your Python environment."
+msgstr ""
+"**安装 QTrade** 按照[安装指南](#installation)在你的 Python 环境中安装 QTrade。"
+
+#: ../index.md:64 01102a5b91714856a2944330510ba4b7
+msgid ""
+"**Explore Tutorials** Learn to create strategies, backtest them, and use "
+"gym trading environment by following the [Getting "
+"Started](guide/getting_started.md) and the [Trading "
+"Environment](guide/trading_environment.md)."
+msgstr ""
+"**浏览教程** 阅读[快速开始](guide/getting_started.md)和[交易环境]"
+"(guide/trading_environment.md)，学习如何编写策略、运行回测和使用 Gym 交易环境。"
+
+#: ../index.md:67 28c82b9ccb3a4ba1a4a57fa9e2ec33e9
+msgid ""
+"**API Reference** Dive deeper into QTrade's core components with the [API"
+" Reference](api/core.md)."
+msgstr ""
+"**API 参考** 通过 [API 参考](api/core.md)深入了解 QTrade 的核心组件。"
+
+#: ../index.md:73 b98045f8afea4ac8a7aad87abc7e0c46
+msgid "Installation"
+msgstr "安装"
+
+#: ../index.md:75 cc7e25baf1d5477ea8e6e30454e3a850
+msgid "QTrade can be installed with [pip](https://pip.pypa.io):"
+msgstr "通过 [pip](https://pip.pypa.io) 安装 QTrade："
+
+#: ../index.md:81 2490016b559b4ec1bc3b4cd0a6a282e0
+msgid ""
+"For RL evaluation utilities, install the optional `rl` extra (pulls in "
+"stable-baselines3):"
+msgstr ""
+"如需 RL 评估工具，安装可选的 `rl` 附加依赖（会引入 stable-baselines3）："
+
+#: ../index.md:87 30060c11ab134152986da306cff85462
+msgid ""
+"Alternatively, you can obtain the latest source code from "
+"[GitHub](https://github.com/gguan/qtrade):"
+msgstr ""
+"或者从 [GitHub](https://github.com/gguan/qtrade) 获取最新源代码："
+
+#: ../index.md:95 03c2af0a095d46de8b1840d76a4be566
+msgid "To run the example code:"
+msgstr "运行示例代码："
+
+#: ../index.md:103 26ee4206c4f44edab6e470fc1485cc88
+msgid "Usage"
+msgstr "使用"
+
+#: ../index.md:105 3ed7919569654554b26c56528a463944
+msgid ""
+"The [User Guide](guide/getting_started.md) is the place to learn how to "
+"use the library and accomplish common tasks."
+msgstr ""
+"[用户指南](guide/getting_started.md)是学习如何使用本库以及完成常见任务的地方。"
+
+#: ../index.md:107 5945cbbdd0184f5597a5533a45d456b1
+msgid ""
+"The API Reference covers the [core](api/core.md), "
+"[backtest](api/backtest/index.md), and [environment](api/env.md) modules."
+msgstr ""
+"API 参考涵盖 [core](api/core.md)、[backtest](api/backtest/index.md) 和 "
+"[environment](api/env.md) 三个模块。"

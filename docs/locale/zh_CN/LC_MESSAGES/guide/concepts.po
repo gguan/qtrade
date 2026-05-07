@@ -1,0 +1,367 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/concepts.md:1 ffe3879077964188b13959e3429b301e
+msgid "Concepts"
+msgstr ""
+
+#: ../guide/concepts.md:3 033a72d52eaf478795ab811bdebfd74a
+msgid ""
+"QTrade is a small library, but understanding how its components fit "
+"together makes both the API and the source code easier to navigate. This "
+"page is the mental model."
+msgstr ""
+
+#: ../guide/concepts.md:7 4e1df7d5301c47f4984aeb00bc0d8aa7
+msgid "The pieces"
+msgstr ""
+
+#: ../guide/concepts.md:37 8921c22d865246b5b67bb99e1e893139
+msgid ""
+"For RL workflows, replace `Backtest` with `TradingEnv` — same `Broker` "
+"underneath, just driven by Gymnasium's `step()` instead of a Python `for`"
+" loop."
+msgstr ""
+
+#: ../guide/concepts.md:41 2c5742324e1b4fee8cda2b8cc9a9ac94
+msgid "What each component does"
+msgstr ""
+
+#: ../guide/concepts.md:43 a144555d990f4cad8604a115b6e0bcd9
+msgid "Broker"
+msgstr ""
+
+#: ../guide/concepts.md:45 2d7f638c9526488aa04410ca7d579c5e
+msgid ""
+"The simulation core. You don't usually instantiate it directly — both "
+"`Backtest` and `TradingEnv` create one for you."
+msgstr ""
+
+#: ../guide/concepts.md:48 38d098e67fa2450ea1fb648843ea77d8
+msgid "The Broker:"
+msgstr ""
+
+#: ../guide/concepts.md:49 02358f3a68d744d8a40840d516362918
+msgid ""
+"Holds the OHLCV data (single asset or `dict[str, DataFrame]` for "
+"portfolios)"
+msgstr ""
+
+#: ../guide/concepts.md:50 edf96549986746d79e7fe23b290bd9c0
+msgid "Tracks `cash`, computes `equity`, `unrealized_pnl`, `available_margin`"
+msgstr ""
+
+#: ../guide/concepts.md:51 93a5fae9e8c64325a1a9819ac9379ab7
+msgid "Maintains queues of pending / executing / filled / closed orders"
+msgstr ""
+
+#: ../guide/concepts.md:52 dd0a4945c3fd474e954a12ca5568f529
+msgid "Triggers SL / TP exits per bar"
+msgstr ""
+
+#: ../guide/concepts.md:53 d78379b8369445139304d09006de9c6b
+msgid "Owns one `Position` per asset"
+msgstr ""
+
+#: ../guide/concepts.md:54 a600376f08b44f6890fdc273e7ac9565
+msgid "Records the portfolio-level `equity_history` Series"
+msgstr ""
+
+#: ../guide/concepts.md:56 7b70b83417cc4afd9fa57f758de20069
+msgid "Order"
+msgstr ""
+
+#: ../guide/concepts.md:58 a46c9926d44b483bb06fb73624cd1b65
+msgid ""
+"A trade *intention* — what you'd like to do. Created with a signed size "
+"(positive = buy, negative = sell), optional `limit` / `stop` / `sl` / "
+"`tp` / `tag`, and an `asset` symbol. Orders go through the broker's "
+"queues and either fill or get rejected (typically for insufficient "
+"margin)."
+msgstr ""
+
+#: ../guide/concepts.md:63 5c0a2b48e69e42eab9c849c795c33d65
+msgid "Trade"
+msgstr ""
+
+#: ../guide/concepts.md:65 687bb250291f46e39b7ce31640ac30cf
+msgid ""
+"A *filled* position. Each Order that fills opens (or partially closes) a "
+"Trade. While open, the Trade has `entry_price`, `entry_date`, `size`, "
+"optional `sl` / `tp`. When the Trade is closed (by an opposite-side "
+"order, an SL/TP trigger, or end-of-backtest), it gets `exit_price`, "
+"`exit_date`, `profit`, and an `exit_reason`."
+msgstr ""
+
+#: ../guide/concepts.md:71 b99da8912c50445a8f54137c997cd77b
+msgid "Position"
+msgstr ""
+
+#: ../guide/concepts.md:73 01402da0d4884057874fba94b73887c1
+msgid ""
+"A holder for trades on one asset. `active_trades` are open; "
+"`closed_trades` are closed. `position.size` is the net signed size across"
+" all active trades on that asset."
+msgstr ""
+
+#: ../guide/concepts.md:77 66e13c4b7d5041a5865a6a3c00801f4a
+msgid ""
+"For multi-asset, the Broker holds `positions: dict[str, Position]` — one "
+"per asset. `broker.position` (singular) is a convenience accessor that "
+"only works in single-asset mode."
+msgstr ""
+
+#: ../guide/concepts.md:81 217b61e3978a4eadaefce675175ce8be
+msgid "Strategy"
+msgstr ""
+
+#: ../guide/concepts.md:83 1d77634608304bfbbf80bd9543100b00
+msgid "The piece you write. Subclass `qtrade.backtest.Strategy` and implement:"
+msgstr ""
+
+#: ../guide/concepts.md:85 2b50df2cacbe4a10b4f34403f108db3a
+msgid "`prepare()` — runs once before the bar loop. Add indicators here."
+msgstr ""
+
+#: ../guide/concepts.md:86 4a35fa4534b14c9994547d79f8b50fd2
+msgid "`on_bar_close()` — called on every bar. Place orders, manage positions."
+msgstr ""
+
+#: ../guide/concepts.md:88 b0d7abcffaeb49df82f816bdde170eeb
+msgid "Inside `on_bar_close()` you have:"
+msgstr ""
+
+#: ../guide/concepts.md:89 3a0968fbea124e62b51a1b061a3f3804
+msgid ""
+"`self.data` (single-asset) / `self.data_by_asset[asset]` (multi-asset) — "
+"the OHLCV slice up to the current bar."
+msgstr ""
+
+#: ../guide/concepts.md:91 8d04d8a94c274830aaf0d44a92ac7878
+msgid "`self.position` / `self.positions[asset]` — current holdings."
+msgstr ""
+
+#: ../guide/concepts.md:92 00319dab018d4bb38593a984e2efe488
+msgid "`self.equity`, `self.unrealized_pnl` — portfolio-level snapshots."
+msgstr ""
+
+#: ../guide/concepts.md:93 6730e8fa459741ffad3a26b519190b4e
+msgid "`self.buy(...)`, `self.sell(...)`, `self.close(...)` — order helpers."
+msgstr ""
+
+#: ../guide/concepts.md:95 9499ae505f3d4d49acd15aa826ef79d1
+msgid "Backtest"
+msgstr ""
+
+#: ../guide/concepts.md:97 c5c2ddffeb8f4545a073e44f57b76418
+msgid ""
+"The driver. Given `data`, a `Strategy` class, cash, commission, and "
+"margin settings, it:"
+msgstr ""
+
+#: ../guide/concepts.md:100 5b2b79314e45416a9f77b93a74306177
+msgid "Constructs a `Broker` and a `Strategy` instance."
+msgstr ""
+
+#: ../guide/concepts.md:101 d7e624316dae43daa2b92e0293f8cee0
+msgid "Calls `strategy.prepare()`."
+msgstr ""
+
+#: ../guide/concepts.md:102 094fe5b1dfdd4394be93a939fbb9455a
+msgid ""
+"Loops over bars, calling `broker.process_bar(ts)` then "
+"`strategy.on_bar_close()`."
+msgstr ""
+
+#: ../guide/concepts.md:104 f522cf8b30124342a42aec22d9ba3e72
+msgid "Closes open positions at the end."
+msgstr ""
+
+#: ../guide/concepts.md:106 49a26bc4f44840c2a07a642233fc0ab0
+msgid ""
+"Plus utilities: `optimize`, `walk_forward_optimize`, `show_stats`, "
+"`get_trade_history`, `plot`."
+msgstr ""
+
+#: ../guide/concepts.md:109 8bd8f94c8eff48338d45edd54eae213a
+msgid "TradingEnv (RL)"
+msgstr ""
+
+#: ../guide/concepts.md:111 1a0928e0a604458395ee4fd69dbfd746
+msgid ""
+"A Gymnasium environment wrapping the same `Broker`. Composes three "
+"pluggable schemes:"
+msgstr ""
+
+#: ../guide/concepts.md 93c998d6d56e4f1bb5b1771996788c3e
+msgid "Scheme"
+msgstr ""
+
+#: ../guide/concepts.md d28f5a9bf45b410390a00ad70d457b5a
+msgid "Decides"
+msgstr ""
+
+#: ../guide/concepts.md ab30f580ca7c4791b36ef848cd46a046
+msgid "`ActionScheme`"
+msgstr ""
+
+#: ../guide/concepts.md 1a583a7b0b8a43fdad97b75b3fe507c5
+msgid "Action space + how an action becomes Orders"
+msgstr ""
+
+#: ../guide/concepts.md 50c2fc7f36944c3ea4a7eaaf4f6dd2dd
+msgid "`ObserverScheme`"
+msgstr ""
+
+#: ../guide/concepts.md a17521cee1de494294811d6862e43b9d
+msgid "Observation space + what the agent sees"
+msgstr ""
+
+#: ../guide/concepts.md 546fd9011a314968a2ad4af336799320
+msgid "`RewardScheme`"
+msgstr ""
+
+#: ../guide/concepts.md 46be92b4070542579ffe7f9d2bba2a9b
+msgid "The scalar reward each step"
+msgstr ""
+
+#: ../guide/concepts.md:120 95604c6547eb4a9592f91484d941d505
+msgid ""
+"See [Customizing Trading Environment](customize_environment.md) for the "
+"full story."
+msgstr ""
+
+#: ../guide/concepts.md:123 9917a4f7e84448ba87456240d8584d60
+msgid "Lifecycle of a backtest"
+msgstr ""
+
+#: ../guide/concepts.md:125 936bceb4cf204e4ba7e9a831dad1a2d5
+msgid "For a typical bar, in this order:"
+msgstr ""
+
+#: ../guide/concepts.md:127 db3e4736e199420aaffc4fa725e04fe4
+msgid "`Backtest.run` advances to bar *i*."
+msgstr ""
+
+#: ../guide/concepts.md:128 7221f622a0a542c99ef7c8e8a553312d
+msgid "`Broker.process_bar(ts)` fires:"
+msgstr ""
+
+#: ../guide/concepts.md:129 ddbeb6485b0b4ac68c03335a65a5cc61
+msgid "Drop cancelled / rejected orders from the pending queue."
+msgstr ""
+
+#: ../guide/concepts.md:130 4a9f2e8c4fb04c44af290d9ed3c402f8
+msgid "Process executing orders (queued for fill at the next bar's open)."
+msgstr ""
+
+#: ../guide/concepts.md:131 d289feb8686c4a3ca34dd014f5830aa9
+msgid "Check SL / TP on every active trade — close any that triggered."
+msgstr ""
+
+#: ../guide/concepts.md:132 70e1f60721a14a6d9ca300ccfc60e2df
+msgid "Process pending stop / limit orders."
+msgstr ""
+
+#: ../guide/concepts.md:133 0991ce7840544ef8a397ca5bf0461276
+msgid "Update `equity_history` with the new bar's equity."
+msgstr ""
+
+#: ../guide/concepts.md:134 89b9e2c463014609ae5a61c95a18733a
+msgid ""
+"`Strategy.on_bar_close()` runs — you can read `self.data` (truncated to "
+"*i*) and place new orders. New orders fill immediately if "
+"`trade_on_close=True`, otherwise queue for next bar's open."
+msgstr ""
+
+#: ../guide/concepts.md:138 3804a5ce68a04ad3b28307c61e6dfe63
+msgid ""
+"After the final bar, `Broker.close_all_positions()` flushes everything at"
+" the last bar's close."
+msgstr ""
+
+#: ../guide/concepts.md:141 9fdbf7993f2b4a85a7d08b8f4525b5ac
+msgid "Key design choices (and why)"
+msgstr ""
+
+#: ../guide/concepts.md:143 f8d65e8841964188b5404e8464debd40
+msgid ""
+"**Event-loop, not vectorized.** Strategy code reads like real trading "
+"logic (`if x then buy`). Easier to write, easier to debug. Slower than "
+"vectorbt for huge sweeps — see "
+"[COMPARISON.md](https://github.com/gguan/qtrade/blob/main/COMPARISON.md)."
+msgstr ""
+
+#: ../guide/concepts.md:146 44521fb4ea4e44e6aeb89017f395174d
+msgid ""
+"**No look-ahead by construction.** `self.data` is sliced to "
+"`[:current_time]`. You literally cannot read future bars from inside "
+"`on_bar_close()`."
+msgstr ""
+
+#: ../guide/concepts.md:149 c4e7dd73731f4750b63099feab58b9ff
+msgid ""
+"**One cash pool, per-asset positions.** Multi-asset backtests get "
+"realistic portfolio behavior (margin shared across assets) without having"
+" to manage N independent brokers."
+msgstr ""
+
+#: ../guide/concepts.md:152 e90ec7e4872a453e9b8a0170d648ce1a
+msgid ""
+"**Strategy + RL share one Broker.** Same accounting code, same SL/TP "
+"logic, same fill semantics. An RL agent in `TradingEnv` is governed by "
+"exactly the same rules as a `Strategy` in `Backtest`."
+msgstr ""
+
+#: ../guide/concepts.md:156 421a637589a24fad9206a0edd65bd3fe
+msgid "Where to read next"
+msgstr ""
+
+#: ../guide/concepts.md:158 277552e3f1614347a99ab7a72d3e2915
+msgid ""
+"[Getting Started](getting_started.md) — the canonical Strategy / Backtest"
+" workflow on a single asset."
+msgstr ""
+
+#: ../guide/concepts.md:160 887fe17b0c114356bc4b7e2c74fd41de
+msgid ""
+"[Multi-asset / portfolio backtests](multi_asset.md) — passing dict data "
+"and using the multi-asset Strategy API."
+msgstr ""
+
+#: ../guide/concepts.md:162 c46daa221a574ce18e96c90dd75047fa
+msgid ""
+"[Walk-forward optimization](walk_forward.md) — sample-out parameter "
+"selection."
+msgstr ""
+
+#: ../guide/concepts.md:164 9f81d966d4f04245b3e5fb7ee3ba9013
+msgid "[Stats glossary](stats_glossary.md) — what every metric means."
+msgstr ""
+
+#: ../guide/concepts.md:165 a6fe53e4ea9c4abd8b37ba5d760e77b1
+msgid "[Trading environment](trading_environment.md) — the RL workflow."
+msgstr ""
+
+#: ../guide/concepts.md:166 426cae301cf04e00b1061f0df7f0ac48
+msgid "[FAQ](faq.md) — common pitfalls."
+msgstr ""
+

@@ -1,0 +1,482 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026, Guan Guan
+# This file is distributed under the same license as the QTrade package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: QTrade \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-08 02:38+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: zh_CN\n"
+"Language-Team: zh_CN <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: ../guide/faq.md:1 e9737771aa2544d398f48aa83041dd9b
+msgid "FAQ"
+msgstr ""
+
+#: ../guide/faq.md:3 c457e7bdb9e54bf3928e4b80aca42f72
+msgid ""
+"Common questions and pitfalls. If you hit something not covered here, "
+"[open an issue](https://github.com/gguan/qtrade/issues)."
+msgstr ""
+
+#: ../guide/faq.md:6 5936fbf9ac214bd3b7e9c309ac242906
+msgid "Backtesting"
+msgstr ""
+
+#: ../guide/faq.md:8 f86c04540f3948f1a340efc595d7b3cd
+msgid "Why does my strategy underperform Buy & Hold?"
+msgstr ""
+
+#: ../guide/faq.md:10 e6fbfa44f0954c02b97ac7653d126b7d
+msgid ""
+"Most simple strategies do. Buy & Hold extracts the asset's underlying "
+"trend with zero commission and zero timing risk. To beat it your strategy"
+" needs to either:"
+msgstr ""
+
+#: ../guide/faq.md:14 07d3074d1ca94ab6a64211cdd25a14e4
+msgid "**Avoid drawdowns** — sit out the worst periods (timing)."
+msgstr ""
+
+#: ../guide/faq.md:15 bd6d73130dac4cc2b52c39d3f790c2ad
+msgid ""
+"**Add diversification** — multi-asset reduces variance even with B&H-like"
+" returns per asset."
+msgstr ""
+
+#: ../guide/faq.md:17 503c0eae7baf48b2bdc71c9a1631e4cc
+msgid "**Use leverage** — explicit via `margin_ratio` or position sizing."
+msgstr ""
+
+#: ../guide/faq.md:18 88d06cf4c3784a279677c172049cdaa7
+msgid "**Trade with edge** — short-side gains, mean reversion, etc."
+msgstr ""
+
+#: ../guide/faq.md:20 256ba0dba3ec4ee28ed6beb06bec5ea5
+msgid ""
+"If your strategy has a positive Sharpe but loses to B&H, it might still "
+"be valuable as a portfolio component (uncorrelated with passive long)."
+msgstr ""
+
+#: ../guide/faq.md:23 fbc77316a36b4f6f848aa19508e82ef6
+msgid "How do I avoid look-ahead bias?"
+msgstr ""
+
+#: ../guide/faq.md:25 483a0b5854b74b6da0bd64f0fc0ce485
+msgid ""
+"QTrade prevents the most common form by construction: `self.data` (and "
+"`self.data_by_asset[asset]`) is sliced to `[:current_time]`, so you "
+"*cannot* read future bars from inside `on_bar_close`."
+msgstr ""
+
+#: ../guide/faq.md:29 20d2620bbc51425ebdf8acb76aa2f54a
+msgid "Where look-ahead can still creep in:"
+msgstr ""
+
+#: ../guide/faq.md:31 3df6508a902b4fb5b28afcfb0b249b2b
+msgid ""
+"**In `prepare()`**, you have access to the full DataFrame. If you compute"
+" an indicator that uses future information (e.g. "
+"`df['Close'].shift(-1)`), `on_bar_close` will read it."
+msgstr ""
+
+#: ../guide/faq.md:34 cb71e89dc31945e4a7896625be10dc54
+msgid ""
+"**Limit / stop fills** assume the price actually traded at your level "
+"inside the bar. For thinly-traded assets this overstates fill "
+"probability."
+msgstr ""
+
+#: ../guide/faq.md:37 dc51bf7343c94806a791e779a435b699
+msgid ""
+"**`trade_on_close=True`** lets a market order fill at the current bar's "
+"close — the same bar your signal was computed from. For some signals this"
+" is realistic (close-of-bar signals), for others it's effectively "
+"cheating. If unsure, set `trade_on_close=False` and fills happen at the "
+"next bar's open."
+msgstr ""
+
+#: ../guide/faq.md:43 f8602971ca60401d9c7c56ed5b7c4dd0
+msgid "What's the difference between `trade_on_close=True` and `False`?"
+msgstr ""
+
+#: ../guide/faq.md 5e47d6ed7eff4b9e91115e66f32e923d
+msgid "Setting"
+msgstr ""
+
+#: ../guide/faq.md c6fecacc52a646f39f6052e5204c43ee
+msgid "Market order placed in `on_bar_close()` for bar N fills at..."
+msgstr ""
+
+#: ../guide/faq.md 880326f52bd34817b95b8047f0de5b88
+msgid "`True`"
+msgstr ""
+
+#: ../guide/faq.md 4716c82f201744dbbad4555ce272611d
+msgid "Bar N's **close** (same bar)"
+msgstr ""
+
+#: ../guide/faq.md 175eac5be9244634a4ee46d6d9b913ae
+msgid "`False`"
+msgstr ""
+
+#: ../guide/faq.md 44ae38d9757149a78e003c396b126309
+msgid "Bar N+1's **open**"
+msgstr ""
+
+#: ../guide/faq.md:50 ee0d2ee4481b405ea6d333b3dfa5e05f
+msgid ""
+"`True` is convenient for backtests where your signal genuinely arrives at"
+" end-of-bar (e.g. you compute on close prices). `False` is the realistic "
+"setting if your signal could in practice take a tick to act on — slightly"
+" conservative, recommended unless you have a reason."
+msgstr ""
+
+#: ../guide/faq.md:55 601850194de04008a741135266775796
+msgid "My strategy fires no trades. Why?"
+msgstr ""
+
+#: ../guide/faq.md:57 7414211f8a074685b340529bf222e362
+msgid "A few common causes:"
+msgstr ""
+
+#: ../guide/faq.md:59 df9070c34be343cf84bb1dcb04a14a9a
+msgid ""
+"**Indicators are NaN at the start** — the first `window_size` bars are "
+"warmup. `Backtest._start_idx` skips them automatically; if your data is "
+"shorter than the warmup, you get zero trades."
+msgstr ""
+
+#: ../guide/faq.md:62 aaf7ec6305c44c0182031c02819b237c
+msgid ""
+"**`available_margin` is 0** — `margin_ratio < 1` lets you take leveraged "
+"positions, but `available_margin` shrinks fast as you stack trades. Lower"
+" the size or raise the ratio."
+msgstr ""
+
+#: ../guide/faq.md:65 829e68516c1546bca4f928fac30d1b96
+msgid ""
+"**`size=0` quietly does nothing** — `Order(size=0)` raises now (good!), "
+"but if you compute `size = available_margin // close` with too-small "
+"cash, default `Strategy.buy()` resolves to size 0 and Order construction "
+"errors."
+msgstr ""
+
+#: ../guide/faq.md:70 2212e401032b4b81a53bc9251e265e4c
+msgid "Why does my SL/TP fire at a price different from what I set?"
+msgstr ""
+
+#: ../guide/faq.md:72 2ae5e522769b4a28bfadf77de1f39727
+msgid ""
+"The SL/TP triggers when the bar's `low` (for long stops) or `high` (for "
+"long take-profits) crosses your level. The synthetic exit is recorded *at"
+" your SL/TP level*, not at the bar's close. So if you set sl=99 and the "
+"bar dips to low=98, your fill is recorded at 99, even though the bar "
+"closed at 102."
+msgstr ""
+
+#: ../guide/faq.md:78 d867799c28534f818bd8a371c9eee567
+msgid ""
+"Caveat: ordinary stop *orders* (placed via `Order(stop=...)`) currently "
+"fill at the bar's close, not the trigger price — a known fidelity gap "
+"tracked as a future fix. SL/TP attached to a Trade work as described."
+msgstr ""
+
+#: ../guide/faq.md:82 3ff5486eaba248b1bcf7080d99311cb0
+msgid "Optimization"
+msgstr ""
+
+#: ../guide/faq.md:84 fb7904cecd4a4e6695abb77972febdf9
+msgid "Why does my strategy look great in `optimize()` but bad live?"
+msgstr ""
+
+#: ../guide/faq.md:86 2d739b4cc60047bfb74810e8ab078bc9
+msgid ""
+"In-sample overfitting. `optimize()` picks the params that look best on "
+"the same data they're tested on — which is a textbook recipe for fitting "
+"noise."
+msgstr ""
+
+#: ../guide/faq.md:90 01fed5c983c44075a9609d6fea339b43
+msgid ""
+"Use `walk_forward_optimize` instead — see [Walk-forward "
+"optimization](walk_forward.md). Each parameter set is evaluated only on "
+"data the strategy was never tuned on."
+msgstr ""
+
+#: ../guide/faq.md:94 791c9f4dd38d42f7aeb6ac504313230c
+msgid ""
+"If walk-forward Sharpe is much lower than `optimize` Sharpe, that gap is "
+"your overfit. Common; expected; treat the walk-forward number as the "
+"realistic one."
+msgstr ""
+
+#: ../guide/faq.md:98 e1328d90e8b64bbe895d39b87cff0f18
+msgid "How do I pick the `maximize` metric?"
+msgstr ""
+
+#: ../guide/faq.md:100 ed03b0a0a8b94893999d0f60ecd44521
+msgid ""
+"**Total Return [%]**: simple, but punishes nothing for risk. Strategies "
+"with huge drawdowns can win."
+msgstr ""
+
+#: ../guide/faq.md:102 c32ce36fece643bd82ed8aeb629bcf5e
+msgid ""
+"**Sharpe Ratio**: most common default. Good for normal-ish return "
+"distributions."
+msgstr ""
+
+#: ../guide/faq.md:104 fe4bc1eeeeed4fb4b3ffc035f39291ce
+msgid ""
+"**Sortino Ratio**: better for asymmetric / fat-tailed returns (trend-"
+"followers)."
+msgstr ""
+
+#: ../guide/faq.md:106 555c343a8d4b49898ca5a0249b61e01e
+msgid ""
+"**Calmar Ratio**: rewards smooth equity curves; good if you care about "
+"drawdown experience."
+msgstr ""
+
+#: ../guide/faq.md:109 d2210eeaa7f246358331803061359bad
+msgid "Start with Sharpe unless you have a specific reason."
+msgstr ""
+
+#: ../guide/faq.md:111 2ed41e956c934effa8ed53abebfcfe34
+msgid "My grid search is too slow."
+msgstr ""
+
+#: ../guide/faq.md:113 39579cfb58574b2290bf5e7558be497a
+msgid "Two paths:"
+msgstr ""
+
+#: ../guide/faq.md:115 83c4ebcda9f2431193945c8124c3ede1
+msgid ""
+"**Reduce grid size** — many strategies have one or two truly important "
+"parameters; ranges of 4–6 values per param are usually enough. Don't "
+"sweep everything at fine resolution."
+msgstr ""
+
+#: ../guide/faq.md:118 d5c73270640348ad8b7aa732e39f847a
+msgid ""
+"**Use vectorbt instead** — for thousands of param combinations, QTrade's "
+"event loop is the wrong tool. See "
+"[COMPARISON.md](https://github.com/gguan/qtrade/blob/main/COMPARISON.md)."
+msgstr ""
+
+#: ../guide/faq.md:122 636db1af43aa44bf9bd5d0e2877a293c
+msgid "Multi-asset"
+msgstr ""
+
+#: ../guide/faq.md:124 890eebf37997461588508eb23724b2a9
+msgid "How do I align data from different sources?"
+msgstr ""
+
+#: ../guide/faq.md:126 2cf0b254d3384e539d0cc3ef8c0ffd77
+msgid ""
+"QTrade requires every asset's DataFrame to share an identical "
+"`DatetimeIndex`. Use a pandas join on the indexes before passing in:"
+msgstr ""
+
+#: ../guide/faq.md:134 5e106dadd5a446b993bd06033ff85581
+msgid ""
+"For data with gaps (corporate actions, illiquid days) you might prefer "
+"union + forward-fill — but **be careful**: forward-filled bars give the "
+"impression of liquidity that wasn't there."
+msgstr ""
+
+#: ../guide/faq.md:138 0f09835851f94c5b81524ed9136bb7ee
+msgid "Can I have different commission per asset?"
+msgstr ""
+
+#: ../guide/faq.md:140 524823c3c6584c81a2f7928ca98e5435
+msgid ""
+"Not currently. `Commission` is a single instance shared across the "
+"broker. To approximate per-asset cost, wrap your strategy logic to add "
+"asset-specific slippage manually before placing orders."
+msgstr ""
+
+#: ../guide/faq.md:144 8446440ef85d4d6da8dcfd96612aeb59
+msgid "Why does `self.position` raise in multi-asset mode?"
+msgstr ""
+
+#: ../guide/faq.md:146 37d98d23eed14459a9261761c2403e3b
+msgid ""
+"Because there's no single Position to return — you have one per asset. "
+"Use `self.positions[\"AAPL\"]` (dict access) instead. Same for "
+"`self.data` → `self.data_by_asset[\"AAPL\"]`."
+msgstr ""
+
+#: ../guide/faq.md:150 fd46ee41728746a2aa6c266fac66ca07
+msgid "Reinforcement Learning"
+msgstr ""
+
+#: ../guide/faq.md:152 4100c1e2fffe482ebf30eece2ca13136
+msgid "My agent learns to do nothing (reward = 0)."
+msgstr ""
+
+#: ../guide/faq.md:154 113ed0de9b4b4d6b9f3dd9ed1d62419b
+msgid ""
+"The default `RewardScheme` only rewards realized PnL on bars where a "
+"trade closed. If your agent never closes trades, reward stays 0 and the "
+"gradient signal is too sparse."
+msgstr ""
+
+#: ../guide/faq.md:158 a3db18c5645f432b8fbacc0e702b1a14
+msgid "Try one of:"
+msgstr ""
+
+#: ../guide/faq.md:160 cfbc42a4114b4d448b7fde878b5efa84
+msgid ""
+"An equity-based reward that fires every bar (see [Customizing Trading "
+"Environment](customize_environment.md))."
+msgstr ""
+
+#: ../guide/faq.md:162 bd3b9ad439af40b5ad1a50f634cede51
+msgid ""
+"An action scheme that forces flat at episode end (so trades close for "
+"sure)."
+msgstr ""
+
+#: ../guide/faq.md:164 648376f1de7b48d98cbca627d7af30eb
+msgid "A higher episode count — sparse reward + long episodes is hard."
+msgstr ""
+
+#: ../guide/faq.md:166 6c2c1443983046218fce59c3a60f361f
+msgid "What does `info` contain in `env.step()` returns?"
+msgstr ""
+
+#: ../guide/faq.md:168 17cf13fe2ee94c148405cf5441a07af3
+msgid "Per-step dict from `TradingEnv.step()`:"
+msgstr ""
+
+#: ../guide/faq.md 3beb58d2a57a4272807a7556e8c6aecd
+msgid "Key"
+msgstr ""
+
+#: ../guide/faq.md 24f4bd56dcbf4305afecb2e0d9f2fc89
+msgid "Meaning"
+msgstr ""
+
+#: ../guide/faq.md 3e9e396eefce470a958b0b5a5faac90d
+msgid "`equity`"
+msgstr ""
+
+#: ../guide/faq.md a1bf6559c3944a8098bd9563145b5ec3
+msgid "`broker.equity`"
+msgstr ""
+
+#: ../guide/faq.md d960ce2620544b268f4e6b0cc206c2a4
+msgid "`unrealized_pnl`"
+msgstr ""
+
+#: ../guide/faq.md 3cb03e181e404ab4a06237a3014d54de
+msgid "`broker.unrealized_pnl`"
+msgstr ""
+
+#: ../guide/faq.md ebbd21f8a8c04280a0f73c05689f0e1e
+msgid "`cumulative_return`"
+msgstr ""
+
+#: ../guide/faq.md 6312021847b244f09af0ebe7eb36c951
+msgid "`broker.cumulative_returns` (multiplicative since start)"
+msgstr ""
+
+#: ../guide/faq.md 74d022c29813442fa6f2c7009676757b
+msgid "`position`"
+msgstr ""
+
+#: ../guide/faq.md f740e52bd6ee486fb60e0aaa5ec14f08
+msgid "`broker.position.size` (signed)"
+msgstr ""
+
+#: ../guide/faq.md 12b012652c2e43569c4d3c5645329b70
+msgid "`total_trades`"
+msgstr ""
+
+#: ../guide/faq.md 341896edc7b54409abacdbdde0142f48
+msgid "`len(broker.closed_trades)`"
+msgstr ""
+
+#: ../guide/faq.md a0913c1dd6a94a86a7529025a280b913
+msgid "`trades_profit`"
+msgstr ""
+
+#: ../guide/faq.md 030853cc89ac41dea8a4e608140dad65
+msgid "Sum of all closed trade profits"
+msgstr ""
+
+#: ../guide/faq.md 765ac3cad70e42628c6a4e92865702e8
+msgid "`avg_trade_duration`"
+msgstr ""
+
+#: ../guide/faq.md 553cad2148e743e99a766743d0f3b2a8
+msgid "Mean exit_index − entry_index in bars"
+msgstr ""
+
+#: ../guide/faq.md aaa5c1f383554fa3a1671ae61d3db2da
+msgid "`is_success`"
+msgstr ""
+
+#: ../guide/faq.md b1cd0b1ae1d0459b9740c93fe5001559
+msgid "`trades_profit > 0`"
+msgstr ""
+
+#: ../guide/faq.md:181 121145c5a8e541c4a391afb550942af9
+msgid "`is_success` is intended for SB3's success-rate logging in `EvalCallback`."
+msgstr ""
+
+#: ../guide/faq.md:184 8ced373a81284b42bb3bf3d43ab80186
+msgid "`random_start=True` errors with a cryptic message."
+msgstr ""
+
+#: ../guide/faq.md:186 d3d09207c2f142929fbd0297c2e3b327
+msgid ""
+"Fixed in v0.3.0 — now raises `ValueError` if `len(data) <= window_size + "
+"max_steps`. The default `max_steps=3000` needs at least ~3000 bars of "
+"data; lower it for shorter datasets."
+msgstr ""
+
+#: ../guide/faq.md:190 679867c4ae994c3eaf96aac78867789c
+msgid "Misc"
+msgstr ""
+
+#: ../guide/faq.md:192 0458eed7c6344e9f84dc22f9cc60b07c
+msgid "How do I save the backtest result for later?"
+msgstr ""
+
+#: ../guide/faq.md:194 64624210c1804c908677069d62287df0
+msgid ""
+"There's no built-in serializer, but the broker holds everything. Pickle "
+"works as a quick-and-dirty save:"
+msgstr ""
+
+#: ../guide/faq.md:203 04190cdc29b94070b9187196f5744ef6
+msgid ""
+"For something less brittle (cross-version safe), pull what you need into "
+"DataFrames first: `bt.broker.equity_history`, `bt.get_trade_history()`, "
+"`calculate_stats(bt.broker)`."
+msgstr ""
+
+#: ../guide/faq.md:207 9a913bdf8c7e4a34935972ebcfaa722e
+msgid "Where do I report bugs?"
+msgstr ""
+
+#: ../guide/faq.md:209 e21c9cd35ef448318138e60b70db8d28
+msgid ""
+"[https://github.com/gguan/qtrade/issues](https://github.com/gguan/qtrade/issues)."
+" Minimal repro + the QTrade version (`qtrade-lib --version` doesn't "
+"exist; use `pip show qtrade-lib`) helps a lot."
+msgstr ""
+
