@@ -39,6 +39,8 @@ dev = [
     "pytest>=8.0.0",
     "coverage>=7.0.0",
     "ruff",
+    "mypy>=1.10",
+    "pre-commit>=3.7",
 ]
 
 [project.urls]
@@ -71,6 +73,18 @@ keep-runtime-typing = true
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 15
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true  # Many ecosystem libs (bokeh, mplfinance, etc.) lack type stubs
+files = ["qtrade"]
+
+# Per-module relaxations: these files have known typing debt around Trade's
+# Optional[float] properties (profit, exit_price, exit_date) being used as
+# non-Optional after a trade closes. Tracked as future work.
+[[tool.mypy.overrides]]
+module = ["qtrade.utils.stats", "qtrade.utils.evaluation", "qtrade.utils.plot_bokeh", "qtrade.core.broker"]
+ignore_errors = true
 
 [tool.coverage.run]
 disable_warnings = ["couldnt-parse"]

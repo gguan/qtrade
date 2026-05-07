@@ -30,7 +30,7 @@ guide/customize_environment
 :hidden:
 
 api/core
-api/backtest
+api/backtest/index
 api/env
 ```
 
@@ -39,36 +39,36 @@ api/env
 :hidden:
 
 GitHub <https://github.com/gguan/qtrade>
-kitchen-sink/index
-stability
-changelog
-Contribute to the Docs <https://github.com/gguan/qtrade/blob/main/docs/README.md>
 ```
 
 ---
 
 ## How to Use
 
-1. **Install QTrade**  
-   Follow the instructions in the [Installation Guide](#installing) to set up QTrade in your Python environment.
+1. **Install QTrade**
+   Follow the instructions in the [Installation Guide](#installation) to set up QTrade in your Python environment.
 
-2. **Explore Tutorials**  
+2. **Explore Tutorials**
    Learn to create strategies, backtest them, and use gym trading environment by following the [Getting Started](guide/getting_started.md) and the [Trading Environment](guide/trading_environment.md).
 
-3. **API Reference**  
+3. **API Reference**
    Dive deeper into QTrade's core components with the [API Reference](api/core.md).
-
-4. **Get Involved**  
-   Contribute to the development or documentation through the links in the [Development Section](#development).
 
 ---
 
-## <a id="installing"></a>Installing
+(installation)=
+## Installation
 
 QTrade can be installed with [pip](https://pip.pypa.io):
 
 ```bash
 $ pip install qtrade-lib
+```
+
+For RL evaluation utilities, install the optional `rl` extra (pulls in stable-baselines3):
+
+```bash
+$ pip install "qtrade-lib[rl]"
 ```
 
 Alternatively, you can obtain the latest source code from [GitHub](https://github.com/gguan/qtrade):
@@ -82,7 +82,6 @@ $ pip install .
 To run the example code:
 
 ```bash
-$ pip install -r examples/requirements.txt
 $ python examples/simple_strategy.py
 ```
 
@@ -90,6 +89,6 @@ $ python examples/simple_strategy.py
 
 ## Usage
 
-The [User Guide](guide/getting_started.md) is the place to learn how to use the library and accomplish common tasks. For more advanced customization, refer to the [Customization Guide](customisation/index.md).
+The [User Guide](guide/getting_started.md) is the place to learn how to use the library and accomplish common tasks.
 
-The [Reference Documentation](reference/index.md) provides API-level documentation.
+The API Reference covers the [core](api/core.md), [backtest](api/backtest/index.md), and [environment](api/env.md) modules.

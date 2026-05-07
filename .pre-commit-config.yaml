@@ -1,0 +1,29 @@
+# Run `pre-commit install` once after cloning to enable.
+# Auto-runs ruff + mypy on staged files before each commit.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.12
+    hooks:
+      - id: ruff
+        args: [--fix]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.18.2
+    hooks:
+      - id: mypy
+        # Use the project's pyproject.toml config; pass no extra args so it
+        # picks up the [tool.mypy] section (files / overrides).
+        args: []
+        additional_dependencies:
+          - numpy>=2.0
+          - pandas>=2.2
+          - types-tqdm

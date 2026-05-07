@@ -43,6 +43,14 @@ $ python examples/simple_strategy.py
 - Python >= 3.10
 - Dependencies declared in `pyproject.toml`
 
+### Development
+
+```bash
+$ pip install -e ".[dev]"
+$ pre-commit install   # auto-runs ruff + mypy on each commit
+$ pytest               # run the test suite
+```
+
 
 ### Usage
 
