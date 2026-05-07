@@ -453,7 +453,9 @@ class Broker:
             exit_date=self.current_time,
             exit_reason=exit_reason
         )
-        sl_tp_order = Order(size=closed_trade.size, tag=exit_reason)
+        # The exit is in the opposite direction of the trade itself
+        # (closing a long is a sell; closing a short is a buy).
+        sl_tp_order = Order(size=-closed_trade.size, tag=exit_reason)
         sl_tp_order._fill(exit_price, self.current_time)
         self._filled_orders.append(sl_tp_order)
         self.cash += closed_trade.profit

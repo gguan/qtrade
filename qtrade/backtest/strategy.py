@@ -55,8 +55,6 @@ class Strategy(ABC):
         """
         if size is None:
             size = self._broker.available_margin // self.data['Close'].iloc[-1]
-        if size == 0:
-            print(self._broker.available_margin)
         order = Order(size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag)
         self._broker.place_orders(order)
 
@@ -121,15 +119,15 @@ class Strategy(ABC):
         Get the active trades.
 
         """
-        return tuple(self._broker.position.active_trades())
-    
+        return self._broker.position.active_trades
+
     @property
     def closed_trades(self) -> tuple[Trade, ...]:
         """
         Get the closed trades.
 
         """
-        return tuple(self._broker.position.closed_trades())
+        return self._broker.position.closed_trades
     
     @property
     def pending_orders(self) -> tuple[Order, ...]:

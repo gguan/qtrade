@@ -113,3 +113,42 @@ def test_strategy_str_includes_params(broker, data):
     text = str(s)
     assert '_DummyStrategy' in text
     assert 'n=5' in text and 'm=10' in text
+
+
+# ---------------------------------------------------------------------------
+# Regression tests for known bugs (will fail until the underlying fix lands)
+# ---------------------------------------------------------------------------
+
+
+def test_strategy_active_trades_returns_tuple_of_active_trades(broker, data):
+    """Bug #1: Strategy.active_trades calls position.active_trades() with parens,
+    but it's a @property — currently raises TypeError 'tuple object is not callable'."""
+    s = _DummyStrategy(broker, data, {})
+    s.buy(size=5)
+    trades = s.active_trades  # currently raises TypeError
+    assert isinstance(trades, tuple)
+    assert len(trades) == 1
+    assert trades[0].size == 5
+
+
+def test_strategy_closed_trades_returns_tuple_of_closed_trades(broker, data):
+    """Bug #1 (sibling): Strategy.closed_trades has the same '@property called as method' bug."""
+    s = _DummyStrategy(broker, data, {})
+    s.buy(size=5)
+    s.sell(size=5)  # closes the position
+    trades = s.closed_trades  # currently raises TypeError
+    assert isinstance(trades, tuple)
+    assert len(trades) == 1
+
+
+def test_strategy_buy_with_zero_default_size_does_not_print(data, capsys):
+    """Bug #3: Strategy.buy() has a leftover debug print() when default size resolves to 0."""
+    # cash=50 / close=100 → default size = 0
+    broker = Broker(data, cash=50, commission=NoCommission(), margin_ratio=1.0, trade_on_close=True)
+    s = _DummyStrategy(broker, data, {})
+    try:
+        s.buy()  # default size=None → 0 → triggers Order(0) AssertionError, but print fires first
+    except AssertionError:
+        pass
+    captured = capsys.readouterr()
+    assert captured.out == "", f"Stray debug output: {captured.out!r}"

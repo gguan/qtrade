@@ -651,3 +651,48 @@ def test_pending_stop_executes_on_next_open_when_trade_on_close_false(broker_no_
     b.process_bar(pd.Timestamp('2024-01-05'))
     assert len(b.filled_orders) == 1
     assert b.filled_orders[0].fill_price == 108.0
+
+
+# ---------------------------------------------------------------------------
+# Regression tests for known bugs (will fail until the underlying fix lands)
+# ---------------------------------------------------------------------------
+
+
+def test_long_tp_synthetic_order_records_sell_direction(broker_no_commission):
+    """Bug #2: closing a long position (via TP) is conceptually a sell, so the
+    synthetic Order in filled_orders should have negative size. Currently it
+    copies closed_trade.size (positive), which makes plot_bokeh draw it as a
+    buy marker."""
+    broker_no_commission._open_trade(
+        entry_price=100.0, entry_date=pd.Timestamp('2024-01-01'),
+        size=10, tp=105.0,
+    )
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-03'))  # close=106 → TP hit
+
+    tp_orders = [o for o in broker_no_commission.filled_orders if o.tag == 'tp']
+    assert len(tp_orders) == 1
+    # Closing a long is a SELL: size should be negative, is_short True
+    assert tp_orders[0].size < 0
+    assert tp_orders[0].is_short is True
+    assert tp_orders[0].is_long is False
+
+
+def test_short_sl_synthetic_order_records_buy_direction(broker_no_commission):
+    """Bug #2 (sibling): closing a short via SL should record as a buy."""
+    broker_no_commission._open_trade(
+        entry_price=104.0, entry_date=pd.Timestamp('2024-01-01'),
+        size=-10, sl=110.0,
+    )
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-03'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-04'))  # high=111 → SL hit
+
+    sl_orders = [o for o in broker_no_commission.filled_orders if o.tag == 'sl']
+    assert len(sl_orders) == 1
+    # Closing a short is a BUY: size should be positive, is_long True
+    assert sl_orders[0].size > 0
+    assert sl_orders[0].is_long is True
+    assert sl_orders[0].is_short is False
