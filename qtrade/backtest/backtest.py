@@ -154,6 +154,124 @@ class Backtest:
 
         return best_params, best_stats, all_results
 
+    def walk_forward_optimize(self,
+                              *,
+                              train_window: int,
+                              test_window: int,
+                              maximize: str,
+                              step: int | None = None,
+                              constraint: Callable[[Any], bool] | None = None,
+                              **params_grid) -> dict:
+        """Walk-forward optimization: rolling-window training + immediate
+        out-of-sample test.
+
+        For each (train, test) window pair:
+
+        1. Run :meth:`optimize` on the train slice to pick the best params.
+        2. Run a fresh backtest on the test slice using those params.
+        3. Record the out-of-sample (OoS) statistics.
+
+        This is the standard antidote to the in-sample overfitting that bare
+        :meth:`optimize` produces — every reported metric is on data the
+        strategy was never tuned on.
+
+        Args:
+            train_window: Number of bars in each training window.
+            test_window: Number of bars in the test window immediately after.
+            maximize: Metric name to maximize within each train window
+                (same as :meth:`optimize`).
+            step: How many bars to advance between successive train starts.
+                Defaults to ``test_window`` (non-overlapping test windows).
+            constraint: Optional filter on parameter dicts.
+            **params_grid: Parameter ranges, same as :meth:`optimize`.
+
+        Returns:
+            ``{'windows': [...], 'summary': {...}}``.
+
+            Each entry in ``windows`` is a dict with ``train_start``,
+            ``train_end``, ``test_start``, ``test_end``, ``best_params``,
+            ``train_stats``, ``test_stats``, and ``test_equity``
+            (the test-window equity Series).
+
+            ``summary`` contains aggregate OoS metrics: ``n_windows``,
+            ``mean_oos_return``, ``hit_rate``, ``min_oos_return``,
+            ``max_oos_return``.
+        """
+        if train_window <= 0 or test_window <= 0:
+            raise ValueError("train_window and test_window must be positive")
+
+        index = self._index()
+        n = len(index)
+        if train_window + test_window > n:
+            raise ValueError(
+                f"train_window ({train_window}) + test_window ({test_window}) "
+                f"exceeds data length ({n})"
+            )
+
+        if step is None:
+            step = test_window
+
+        windows: list[dict] = []
+        i = 0
+        while i + train_window + test_window <= n:
+            train_slc = slice(i, i + train_window)
+            test_slc = slice(i + train_window, i + train_window + test_window)
+
+            # Train: optimize on the train slice
+            train_bt = Backtest(
+                self._slice_data(train_slc),
+                self.strategy_class,
+                cash=self.cash,
+                commission=self.commission,
+                margin_ratio=self.margin_ratio,
+                trade_on_close=self.trade_on_close,
+            )
+            best_params, train_stats, _ = train_bt.optimize(
+                maximize=maximize, constraint=constraint, **params_grid,
+            )
+
+            # Test: fresh backtest with the best params, on data the strategy
+            # has never seen.
+            test_bt = Backtest(
+                self._slice_data(test_slc),
+                self.strategy_class,
+                cash=self.cash,
+                commission=self.commission,
+                margin_ratio=self.margin_ratio,
+                trade_on_close=self.trade_on_close,
+            )
+            test_bt.run(**(best_params or {}))
+            test_stats = calculate_stats(test_bt.broker)
+
+            windows.append({
+                'train_start': index[i],
+                'train_end': index[i + train_window - 1],
+                'test_start': index[i + train_window],
+                'test_end': index[i + train_window + test_window - 1],
+                'best_params': best_params,
+                'train_stats': train_stats,
+                'test_stats': test_stats,
+                'test_equity': test_bt.broker.equity_history.copy(),
+            })
+            i += step
+
+        oos_returns = [w['test_stats']['Total Return [%]'] for w in windows]
+        summary = {
+            'n_windows': len(windows),
+            'mean_oos_return': float(np.mean(oos_returns)) if oos_returns else 0.0,
+            'hit_rate': float(np.mean([r > 0 for r in oos_returns])) if oos_returns else 0.0,
+            'min_oos_return': float(np.min(oos_returns)) if oos_returns else 0.0,
+            'max_oos_return': float(np.max(oos_returns)) if oos_returns else 0.0,
+        }
+
+        return {'windows': windows, 'summary': summary}
+
+    def _slice_data(self, slc: slice):
+        """Slice the input data by row index. Handles single and multi-asset."""
+        if self._is_multi_asset:
+            return {asset: df.iloc[slc] for asset, df in self.data.items()}  # type: ignore[union-attr]
+        return self.data.iloc[slc]  # type: ignore[union-attr]
+
     def show_stats(self):
         if not self.stats:
             self.stats = calculate_stats(self.broker)
@@ -162,20 +280,7 @@ class Backtest:
 
     def get_trade_history(self) -> pd.DataFrame:
         """Trade-by-trade DataFrame across all assets."""
-        trade_history = self.broker.closed_trades
-        return pd.DataFrame({
-            'Asset': [trade.asset for trade in trade_history],
-            'Type': ['Long' if trade.is_long else 'Short' for trade in trade_history],
-            'Size': [trade.size for trade in trade_history],
-            'Entry Price': [trade.entry_price for trade in trade_history],
-            'Exit Price': [trade.exit_price for trade in trade_history],
-            'Entry Time': [trade.entry_date for trade in trade_history],
-            'Exit Date': [trade.exit_date for trade in trade_history],
-            'Profit': [trade.profit for trade in trade_history],
-            'Tag': [trade.tag for trade in trade_history],
-            'Exit Reason': [trade.exit_reason for trade in trade_history],
-            'Duration': [trade.exit_date - trade.entry_date for trade in trade_history],
-        })
+        return self.broker.get_trade_history()
 
     def plot(self):
         plot_with_bokeh(self.broker)

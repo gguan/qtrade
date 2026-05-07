@@ -310,24 +310,8 @@ class TradingEnv(gym.Env):
 
   
     def get_trade_history(self) -> pd.DataFrame:
-        """
-        Get detailed information about all trades.
-
-        :return: DataFrame with trade details
-        """
-        trade_history = self._broker.closed_trades
-        return pd.DataFrame({
-            'Type': ['Long' if trade.is_long else 'Short' for trade in trade_history],
-            'Size': [trade.size for trade in trade_history],
-            'Entry Price': [trade.entry_price for trade in trade_history],
-            'Exit Price': [trade.exit_price for trade in trade_history],
-            'Entry Time': [trade.entry_date for trade in trade_history],
-            'Exit Date': [trade.exit_date for trade in trade_history],
-            'Profit': [trade.profit for trade in trade_history],
-            'Tag': [trade.tag for trade in trade_history],
-            'Exit Reason': [trade.exit_reason for trade in trade_history],
-            'Duration': [trade.exit_date - trade.entry_date for trade in trade_history],
-        })
+        """Trade-by-trade DataFrame across all assets."""
+        return self._broker.get_trade_history()
     
     def plot(self, filename=None):
         plot_with_bokeh(self._broker, filename=filename)

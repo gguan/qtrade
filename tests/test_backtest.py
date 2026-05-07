@@ -103,3 +103,76 @@ def test_backtest_optimize_constraint_filters_combinations(ohlc_data_trending):
     # threshold=5 should be filtered out
     assert len(all_results) == 2
     assert all(r['params']['threshold'] != 5 for r in all_results)
+
+
+# ---------------------------------------------------------------------------
+# Walk-forward optimization
+# ---------------------------------------------------------------------------
+
+
+def test_walk_forward_returns_one_window_when_step_equals_remainder(ohlc_data_long):
+    bt = Backtest(ohlc_data_long, ParamStrategy, cash=10_000, commission=NoCommission())
+    result = bt.walk_forward_optimize(
+        train_window=20, test_window=10, maximize='Total Return [%]',
+        threshold=[2, 5],
+    )
+    # 40 bars total, train_window=20, test_window=10, step=10 →
+    # iter 0: train[0:20], test[20:30]; iter 1: train[10:30], test[30:40]; stop (next would exceed).
+    assert len(result['windows']) == 2
+    assert result['summary']['n_windows'] == 2
+
+
+def test_walk_forward_window_dict_has_expected_keys(ohlc_data_long):
+    bt = Backtest(ohlc_data_long, ParamStrategy, cash=10_000, commission=NoCommission())
+    result = bt.walk_forward_optimize(
+        train_window=20, test_window=10, maximize='Total Return [%]',
+        threshold=[2, 5],
+    )
+    w = result['windows'][0]
+    assert {'train_start', 'train_end', 'test_start', 'test_end',
+            'best_params', 'train_stats', 'test_stats', 'test_equity'} <= w.keys()
+    # Train and test windows are contiguous
+    assert w['test_start'] > w['train_end']
+
+
+def test_walk_forward_summary_aggregates_oos_returns(ohlc_data_long):
+    bt = Backtest(ohlc_data_long, ParamStrategy, cash=10_000, commission=NoCommission())
+    result = bt.walk_forward_optimize(
+        train_window=20, test_window=10, maximize='Total Return [%]',
+        threshold=[2, 5],
+    )
+    summary = result['summary']
+    returns = [w['test_stats']['Total Return [%]'] for w in result['windows']]
+    assert summary['mean_oos_return'] == pytest.approx(sum(returns) / len(returns))
+    assert summary['min_oos_return'] == pytest.approx(min(returns))
+    assert summary['max_oos_return'] == pytest.approx(max(returns))
+    assert 0.0 <= summary['hit_rate'] <= 1.0
+
+
+def test_walk_forward_rejects_too_small_data(ohlc_data_trending):
+    bt = Backtest(ohlc_data_trending, ParamStrategy, cash=10_000, commission=NoCommission())
+    with pytest.raises(ValueError, match=r"exceeds data length"):
+        bt.walk_forward_optimize(
+            train_window=15, test_window=10, maximize='Total Return [%]',
+            threshold=[2],
+        )
+
+
+def test_walk_forward_rejects_invalid_window_sizes(ohlc_data_long):
+    bt = Backtest(ohlc_data_long, ParamStrategy, cash=10_000, commission=NoCommission())
+    with pytest.raises(ValueError, match=r"must be positive"):
+        bt.walk_forward_optimize(
+            train_window=0, test_window=10, maximize='Total Return [%]',
+            threshold=[2],
+        )
+
+
+def test_walk_forward_step_controls_window_count(ohlc_data_long):
+    bt = Backtest(ohlc_data_long, ParamStrategy, cash=10_000, commission=NoCommission())
+    # step=5 (smaller than test_window=10) → more, overlapping test windows
+    result = bt.walk_forward_optimize(
+        train_window=20, test_window=10, step=5, maximize='Total Return [%]',
+        threshold=[2, 5],
+    )
+    # 40 bars, advance by 5: iters 0/5/10 still leave room for train+test → 3 windows
+    assert result['summary']['n_windows'] == 3
