@@ -11,8 +11,8 @@ QTrade is a simple, modular, and highly customizable trading interface capable o
 With features ranging from traditional signal-based strategies to reinforcement learning-driven approaches, QTrade allows traders to focus on developing and testing strategies without the burden of implementation details.
 
 ## Key Features
-- **Backtesting**: Efficient simulation of trading strategies on historical data.
-- **Reinforcement Learning**: Provides a highly customizable Gym environment for training and testing AI-driven trading agents.
+- **Backtesting**: Single-asset or multi-asset / portfolio strategies with shared cash and per-asset positions.
+- **Reinforcement Learning**: A highly customizable Gymnasium environment for training and testing AI-driven trading agents.
 
 ```{toctree}
 :caption: User Guide
@@ -20,6 +20,7 @@ With features ranging from traditional signal-based strategies to reinforcement 
 :hidden:
 
 guide/getting_started
+guide/multi_asset
 guide/trading_environment
 guide/customize_environment
 
