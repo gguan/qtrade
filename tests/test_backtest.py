@@ -66,11 +66,12 @@ def test_backtest_get_trade_history_returns_dataframe(ohlc_data_trending):
     df = bt.get_trade_history()
     assert isinstance(df, pd.DataFrame)
     assert list(df.columns) == [
-        'Type', 'Size', 'Entry Price', 'Exit Price',
+        'Asset', 'Type', 'Size', 'Entry Price', 'Exit Price',
         'Entry Time', 'Exit Date', 'Profit', 'Tag', 'Exit Reason', 'Duration',
     ]
     assert len(df) == 1
     assert df.iloc[0]['Type'] == 'Long'
+    assert df.iloc[0]['Asset'] == 'default'
 
 
 def test_backtest_show_stats_runs_without_error(ohlc_data_trending, capsys):
