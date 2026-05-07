@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from typing import Any, Callable, Optional
+from typing import Any
+from collections.abc import Callable
 
 import logging
 from qtrade.backtest.strategy import Strategy
@@ -16,7 +17,7 @@ class Backtest:
                  data: pd.DataFrame,
                  strategy_class: type[Strategy],
                  cash: float = 10_000,
-                 commission: Optional[Commission] = None,
+                 commission: Commission | None = None,
                  margin_ratio: float = 1.0,
                  trade_on_close: bool = False,  # Determines fill_price_mode
                  verbose: bool = False,
@@ -80,7 +81,7 @@ class Backtest:
 
     def optimize(self,
                  maximize: str,
-                 constraint: Optional[Callable[[Any], bool]] = None,
+                 constraint: Callable[[Any], bool] | None = None,
                  **params_grid):
         """
         Optimize strategy parameters.
@@ -100,7 +101,7 @@ class Backtest:
         keys = list(params_grid.keys())
         for combination in product(*params_grid.values()):
             # param_dict is like {'n1': 10, 'n2': 20, ...}
-            param_dict = dict(zip(keys, combination))
+            param_dict = dict(zip(keys, combination, strict=True))
 
             # If a constraint function is provided, check if it is satisfied
             if constraint and not constraint(param_dict):

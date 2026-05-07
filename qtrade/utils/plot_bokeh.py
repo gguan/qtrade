@@ -267,7 +267,7 @@ return this.labels[index] || "";
         index=np.array([datetime.get_loc(order._fill_date) for order in orders ]),
         size=np.array([abs(order.size) for order in orders]),
         datetime=np.array([order._fill_date for order in orders]),
-        fill_price=np.array([order._fill_price if order.size > 0 else order._fill_price for order in orders]),
+        fill_price=np.array([order._fill_price for order in orders]),
         color_mapper=np.where(np.array([order.size for order in orders]) > 0, day_colors['bull'], day_colors['bear']),
         marker_shape=np.where(np.array([order.size for order in orders]) > 0, 'triangle', 'inverted_triangle'),
     ))

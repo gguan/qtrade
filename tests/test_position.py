@@ -1,6 +1,5 @@
 # tests/test_position.py
 
-import pytest
 import pandas as pd
 from qtrade.core import Trade, Position
 

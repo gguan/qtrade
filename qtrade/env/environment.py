@@ -4,7 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 import logging
-from typing import Optional
 from qtrade.core import Broker, Commission
 from qtrade.core.commission import NoCommission
 from qtrade.core.order import Order
@@ -24,16 +23,16 @@ class TradingEnv(gym.Env):
     metadata = {'render_modes': ['human', 'rgb_array'], 'render_fps': 12}
 
     def __init__(self, data: pd.DataFrame, cash: float = 10000, 
-                 commission: Optional[Commission] = None,
+                 commission: Commission | None = None,
                  margin_ratio: float = 1.0,
                  trade_on_close: bool = True,
                  window_size: int = 10, 
                  max_steps = 3000, 
                  random_start: bool = False,
-                 action_scheme: Optional[ActionScheme] = None,
-                 reward_scheme: Optional[RewardScheme] = None,
-                 observer_scheme: Optional[ObserverScheme] = None,
-                 render_mode: Optional[str] = 'human',
+                 action_scheme: ActionScheme | None = None,
+                 reward_scheme: RewardScheme | None = None,
+                 observer_scheme: ObserverScheme | None = None,
+                 render_mode: str | None = 'human',
                  verbose: bool = False
                  ):
         
@@ -77,7 +76,7 @@ class TradingEnv(gym.Env):
         self.reset()
         
 
-    def reset(self, seed: Optional[int] = None, options: Optional[dict] = None):
+    def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed, options=options)
 
         self.start_idx = self.window_size if not self.random_start else self.np_random.integers(

@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 from math import copysign
 import plotly.graph_objects as go
@@ -48,7 +47,6 @@ def plot_with_plotly(broker):
     datatime = broker.account_value_history.index
     index = np.arange(len(broker.account_value_history))
     trade_exit_idx = np.array([datatime.get_loc(t.exit_date) if t.exit_date in datatime else np.nan for t in trades])
-    trade_exit_price = np.array([t.exit_price for t in trades])
     trade_size = np.array([t.size for t in trades])
     return_pct = np.array([copysign(1, t.size) * (t.exit_price / t.entry_price - 1) for t in trades])
     abs_size = np.abs(trade_size)

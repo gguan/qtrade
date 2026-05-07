@@ -42,10 +42,10 @@ def test_order_fill_then_reject():
     order = Order(size=10, limit=None, stop=None, sl=95.0, tp=105.0, tag="Order1")
     order._fill(102.0, '2024-01-01')
 
-    with pytest.raises(Exception, match="Order already filled."):
+    with pytest.raises(ValueError, match=r"Order already filled."):
         order._fill(102.0, '2024-01-01')
 
-    with pytest.raises(Exception, match="Order already filled."):
+    with pytest.raises(ValueError, match=r"Order already filled."):
         order._close(reason="Cannot reject a filled order.")
 
 
@@ -53,5 +53,5 @@ def test_order_reject_then_fill():
     order = Order(size=10, limit=None, stop=None, sl=95.0, tp=105.0, tag="Order1")
     order._close(reason="Insufficient margin")
 
-    with pytest.raises(Exception, match="Order already closed."):
+    with pytest.raises(ValueError, match=r"Order already closed."):
         order._fill(102.0, '2024-01-01')

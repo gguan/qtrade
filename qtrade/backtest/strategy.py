@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Optional
 import pandas as pd
 
 from qtrade.core import Order, Trade, Position
@@ -38,11 +37,11 @@ class Strategy(ABC):
         pass
 
     def buy(self, *,
-            size: Optional[int] = None,
-            limit: Optional[float] = None,
-            stop: Optional[float] = None,
-            sl: Optional[float] = None,
-            tp: Optional[float] = None,
+            size: int | None = None,
+            limit: float | None = None,
+            stop: float | None = None,
+            sl: float | None = None,
+            tp: float | None = None,
             tag: object = None):
         """
         Place a buy order.
@@ -62,11 +61,11 @@ class Strategy(ABC):
         self._broker.place_orders(order)
 
     def sell(self, *,
-             size: Optional[int] = None,
-             limit: Optional[float] = None,
-             stop: Optional[float] = None,
-             sl: Optional[float] = None,
-             tp: Optional[float] = None,
+             size: int | None = None,
+             limit: float | None = None,
+             stop: float | None = None,
+             sl: float | None = None,
+             tp: float | None = None,
              tag: object = None):
         """
         Place a sell order.

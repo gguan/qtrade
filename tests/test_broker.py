@@ -248,10 +248,10 @@ def test_sl_tp_trigger_for_short(broker_no_commission):
     assert len(broker_no_commission.position.closed_trades) == 0
     # 第二天价格104，无触发SL/TP
     broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
-    broker_no_commission.unrealized_pnl == 0
+    assert broker_no_commission.unrealized_pnl == 0
     # 第三天价格106, 无触发
     broker_no_commission.process_bar(pd.Timestamp('2024-01-03'))
-    broker_no_commission.unrealized_pnl == -20
+    assert broker_no_commission.unrealized_pnl == -20
     # 第四天价格110，触发SL
     broker_no_commission.process_bar(pd.Timestamp('2024-01-04'))
 
@@ -416,7 +416,7 @@ def test_order_fill_reject_sequence(broker_no_commission):
     assert order.is_filled is True
 
     # 尝试拒绝已填充的订单，应报错
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         order._close(reason="Cannot reject a filled order.")
 
     # 新订单 过大，保证金不足被拒绝
@@ -428,7 +428,7 @@ def test_order_fill_reject_sequence(broker_no_commission):
     assert order2.is_closed is True
 
     # 尝试填充已拒绝的订单应报错
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         order2._fill(110.0, pd.Timestamp('2024-01-03'))
 
 # tests/test_broker.py
@@ -506,12 +506,12 @@ def test_cancel_order(broker_no_commission):
     assert order not in broker_no_commission._pending_orders, "订单不应在待执行订单列表中"
     
         # 检查订单是否可以再次取消
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         order._fill(100.0, pd.Timestamp('2024-01-01'))
     # 检查订单是否已被填充
     assert order.is_filled is False, "已取消的订单不应被填充"
     assert order.fill_price is None, "已取消的订单不应有填充价格"
-    
+
     # 检查订单是否可以再次取消
-    with pytest.raises(Exception):
+    with pytest.raises(ValueError):
         order.cancel()

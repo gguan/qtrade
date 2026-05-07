@@ -1,6 +1,5 @@
 # components/trade.py
 
-from typing import Optional
 import pandas as pd
 
 
@@ -27,9 +26,9 @@ class Trade:
         entry_date: pd.Timestamp,
         entry_index: int,
         size: int,
-        sl: Optional[float] = None,
-        tp: Optional[float] = None,
-        tag: Optional[object] = None,
+        sl: float | None = None,
+        tp: float | None = None,
+        tag: object | None = None,
     ):
         """
         Initialize a Trade instance.
@@ -51,19 +50,19 @@ class Trade:
         self._entry_date: pd.Timestamp = entry_date
         self._entry_index: int = entry_index
         self._size: int = size
-        self._sl: Optional[float] = sl
-        self._tp: Optional[float] = tp
-        self._tag: Optional[object] = tag
+        self._sl: float | None = sl
+        self._tp: float | None = tp
+        self._tag: object | None = tag
 
-        self._exit_price: Optional[float] = None
-        self._exit_date: Optional[pd.Timestamp] = None
-        self._exit_index: Optional[int] = None
-        self._profit: Optional[float] = None
-        self._exit_reason: Optional[str] = None  # 'signal', 'sl', 'tp', 'end'
+        self._exit_price: float | None = None
+        self._exit_date: pd.Timestamp | None = None
+        self._exit_index: int | None = None
+        self._profit: float | None = None
+        self._exit_reason: str | None = None  # 'signal', 'sl', 'tp', 'end'
 
     def close(
         self,
-        size: Optional[int],
+        size: int | None,
         exit_price: float,
         exit_date: pd.Timestamp,
         exit_index: int,
@@ -146,37 +145,37 @@ class Trade:
         return self._entry_index
 
     @property
-    def sl(self) -> Optional[float]:
+    def sl(self) -> float | None:
         """Optional[float]: Stop loss price."""
         return self._sl
 
     @property
-    def tp(self) -> Optional[float]:
+    def tp(self) -> float | None:
         """Optional[float]: Take profit price."""
         return self._tp
 
     @property
-    def tag(self) -> Optional[object]:
+    def tag(self) -> object | None:
         """Optional[object]: Tag for identifying the trade."""
         return self._tag
     
     @property
-    def exit_price(self) -> Optional[float]:
+    def exit_price(self) -> float | None:
         """Optional[float]: Price at which the trade was exited."""
         return self._exit_price
 
     @property
-    def exit_date(self) -> Optional[pd.Timestamp]:
+    def exit_date(self) -> pd.Timestamp | None:
         """Optional[pd.Timestamp]: Date when the trade was exited."""
         return self._exit_date
     
     @property
-    def exit_index(self) -> Optional[int]:
+    def exit_index(self) -> int | None:
         """Optional[int]: Index when the trade was exited."""
         return self._exit_index
 
     @property
-    def profit(self) -> Optional[float]:
+    def profit(self) -> float | None:
         """
         Optional[float]: Profit or loss from the trade.
 
@@ -186,7 +185,7 @@ class Trade:
         return self._profit
 
     @property
-    def exit_reason(self) -> Optional[str]:
+    def exit_reason(self) -> str | None:
         """
         Optional[str]: Reason for exiting the trade.
 

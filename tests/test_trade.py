@@ -37,7 +37,7 @@ def test_trade_initialization_zero_size():
     entry_index = 0
     size = 0
 
-    with pytest.raises(AssertionError, match="Trade size cannot be zero."):
+    with pytest.raises(AssertionError, match=r"Trade size cannot be zero."):
         Trade(entry_price, entry_date, entry_index, size)
 
 
@@ -111,7 +111,7 @@ def test_trade_close_over_size():
     exit_index = 1
     exit_reason = 'tp'
 
-    with pytest.raises(ValueError, match="Cannot close more than the current position size."):
+    with pytest.raises(ValueError, match=r"Cannot close more than the current position size."):
         trade.close(close_size, exit_price, exit_date, exit_index, exit_reason)
 
 
@@ -126,7 +126,7 @@ def test_trade_close_already_closed():
     trade.close(None, 110.0, pd.Timestamp('2024-01-02'), 1, 'tp')
 
     # Attempt to close again
-    with pytest.raises(ValueError, match="Cannot close a trade that is already fully closed."):
+    with pytest.raises(ValueError, match=r"Cannot close a trade that is already fully closed."):
         trade.close(1, 115.0, pd.Timestamp('2024-01-03'), 1, 'tp')
 
 
