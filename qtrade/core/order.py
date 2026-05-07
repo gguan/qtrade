@@ -1,6 +1,5 @@
 # components/order.py
 
-from typing import Optional
 import pandas as pd
 
 
@@ -24,11 +23,11 @@ class Order:
     def __init__(
         self,
         size: int,
-        limit: Optional[float] = None,
-        stop: Optional[float] = None,
-        sl: Optional[float] = None,
-        tp: Optional[float] = None,
-        tag: Optional[object] = None
+        limit: float | None = None,
+        stop: float | None = None,
+        sl: float | None = None,
+        tp: float | None = None,
+        tag: object | None = None
     ):
         """
         Initialize an Order instance.
@@ -47,16 +46,16 @@ class Order:
         assert size != 0, 'Order size cannot be zero.'
 
         self._size: int = size
-        self._limit: Optional[float] = limit
-        self._stop: Optional[float] = stop
-        self._sl: Optional[float] = sl
-        self._tp: Optional[float] = tp
-        self._tag: Optional[object] = tag
+        self._limit: float | None = limit
+        self._stop: float | None = stop
+        self._sl: float | None = sl
+        self._tp: float | None = tp
+        self._tag: object | None = tag
 
         self._is_filled: bool = False
-        self._fill_price: Optional[float] = None
-        self._fill_date: Optional[pd.Timestamp] = None
-        self._close_reason: Optional[str] = None
+        self._fill_price: float | None = None
+        self._fill_date: pd.Timestamp | None = None
+        self._close_reason: str | None = None
 
     def _fill(self, fill_price: float, fill_date: pd.Timestamp) -> None:
         """
@@ -102,27 +101,27 @@ class Order:
         return self._size
 
     @property
-    def limit(self) -> Optional[float]:
+    def limit(self) -> float | None:
         """Optional[float]: Limit price."""
         return self._limit
 
     @property
-    def stop(self) -> Optional[float]:
+    def stop(self) -> float | None:
         """Optional[float]: Stop price."""
         return self._stop
 
     @property
-    def sl(self) -> Optional[float]:
+    def sl(self) -> float | None:
         """Optional[float]: Stop loss price."""
         return self._sl
 
     @property
-    def tp(self) -> Optional[float]:
+    def tp(self) -> float | None:
         """Optional[float]: Take profit price."""
         return self._tp
 
     @property
-    def tag(self) -> Optional[object]:
+    def tag(self) -> object | None:
         """Optional[object]: Order tag."""
         return self._tag
 
@@ -142,12 +141,12 @@ class Order:
         return self._is_filled
 
     @property
-    def fill_price(self) -> Optional[float]:
+    def fill_price(self) -> float | None:
         """Optional[float]: Fill price."""
         return self._fill_price
 
     @property
-    def fill_date(self) -> Optional[pd.Timestamp]:
+    def fill_date(self) -> pd.Timestamp | None:
         """Optional[pd.Timestamp]: Fill date."""
         return self._fill_date
     

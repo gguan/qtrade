@@ -40,8 +40,8 @@ $ python examples/simple_strategy.py
 
 ### Requirements
 
-- Python >= 3.8
-- Dependencies listed in requirements.txt
+- Python >= 3.10
+- Dependencies declared in `pyproject.toml`
 
 
 ### Usage

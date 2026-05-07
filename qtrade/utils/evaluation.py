@@ -1,6 +1,7 @@
 import os
 import warnings
-from typing import Any, Callable, Optional, Union
+from typing import Any
+from collections.abc import Callable
 
 import gymnasium as gym
 import numpy as np
@@ -108,15 +109,15 @@ class EvalWithInfoCallback(EvalCallback):
 
 def evaluate_policy_with_infos(
     model: "type_aliases.PolicyPredictor",
-    env: Union[gym.Env, VecEnv],
+    env: gym.Env | VecEnv,
     n_eval_episodes: int = 10,
     deterministic: bool = True,
     render: bool = False,
-    callback: Optional[Callable[[dict[str, Any], dict[str, Any]], None]] = None,
-    reward_threshold: Optional[float] = None,
+    callback: Callable[[dict[str, Any], dict[str, Any]], None] | None = None,
+    reward_threshold: float | None = None,
     return_episode_rewards: bool = False,
     warn: bool = True,
-) -> Union[tuple[float, float, list[dict[str, Any]]], tuple[list[float], list[int], list[dict[str, Any]]]]:
+) -> tuple[float, float, list[dict[str, Any]]] | tuple[list[float], list[int], list[dict[str, Any]]]:
     """
     Evaluates a policy by running it for n episodes and returns results with additional info.
 

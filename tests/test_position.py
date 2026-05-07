@@ -1,6 +1,5 @@
 # tests/test_position.py
 
-import pytest
 import pandas as pd
 from qtrade.core import Trade, Position
 
@@ -33,3 +32,13 @@ def test_position_properties():
     assert bool(position) is True
     assert position.active_trades == (trade1, trade2)
     assert position.closed_trades == ()
+
+
+def test_position_repr():
+    position = Position()
+    position._active_trades.append(Trade(100.0, pd.Timestamp('2024-01-01'), 0, 10))
+    text = repr(position)
+    assert text.startswith('<Position')
+    assert 'Size=10' in text
+    assert 'Active Trades=(1)' in text
+    assert 'Closed Trades=(0)' in text

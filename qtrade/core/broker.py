@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Union
 
 import pandas as pd
 
@@ -37,7 +36,7 @@ class Broker:
         self,
         data: pd.DataFrame,
         cash: float,
-        commission: Optional[Commission],
+        commission: Commission | None,
         margin_ratio: float,
         trade_on_close: bool
     ):
@@ -199,7 +198,7 @@ class Broker:
         """
         return self._equity_history.copy()
 
-    def place_orders(self, orders: Union[Order, list[Order]]) -> None:
+    def place_orders(self, orders: Order | list[Order]) -> None:
         """
         Submit one or multiple orders.
 
@@ -489,9 +488,9 @@ class Broker:
             entry_price: float, 
             entry_date: pd.Timestamp, 
             size: int, 
-            sl: Optional[float] = None, 
-            tp: Optional[float] = None, 
-            tag: Optional[object] = None
+            sl: float | None = None, 
+            tp: float | None = None, 
+            tag: object | None = None
         ) -> None:
         """
         Open a new trade position with the specified parameters.
@@ -521,7 +520,7 @@ class Broker:
             exit_price: float, 
             exit_date: pd.Timestamp, 
             exit_reason: str, 
-            close_size: Optional[int] = None
+            close_size: int | None = None
         ) -> Trade:
         """
         Close an active trade and move it to the closed trades list.

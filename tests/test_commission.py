@@ -35,7 +35,7 @@ def test_percentage_commission():
 
 
 def test_percentage_commission_negative_percentage():
-    with pytest.raises(ValueError, match="Percentage cannot be negative."):
+    with pytest.raises(ValueError, match=r"Percentage cannot be negative."):
         PercentageCommission(percentage=-0.001)
 
 
@@ -51,7 +51,7 @@ def test_fixed_commission():
 
 
 def test_fixed_commission_negative_fee():
-    with pytest.raises(ValueError, match="Fixed fee cannot be negative."):
+    with pytest.raises(ValueError, match=r"Fixed fee cannot be negative."):
         FixedCommission(fixed_fee=-10.0)
 
 
@@ -74,5 +74,5 @@ def test_slippage_commission():
 
 
 def test_slippage_commission_negative_percentage():
-    with pytest.raises(ValueError, match="Slippage percentage cannot be negative."):
+    with pytest.raises(ValueError, match=r"Slippage percentage cannot be negative."):
         SlippageCommission(slippage_percentage=-0.002)
