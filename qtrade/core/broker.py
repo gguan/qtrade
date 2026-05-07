@@ -12,29 +12,49 @@ from .position import Position
 from .commission import Commission
 
 
+# Mapping of common case-insensitive column aliases to canonical capitalized names.
+_COMMON_NAMES = {
+    "date": "Date",
+    "time": "Time",
+    "timestamp": "Timestamp",
+    "open": "Open",
+    "high": "High",
+    "low": "Low",
+    "close": "Close",
+    "adj_close": "Adj_Close",
+    "volume": "Volume",
+}
+
+
+def _canonicalize_columns(df: pd.DataFrame) -> None:
+    df.rename(columns=lambda x: _COMMON_NAMES[x.lower()] if x.lower() in _COMMON_NAMES else x, inplace=True)
+
+
 class Broker:
     """
     The Broker class is responsible for executing orders and managing positions.
 
+    Internally Broker tracks positions and OHLCV data per asset (keyed by string symbol);
+    a single-asset DataFrame passed to the constructor is wrapped under the key
+    ``"default"`` for backwards compatibility, so existing single-asset workflows
+    continue to use the same external API (``broker.data``, ``broker.position``).
+
     Attributes:
-        data (pd.DataFrame): DataFrame containing market data with columns ['Open', 'High', 'Low', 'Close'].
-        cash (float): Current cash balance in the account.
+        cash (float): Current shared cash balance across all assets.
         commission (Optional[Commission]): Instance for calculating trade commissions. If None, no commission is applied.
         margin_ratio (float): Margin ratio (0 < margin_ratio ≤ 1).
         trade_on_close (bool): If True, orders are filled at the current close price. Otherwise, at the next open price.
-        position (Position): Current position information.
         current_time (pd.Timestamp): Timestamp of the current bar.
-        _new_orders (List[Order]): Orders submitted in the current bar.
         _pending_orders (List[Order]): Pending orders (e.g., stop/limit orders) awaiting execution.
         _executing_orders (List[Order]): Orders to be executed at the next bar's open price if trade_on_close is False.
         _filled_orders (List[Order]): List of filled orders.
-        _rejected_orders (List[Order]): List of rejected orders.
-        _equity_history (pd.Series): Historical record of account equity.
+        _closed_orders (List[Order]): List of rejected/canceled orders.
+        _equity_history (pd.Series): Portfolio-level historical record of account equity.
     """
 
     def __init__(
         self,
-        data: pd.DataFrame,
+        data: pd.DataFrame | dict[str, pd.DataFrame],
         cash: float,
         commission: Commission | None,
         margin_ratio: float,
@@ -44,7 +64,10 @@ class Broker:
         Initialize the Broker with market data and account settings.
 
         Args:
-            data (pd.DataFrame): Market data with ['Open', 'High', 'Low', 'Close'] columns.
+            data (pd.DataFrame | dict[str, pd.DataFrame]): Market data with
+                ['Open', 'High', 'Low', 'Close'] columns. Pass a single DataFrame for
+                a single-asset backtest (wrapped internally as ``{"default": data}``)
+                or a dict of DataFrames keyed by asset symbol for multi-asset.
             cash (float): Initial cash balance. Must be positive.
             commission (Optional[Commission]): Commission calculator instance.
             margin_ratio (float): Margin ratio (0 < margin_ratio ≤ 1).
@@ -55,147 +78,157 @@ class Broker:
         """
         assert cash > 0, "Initial cash must be positive."
         assert 0 < margin_ratio <= 1, "Margin ratio must be between 0 and 1."
-        
-        common_names = {
-            "date": "Date",
-            "time": "Time",
-            "timestamp": "Timestamp",
-            "open": "Open",
-            "high": "High",
-            "low": "Low",
-            "close": "Close",
-            "adj_close": "Adj_Close",
-            "volume": "Volume",
-        }
-        data.rename(columns=lambda x: common_names[x.lower()] if x.lower() in common_names else x, inplace=True)
-        self.data = data
+
+        # Normalize to dict[str, DataFrame]; canonicalize column names per asset.
+        if isinstance(data, pd.DataFrame):
+            data_by_asset = {"default": data}
+        else:
+            assert len(data) > 0, "Multi-asset data dict cannot be empty."
+            data_by_asset = data
+        for df in data_by_asset.values():
+            _canonicalize_columns(df)
+
+        self._data_by_asset: dict[str, pd.DataFrame] = data_by_asset
         self.cash = cash
         self.commission = commission
         self.margin_ratio = margin_ratio
         self.trade_on_close = trade_on_close
-        self.position = Position()
+        self._positions: dict[str, Position] = {a: Position() for a in data_by_asset}
 
-        self.current_time = data.index[0]
+        # Use the first asset's index as the timeline; multi-asset support assumes
+        # aligned indexes (validated in P2).
+        first_index = next(iter(data_by_asset.values())).index
+        self.current_time = first_index[0]
 
-        self._new_orders: list[Order] = []
         self._pending_orders: list[Order] = []
         self._executing_orders: list[Order] = []
 
         self._filled_orders: list[Order] = []
         self._closed_orders: list[Order] = []  # Rejected and canceled orders
 
-        self._equity_history = pd.Series(data=self.cash, index=data.index).astype('float64')
+        self._equity_history = pd.Series(data=self.cash, index=first_index).astype('float64')
+
+    # ------------------------------------------------------------------
+    # Backwards-compatible single-asset accessors.
+    # ------------------------------------------------------------------
+
+    @property
+    def data(self) -> pd.DataFrame:
+        """Single-asset access. For multi-asset, use :attr:`data_by_asset`."""
+        if len(self._data_by_asset) > 1:
+            raise AttributeError(
+                "Broker has multiple assets; use broker.data_by_asset[symbol] instead of broker.data"
+            )
+        return next(iter(self._data_by_asset.values()))
+
+    @property
+    def position(self) -> Position:
+        """Single-asset access. For multi-asset, use :attr:`positions`."""
+        if len(self._positions) > 1:
+            raise AttributeError(
+                "Broker has multiple assets; use broker.positions[symbol] instead of broker.position"
+            )
+        return next(iter(self._positions.values()))
+
+    @property
+    def data_by_asset(self) -> dict[str, pd.DataFrame]:
+        """Per-asset OHLCV data."""
+        return self._data_by_asset
+
+    @property
+    def positions(self) -> dict[str, Position]:
+        """Per-asset Position objects."""
+        return self._positions
+
+    @property
+    def assets(self) -> list[str]:
+        """List of asset symbols this broker tracks."""
+        return list(self._data_by_asset.keys())
+
+    # ------------------------------------------------------------------
+    # Aggregate properties (portfolio-level for multi-asset, identical to
+    # single-asset behavior when only "default" is present).
+    # ------------------------------------------------------------------
 
     @property
     def equity(self) -> float:
-        """
-        Calculate the current equity of the account.
-
-        Returns:
-            float: Current equity (cash + unrealized P&L).
-        """
+        """Calculate the current equity of the account (cash + total unrealized P&L)."""
         return self.cash + self.unrealized_pnl
 
     @property
     def cumulative_returns(self) -> float:
-        """
-        Calculate the cumulative returns of the account.
-
-        Returns:
-            float: Cumulative returns (equity / initial equity).
-        """
+        """Cumulative returns (equity / initial equity)."""
         return self.equity / self._equity_history.iloc[0]
 
     @property
     def available_margin(self) -> float:
-        """
-        Calculate the available margin for new trades.
-
-        Returns:
-            float: Available margin, minimum 0.
-        """
-        current_price = self.data.loc[self.current_time, 'Close']
-        used_margin = sum(
-            abs(trade.size) * current_price * self.margin_ratio
-            for trade in self.position.active_trades
-        )
+        """Available margin for new trades, summed across all assets."""
+        used_margin = 0.0
+        for asset, position in self._positions.items():
+            current_price = self._data_by_asset[asset].loc[self.current_time, 'Close']
+            used_margin += sum(
+                abs(trade.size) * current_price * self.margin_ratio
+                for trade in position.active_trades
+            )
         return max(0, self.equity - used_margin)
 
     @property
     def unrealized_pnl(self) -> float:
-        """
-        Calculate the unrealized profit and loss.
+        """Sum of unrealized P&L across all active trades on every asset."""
+        total = 0.0
+        for asset, position in self._positions.items():
+            current_price = self._data_by_asset[asset].loc[self.current_time, 'Close']
+            for trade in position.active_trades:
+                total += trade.size * (current_price - trade.entry_price)
+        return total
 
-        Returns:
-            float: Sum of unrealized P&L from all active trades.
-        """
-        current_price = self.data.loc[self.current_time, 'Close']
-        return sum(
-            trade.size * (current_price - trade.entry_price) for trade in self.position.active_trades
-        )
-    
     @property
     def unrealized_pnl_pct(self) -> float:
-        """
-        Calculate the unrealized profit and loss percentage.
-
-        Returns:
-            float: Unrealized P&L percentage.
-        """
-        total_initial_margin = sum(
-            abs(trade.size) * trade.entry_price * self.margin_ratio for trade in self.position.active_trades
-        )
+        """Unrealized P&L as a percentage of total initial margin (across all assets)."""
+        total_initial_margin = 0.0
+        for position in self._positions.values():
+            total_initial_margin += sum(
+                abs(trade.size) * trade.entry_price * self.margin_ratio
+                for trade in position.active_trades
+            )
         return self.unrealized_pnl / total_initial_margin * 100 if total_initial_margin != 0 else 0
 
     @property
     def realized_pnl(self) -> float:
-        """
-        Calculate the realized profit and loss.
+        """Sum of realized P&L from all closed trades across all assets."""
+        total = 0.0
+        for position in self._positions.values():
+            for trade in position.closed_trades:
+                if trade.profit is not None:
+                    total += trade.profit
+        return total
 
-        Returns:
-            float: Sum of realized P&L from all closed trades.
-        """
-        return sum(trade.profit for trade in self.position.closed_trades) if self.position.closed_trades else 0
-    
     @property
     def closed_trades(self) -> tuple[Trade, ...]:
-        """
-        Get a tuple of all closed trades.
-
-        Returns:
-            Tuple[Trade, ...]: Closed trades.
-        """
-        return self.position.closed_trades
+        """Closed trades across all assets (concatenated; per-asset access via :attr:`positions`)."""
+        result: list[Trade] = []
+        for position in self._positions.values():
+            result.extend(position.closed_trades)
+        return tuple(result)
 
     @property
     def filled_orders(self) -> tuple[Order, ...]:
-        """
-        Get a tuple of all filled orders.
-
-        Returns:
-            Tuple[Order, ...]: Filled orders.
-        """
+        """Get a tuple of all filled orders."""
         return tuple(self._filled_orders)
 
     @property
     def closed_orders(self) -> tuple[Order, ...]:
-        """
-        Get a tuple of all closed orders.
-
-        Returns:
-            Tuple[Order, ...]: Closed orders.
-        """
+        """Get a tuple of all closed orders."""
         return tuple(self._closed_orders)
 
     @property
     def equity_history(self) -> pd.Series:
-        """
-        Get a copy of the equity history.
-
-        Returns:
-            pd.Series: Historical equity values.
-        """
+        """Get a copy of the equity history (portfolio-level)."""
         return self._equity_history.copy()
+
+    # ------------------------------------------------------------------
+    # Order placement and bar processing.
+    # ------------------------------------------------------------------
 
     def place_orders(self, orders: Order | list[Order]) -> None:
         """
@@ -215,26 +248,21 @@ class Broker:
             new_orders = [orders]
         else:
             raise TypeError("orders must be an Order instance or a list of Orders.")
-        
+
         for order in new_orders:
             if order._stop or order._limit:
                 self._pending_orders.append(order)
             else:
                 if self.trade_on_close:
                     fill_date = self.current_time
-                    fill_price = self.data.loc[fill_date, 'Close']
+                    fill_price = self._data_by_asset[order.asset].loc[fill_date, 'Close']
                     self.__process_order(order, fill_price, fill_date)
                 else:
                     self._executing_orders.append(order)
         self.__update_account_value_history()
 
     def process_bar(self, current_time: pd.Timestamp) -> None:
-        """
-        Process the trading logic for the current bar.
-
-        Args:
-            current_time (pd.Timestamp): Timestamp of the current bar.
-        """
+        """Process the trading logic for the current bar."""
         self.current_time = current_time
         self.__remove_closed_orders()
         self.__process_executing_orders()
@@ -243,9 +271,6 @@ class Broker:
         self.__update_account_value_history()
 
     def __update_account_value_history(self) -> None:
-        """
-        Update the historical record of account equity.
-        """
         self._equity_history.loc[self.current_time] = self.equity
 
     def __remove_closed_orders(self) -> None:
@@ -259,24 +284,21 @@ class Broker:
         self._executing_orders = [order for order in self._executing_orders if not order.is_closed]
 
     def __process_executing_orders(self) -> None:
-        """
-        Execute orders that are set to be filled at the next bar's open price.
-        """
+        """Execute orders that were queued for fill at the next bar's open price."""
         for order in self._executing_orders:
             fill_date = self.current_time
-            fill_price = self.data.loc[fill_date, 'Open']
+            fill_price = self._data_by_asset[order.asset].loc[fill_date, 'Open']
             self.__process_order(order, fill_price, fill_date)
         self._executing_orders.clear()
 
     def __process_pending_orders(self) -> None:
-        """
-        Process pending orders, including stop and limit orders.
-        """
-        high = self.data.loc[self.current_time, 'High']
-        low = self.data.loc[self.current_time, 'Low']
-
+        """Process pending orders, including stop and limit orders."""
         orders_to_remove = []
         for order in self._pending_orders:
+            df = self._data_by_asset[order.asset]
+            high = df.loc[self.current_time, 'High']
+            low = df.loc[self.current_time, 'Low']
+
             # Check stop conditions
             if order._stop:
                 is_stop_triggered = high >= order._stop if order.is_long else low <= order._stop
@@ -299,46 +321,38 @@ class Broker:
                 # Market order
                 if self.trade_on_close:
                     fill_date = self.current_time
-                    fill_price = self.data.loc[fill_date, 'Close']
+                    fill_price = df.loc[fill_date, 'Close']
                     self.__process_order(order, fill_price, fill_date)
                     orders_to_remove.append(order)
                 else:
                     self._executing_orders.append(order)
 
-        # Remove processed orders from pending_orders
         for order in orders_to_remove:
             self._pending_orders.remove(order)
 
     def __process_order(self, order: Order, fill_price: float, fill_date: pd.Timestamp) -> None:
-        """
-        Handle the execution of a filled order.
-
-        Args:
-            order (Order): The order to process.
-            fill_price (float): The price at which the order was filled.
-            fill_date (pd.Timestamp): The date when the order was filled.
-        """
+        """Handle the execution of a filled order against the order's asset."""
         if not self.__is_margin_sufficient(order, fill_price):
-            # Insufficient margin, reject the order
             order._close(reason="Insufficient margin")
             logging.info(f"Order rejected: {order._close_reason}")
             self._closed_orders.append(order)
             return
 
+        position = self._positions[order.asset]
         remaining_order_size = order.size
         commission_cost = self.commission.calculate_commission(order.size, fill_price) if self.commission else 0
         self.cash -= commission_cost
 
-        for trade in self.position.active_trades:
+        for trade in position.active_trades:
             if trade.is_long == order.is_long:
                 continue  # Skip trades on the same side
 
             if abs(remaining_order_size) >= abs(trade.size):
                 # Fully close the trade
                 closed_trade = self._close_trade(
-                    trade = trade, 
-                    exit_price = fill_price,
-                    exit_date = fill_date,
+                    trade=trade,
+                    exit_price=fill_price,
+                    exit_date=fill_date,
                     exit_reason='signal',
                 )
                 self.cash += closed_trade.profit
@@ -346,106 +360,89 @@ class Broker:
             else:
                 # Partially close the trade
                 closed_trade = self._close_trade(
-                    trade = trade,
-                    close_size = -remaining_order_size,
-                    exit_price = fill_price,
-                    exit_date = fill_date,
+                    trade=trade,
+                    close_size=-remaining_order_size,
+                    exit_price=fill_price,
+                    exit_date=fill_date,
                     exit_reason='signal',
                 )
                 self.cash += closed_trade.profit
                 remaining_order_size = 0  # Order fully filled
 
             if remaining_order_size == 0:
-                break  # Order fully filled
+                break
 
-        # Remove trades with zero size
-        self.position._active_trades = [
-            trade for trade in self.position.active_trades if trade.size != 0
-        ]
+        # Drop fully-closed trades
+        position._active_trades = [t for t in position.active_trades if t.size != 0]
 
         if remaining_order_size != 0:
-            # Open a new position with the remaining order size
             self._open_trade(
-                entry_price = fill_price,
-                entry_date = fill_date,
-                size = remaining_order_size,
-                sl = order._sl,
-                tp = order._tp,
-                tag = order.tag
+                entry_price=fill_price,
+                entry_date=fill_date,
+                size=remaining_order_size,
+                sl=order._sl,
+                tp=order._tp,
+                tag=order.tag,
+                asset=order.asset,
             )
 
-        # Record the filled order
         order._fill(fill_price, fill_date)
         self._filled_orders.append(order)
 
     def __is_margin_sufficient(self, order: Order, fill_price: float) -> bool:
-        """
-        Check if there is sufficient margin to execute the order.
-
-        Args:
-            order (Order): The order to check.
-            fill_price (float): The price at which the order will be filled.
-
-        Returns:
-            bool: True if there is sufficient margin, False otherwise.
-        """
-        new_position_size = self.position.size + order.size
+        """Check if there's enough portfolio margin to take on the order on its asset."""
+        position = self._positions[order.asset]
+        new_position_size = position.size + order.size
         new_margin = abs(new_position_size) * fill_price * self.margin_ratio
 
-        # Calculate unrealized P&L considering the fill price
-        unrealized_pnl = sum(
-            trade.size * (fill_price - trade.entry_price) 
-            for trade in self.position.active_trades
-        )
+        # Account value uses the prospective fill_price for the order's asset
+        # and current Close for everyone else.
+        unrealized_pnl = 0.0
+        for asset, pos in self._positions.items():
+            price = fill_price if asset == order.asset else self._data_by_asset[asset].loc[self.current_time, 'Close']
+            for trade in pos.active_trades:
+                unrealized_pnl += trade.size * (price - trade.entry_price)
         account_value = self.cash + unrealized_pnl
 
-        return account_value >= new_margin
+        # Other assets' used margin counts against the available pool.
+        other_used_margin = 0.0
+        for asset, pos in self._positions.items():
+            if asset == order.asset:
+                continue
+            price = self._data_by_asset[asset].loc[self.current_time, 'Close']
+            other_used_margin += sum(abs(t.size) * price * self.margin_ratio for t in pos.active_trades)
+
+        return account_value >= new_margin + other_used_margin
 
     def __check_sl_tp(self) -> None:
-        """
-        Check and apply stop loss (SL) and take profit (TP) conditions for all active trades.
-        """
-        high = self.data.loc[self.current_time, 'High']
-        low = self.data.loc[self.current_time, 'Low']
+        """Check and apply stop loss / take profit conditions across every asset."""
+        for asset, position in self._positions.items():
+            df = self._data_by_asset[asset]
+            high = df.loc[self.current_time, 'High']
+            low = df.loc[self.current_time, 'Low']
 
-        for trade in self.position.active_trades:
-            if not trade.sl and not trade.tp:
-                continue  # No SL/TP set for this trade
+            for trade in position.active_trades:
+                if not trade.sl and not trade.tp:
+                    continue
 
-            sl = trade.sl
-            tp = trade.tp
+                sl = trade.sl
+                tp = trade.tp
 
-            if trade.is_long:
-                # For long positions
-                if sl is not None and low <= sl:
-                    # Stop loss triggered
-                    self.__execute_trade_exit(trade, sl, 'sl')
-                elif tp is not None and high >= tp:
-                    # Take profit triggered
-                    self.__execute_trade_exit(trade, tp, 'tp')
-            else:
-                # For short positions
-                if sl is not None and high >= sl:
-                    # Stop loss triggered
-                    self.__execute_trade_exit(trade, sl, 'sl')
-                elif tp is not None and low <= tp:
-                    # Take profit triggered
-                    self.__execute_trade_exit(trade, tp, 'tp')
+                if trade.is_long:
+                    if sl is not None and low <= sl:
+                        self.__execute_trade_exit(trade, sl, 'sl')
+                    elif tp is not None and high >= tp:
+                        self.__execute_trade_exit(trade, tp, 'tp')
+                else:
+                    if sl is not None and high >= sl:
+                        self.__execute_trade_exit(trade, sl, 'sl')
+                    elif tp is not None and low <= tp:
+                        self.__execute_trade_exit(trade, tp, 'tp')
 
-        # Remove trades with zero size
-        self.position._active_trades = [
-            trade for trade in self.position.active_trades if trade.size != 0
-        ]
+            position._active_trades = [t for t in position.active_trades if t.size != 0]
 
     def __execute_trade_exit(self, trade: Trade, exit_price: float, exit_reason: str) -> None:
-        """
-        Execute the exit of a trade due to SL or TP.
-
-        Args:
-            trade (Trade): The trade to exit.
-            exit_price (float): The price at which to exit the trade.
-            exit_reason (str): Reason for exit ('sl' or 'tp').
-        """
+        """Execute the exit of a trade due to SL or TP."""
         commission_cost = self.commission.calculate_commission(trade.size, exit_price) if self.commission else 0
         self.cash -= commission_cost
 
@@ -457,91 +454,72 @@ class Broker:
         )
         # The exit is in the opposite direction of the trade itself
         # (closing a long is a sell; closing a short is a buy).
-        sl_tp_order = Order(size=-closed_trade.size, tag=exit_reason)
+        sl_tp_order = Order(size=-closed_trade.size, tag=exit_reason, asset=trade.asset)
         sl_tp_order._fill(exit_price, self.current_time)
         self._filled_orders.append(sl_tp_order)
         self.cash += closed_trade.profit
-        
+
     def close_all_positions(self) -> None:
-        """
-        Close all open positions at the end of the trading period.
-        """
-        price = self.data.loc[self.current_time, 'Close']
-        for trade in self.position.active_trades:
-            commission_cost = self.commission.calculate_commission(
-                abs(trade.size), price
-            ) if self.commission else 0
-            self.cash -= commission_cost
+        """Close all open positions across every asset at the current bar's close."""
+        for asset, position in self._positions.items():
+            price = self._data_by_asset[asset].loc[self.current_time, 'Close']
+            for trade in position.active_trades:
+                commission_cost = self.commission.calculate_commission(
+                    abs(trade.size), price
+                ) if self.commission else 0
+                self.cash -= commission_cost
 
-            closed_trade = self._close_trade(
-                trade=trade,
-                exit_price=price,
-                exit_date=self.current_time,
-                exit_reason='end'
-            )
-            self.cash += closed_trade.profit
+                closed_trade = self._close_trade(
+                    trade=trade,
+                    exit_price=price,
+                    exit_date=self.current_time,
+                    exit_reason='end'
+                )
+                self.cash += closed_trade.profit
 
-        # Remove trades with zero size
-        self.position._active_trades = [
-            trade for trade in self.position.active_trades if trade.size != 0
-        ]
+            position._active_trades = [t for t in position.active_trades if t.size != 0]
         self.__update_account_value_history()
-        
-    def _open_trade(
-            self, 
-            entry_price: float, 
-            entry_date: pd.Timestamp, 
-            size: int, 
-            sl: float | None = None, 
-            tp: float | None = None, 
-            tag: object | None = None
-        ) -> None:
-        """
-        Open a new trade position with the specified parameters.
 
-        Args:
-            size (int): Trade size.
-            entry_price (float): Entry price.
-            sl (Optional[float]): Stop loss price.
-            tp (Optional[float]): Take profit price.
-            tag (object): Custom tag for the trade.
-        """
-        """Opens a new trade position with the specified parameters."""
+    def _open_trade(
+            self,
+            entry_price: float,
+            entry_date: pd.Timestamp,
+            size: int,
+            sl: float | None = None,
+            tp: float | None = None,
+            tag: object | None = None,
+            asset: str = "default",
+        ) -> None:
+        """Open a new trade position on the given asset."""
+        df = self._data_by_asset[asset]
         new_trade = Trade(
             entry_price=entry_price,
             entry_date=entry_date,
-            entry_index=self.data.index.get_loc(entry_date),
+            entry_index=df.index.get_loc(entry_date),
             size=size,
             sl=sl,
             tp=tp,
-            tag=tag
+            tag=tag,
+            asset=asset,
         )
-        self.position._active_trades.append(new_trade)
+        self._positions[asset]._active_trades.append(new_trade)
 
     def _close_trade(
-            self, 
-            trade: Trade, 
-            exit_price: float, 
-            exit_date: pd.Timestamp, 
-            exit_reason: str, 
+            self,
+            trade: Trade,
+            exit_price: float,
+            exit_date: pd.Timestamp,
+            exit_reason: str,
             close_size: int | None = None
         ) -> Trade:
-        """
-        Close an active trade and move it to the closed trades list.
-
-        Args:
-            trade (Trade): Trade to close.
-            close_size (int): Size to close.
-            exit_price (float): Price at which the trade is closed.
-            exit_date (pd.Timestamp): Date when the trade is closed.
-            exit_reason (str): Reason for closing ('signal', 'sl', 'tp', 'end').
-        """
+        """Close an active trade and append it to the closed-trades list of its asset."""
+        df = self._data_by_asset[trade.asset]
         closed_trade = trade.close(
             size=close_size,
             exit_price=exit_price,
             exit_date=exit_date,
-            exit_index=self.data.index.get_loc(exit_date),
+            exit_index=df.index.get_loc(exit_date),
             exit_reason=exit_reason
         )
-        self.position._closed_trades.append(closed_trade)
+        self._positions[trade.asset]._closed_trades.append(closed_trade)
         return closed_trade

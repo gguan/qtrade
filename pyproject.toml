@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qtrade-lib"
-version = "0.2.0"
+version = "0.3.0"
 description = "A Python library for backtesting trading strategies and applying reinforcement learning to trading."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -83,7 +83,7 @@ files = ["qtrade"]
 # Optional[float] properties (profit, exit_price, exit_date) being used as
 # non-Optional after a trade closes. Tracked as future work.
 [[tool.mypy.overrides]]
-module = ["qtrade.utils.stats", "qtrade.utils.evaluation", "qtrade.utils.plot_bokeh", "qtrade.core.broker"]
+module = ["qtrade.utils.evaluation", "qtrade.utils.plot_bokeh", "qtrade.core.broker"]
 ignore_errors = true
 
 [tool.coverage.run]

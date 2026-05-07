@@ -29,6 +29,7 @@ class Trade:
         sl: float | None = None,
         tp: float | None = None,
         tag: object | None = None,
+        asset: str = "default",
     ):
         """
         Initialize a Trade instance.
@@ -40,6 +41,8 @@ class Trade:
             sl (Optional[float], optional): Stop loss price. Defaults to None.
             tp (Optional[float], optional): Take profit price. Defaults to None.
             tag (Optional[object], optional): Tag for identifying the trade. Defaults to None.
+            asset (str, optional): Asset symbol this trade is on. Defaults to "default" for
+                single-asset backtests. Multi-asset support is layered on this field.
 
         Raises:
             ValueError: If the trade size is zero.
@@ -53,6 +56,7 @@ class Trade:
         self._sl: float | None = sl
         self._tp: float | None = tp
         self._tag: object | None = tag
+        self._asset: str = asset
 
         self._exit_price: float | None = None
         self._exit_date: pd.Timestamp | None = None
@@ -101,7 +105,8 @@ class Trade:
             size=size_to_close,
             sl=self._sl,
             tp=self._tp,
-            tag=self._tag
+            tag=self._tag,
+            asset=self._asset,
         )
         closed_trade._exit_price = exit_price
         closed_trade._exit_date = exit_date
@@ -143,6 +148,11 @@ class Trade:
     def entry_index(self) -> int:
         """int: Index when the trade was entered."""
         return self._entry_index
+
+    @property
+    def asset(self) -> str:
+        """str: Asset symbol this trade is on."""
+        return self._asset
 
     @property
     def sl(self) -> float | None:

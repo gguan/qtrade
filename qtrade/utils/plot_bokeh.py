@@ -1,5 +1,6 @@
 from math import copysign
 import numpy as np
+import pandas as pd
 from bokeh.plotting import figure, show
 from bokeh.models import ColumnDataSource, HoverTool, Span, Range1d,LinearAxis, DataRange1d, CustomJS
 from bokeh.layouts import gridplot
@@ -289,29 +290,53 @@ return this.labels[index] || "";
     fig_ohlc.legend.title = f'{datetime[0]} - {datetime[-1]} ({datetime[-1]-datetime[0]})'
     return fig_ohlc
 
-def plot_with_bokeh(broker: Broker, filename=None):
-    plot_volume = 'Volume' in broker.data.columns
-    
-    data = broker.data.loc[:broker.current_time].copy(deep=True)
-    datetime = data.index.copy(deep=True)
-    source = ColumnDataSource(data)
-    source.data['index'] = np.arange(len(data))
+def _build_asset_source(df: pd.DataFrame, current_time, equity_history, cumulative_returns, buy_and_hold_returns):
+    """Build the OHLC ColumnDataSource for one asset, also packing the
+    portfolio-level equity / cumulative-return / B&H series so the autoscale
+    JS callback (single-asset mode) can read everything off one source."""
+    asset_data = df.loc[:current_time].copy(deep=True)
+    datetime = asset_data.index.copy(deep=True)
+    source = ColumnDataSource(asset_data)
+    source.data['index'] = np.arange(len(asset_data))
     source.data['datetime'] = datetime
-
-    equity_history = broker.equity_history.loc[:broker.current_time].copy(deep=True)
-    equity_history.reset_index(drop=True, inplace=True)
-    
-    buy_and_hold_col = 'Adj_Close' if 'Adj_Close' in broker.data.columns else 'Close'
-    buy_and_hold_history = broker.data[buy_and_hold_col].loc[:broker.current_time].copy(deep=True)
-    buy_and_hold_history.reset_index(drop=True, inplace=True)
-
-    # Cumulative returns curve (normalized from the initial value)
-    cumulative_returns = equity_history / equity_history[0]
-    buy_and_hold_returns = buy_and_hold_history / buy_and_hold_history[0]
-
     source.data['equity'] = equity_history.values
     source.data['cumulative_returns'] = cumulative_returns.values
     source.data['buy_and_hold_returns'] = buy_and_hold_returns.values
+    return source, datetime
+
+
+def plot_with_bokeh(broker: Broker, filename=None):
+    """Render a backtest report.
+
+    For single-asset brokers: equity panel, trade-returns scatter, and one
+    OHLC panel (with cross-figure autoscale on zoom).
+
+    For multi-asset: portfolio equity vs equal-weighted B&H, a portfolio-wide
+    trade-returns scatter, and one OHLC panel per asset stacked vertically.
+    """
+    if len(broker.data_by_asset) > 1:
+        return _plot_multi_asset(broker, filename)
+    return _plot_single_asset(broker, filename)
+
+
+def _plot_single_asset(broker: Broker, filename=None):
+    only_asset = next(iter(broker.data_by_asset))
+    df = broker.data_by_asset[only_asset]
+    plot_volume = 'Volume' in df.columns
+
+    equity_history = broker.equity_history.loc[:broker.current_time].copy(deep=True)
+    equity_history.reset_index(drop=True, inplace=True)
+
+    buy_and_hold_col = 'Adj_Close' if 'Adj_Close' in df.columns else 'Close'
+    buy_and_hold_history = df[buy_and_hold_col].loc[:broker.current_time].copy(deep=True)
+    buy_and_hold_history.reset_index(drop=True, inplace=True)
+
+    cumulative_returns = equity_history / equity_history.iloc[0]
+    buy_and_hold_returns = buy_and_hold_history / buy_and_hold_history.iloc[0]
+
+    source, datetime = _build_asset_source(
+        df, broker.current_time, equity_history, cumulative_returns, buy_and_hold_returns,
+    )
 
     fig_ohlc = _plot_ohlc(source, datetime, broker.closed_trades, broker.filled_orders, plot_volume=plot_volume)
     fig_equity = _plot_equity(source, equity_history, cumulative_returns, buy_and_hold_returns, fig_ohlc.x_range)
@@ -414,8 +439,64 @@ def plot_with_bokeh(broker: Broker, filename=None):
     fig_ohlc.x_range.js_on_change('start', callback)
     fig_ohlc.x_range.js_on_change('end', callback)
 
+    figs = [fig_equity, fig_trade, fig_ohlc]
+    _apply_styling(figs)
+    _render(figs, filename)
 
-    for f in [fig_equity, fig_trade, fig_ohlc]:
+
+def _plot_multi_asset(broker: Broker, filename=None):
+    """Multi-asset report: portfolio equity + per-asset OHLC panels stacked."""
+    equity_history = broker.equity_history.loc[:broker.current_time].copy(deep=True)
+    equity_history.reset_index(drop=True, inplace=True)
+    cumulative_returns = equity_history / equity_history.iloc[0]
+
+    # Equal-weighted Buy & Hold across all assets.
+    bnh_components = []
+    for df in broker.data_by_asset.values():
+        col = 'Adj_Close' if 'Adj_Close' in df.columns else 'Close'
+        h = df[col].loc[:broker.current_time].copy(deep=True)
+        h.reset_index(drop=True, inplace=True)
+        bnh_components.append(h / h.iloc[0])
+    buy_and_hold_returns = pd.concat(bnh_components, axis=1).mean(axis=1)
+
+    # First asset drives the shared x_range and equity-panel source.
+    first_asset = next(iter(broker.data_by_asset))
+    first_df = broker.data_by_asset[first_asset]
+    first_source, first_datetime = _build_asset_source(
+        first_df, broker.current_time, equity_history, cumulative_returns, buy_and_hold_returns,
+    )
+    plot_volume = 'Volume' in first_df.columns
+    first_trades = [t for t in broker.closed_trades if t.asset == first_asset]
+    first_orders = [o for o in broker.filled_orders if o.asset == first_asset]
+    first_ohlc = _plot_ohlc(first_source, first_datetime, first_trades, first_orders, plot_volume=plot_volume)
+    first_ohlc.title = f"OHLC — {first_asset}"  # type: ignore[assignment]
+
+    fig_equity = _plot_equity(first_source, equity_history, cumulative_returns, buy_and_hold_returns, first_ohlc.x_range)
+    fig_equity.title = "Portfolio equity vs equal-weighted Buy & Hold"  # type: ignore[assignment]
+    fig_trade = _plot_trade(broker.closed_trades, first_datetime, first_ohlc.x_range)
+
+    asset_figs = [first_ohlc]
+    for asset, df in broker.data_by_asset.items():
+        if asset == first_asset:
+            continue
+        source, datetime = _build_asset_source(
+            df, broker.current_time, equity_history, cumulative_returns, buy_and_hold_returns,
+        )
+        plot_volume_i = 'Volume' in df.columns
+        a_trades = [t for t in broker.closed_trades if t.asset == asset]
+        a_orders = [o for o in broker.filled_orders if o.asset == asset]
+        f_ohlc = _plot_ohlc(source, datetime, a_trades, a_orders, plot_volume=plot_volume_i)
+        f_ohlc.x_range = first_ohlc.x_range  # link x-axes
+        f_ohlc.title = f"OHLC — {asset}"  # type: ignore[assignment]
+        asset_figs.append(f_ohlc)
+
+    figs = [fig_equity, fig_trade, *asset_figs]
+    _apply_styling(figs)
+    _render(figs, filename)
+
+
+def _apply_styling(figs):
+    for f in figs:
         if f.legend:
             f.legend.location = 'top_left'
             f.legend.border_line_width = 1
@@ -427,7 +508,6 @@ def plot_with_bokeh(broker: Broker, filename=None):
             f.legend.click_policy = "hide"
             f.legend.title_text_font_size = "12px"
             f.legend.background_fill_alpha = 0.6
-            # f.legend.border_line_color = None
             f.legend.label_height = 12
             f.legend.glyph_height = 12
         f.min_border_left = 0
@@ -435,23 +515,20 @@ def plot_with_bokeh(broker: Broker, filename=None):
         f.min_border_bottom = 6
         f.min_border_right = 10
         f.outline_line_color = '#666666'
-        # Optional: Set grid line style
-        f.xgrid.grid_line_dash = "dotted"  # Dashed line style
-        f.ygrid.grid_line_dash = "dotted"   # Solid line style
+        f.xgrid.grid_line_dash = "dotted"
+        f.ygrid.grid_line_dash = "dotted"
 
-    grid = gridplot([
-        fig_equity,
-        fig_trade,
-        fig_ohlc
-    ], 
-    ncols=1,
-    sizing_mode='stretch_width',
-    merge_tools=True,
-    toolbar_options=dict(logo=None),
-    toolbar_location='right')
 
+def _render(figs, filename):
+    grid = gridplot(
+        figs,
+        ncols=1,
+        sizing_mode='stretch_width',
+        merge_tools=True,
+        toolbar_options=dict(logo=None),
+        toolbar_location='right',
+    )
     show(grid)
-
     if filename:
         from bokeh.io import output_file, save
         output_file(filename)
