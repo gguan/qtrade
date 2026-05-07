@@ -41,3 +41,17 @@ def test_plot_with_bokeh_writes_html_when_filename_given(broker_with_volume, tmp
     assert 'High' in text
     assert 'Low' in text
     assert 'Volume' in text
+
+
+def test_plot_with_bokeh_runs_without_volume_column(ohlc_data_trending):
+    """Bug #6/#7: plot_volume detection was buggy (lowercase) and the JS
+    callback unconditionally referenced extra_y_ranges['volume']. Should now
+    handle data without a Volume column gracefully."""
+    no_vol = ohlc_data_trending.drop(columns=['Volume'])
+    from qtrade.core import Broker, NoCommission
+    broker = Broker(no_vol, cash=10_000, commission=NoCommission(),
+                    margin_ratio=1.0, trade_on_close=True)
+    for ts in no_vol.index:
+        broker.process_bar(ts)
+    with patch('qtrade.utils.plot_bokeh.show'):
+        plot_with_bokeh(broker)  # would crash before the fix

@@ -313,7 +313,7 @@ def plot_with_bokeh(broker: Broker, filename=None):
     source.data['cumulative_returns'] = cumulative_returns.values
     source.data['buy_and_hold_returns'] = buy_and_hold_returns.values
 
-    fig_ohlc = _plot_ohlc(source, datetime, broker.closed_trades, broker.filled_orders, plot_volume=True)
+    fig_ohlc = _plot_ohlc(source, datetime, broker.closed_trades, broker.filled_orders, plot_volume=plot_volume)
     fig_equity = _plot_equity(source, equity_history, cumulative_returns, buy_and_hold_returns, fig_ohlc.x_range)
     fig_trade = _plot_trade(broker.closed_trades, datetime, fig_ohlc.x_range)
     
@@ -368,7 +368,7 @@ def plot_with_bokeh(broker: Broker, filename=None):
             // If it is the full view, reset y_range to auto range (default behavior of DataRange1d)
             equity_y_range.reset();
             ohlc_y_range.reset();
-            volume_y_range.reset();
+            if (typeof volume_y_range !== 'undefined') volume_y_range.reset();
         } else {
             // Calculate the index within the current visible range
             let i = Math.floor(x_start);
@@ -396,27 +396,21 @@ def plot_with_bokeh(broker: Broker, filename=None):
             }
             window._qt_scale_range(ohlc_y_range, min2, max2, true);
             
-            // Average volume * 8
-            let max3 = 0;
-            for (let k = i; k <= j; k++) {
-                max3 += volume[k];
+            // Average volume * 8 (only when volume axis is present)
+            if (typeof volume_y_range !== 'undefined' && volume) {
+                let max3 = 0;
+                for (let k = i; k <= j; k++) {
+                    max3 += volume[k];
+                }
+                max3 = j - i > 0 ? max3 / (j - i) * 8 : 0;
+                window._qt_scale_range(volume_y_range, 0, max3, false);
             }
-            max3 = j - i > 0 ? max3 / (j - i) * 8 : 0;
-            window._qt_scale_range(volume_y_range, 0, max3, false);
         }
         
     }, 100);
     """
     
-    callback = CustomJS(
-        args=dict(
-            source=source,
-            equity_y_range=fig_equity.y_range,
-            volume_y_range=fig_ohlc.extra_y_ranges['volume'],
-            ohlc_y_range=fig_ohlc.y_range
-        ),
-        code=callback_code
-    )
+    callback = CustomJS(args=callback_args, code=callback_code)
     fig_ohlc.x_range.js_on_change('start', callback)
     fig_ohlc.x_range.js_on_change('end', callback)
 

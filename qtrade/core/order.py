@@ -15,9 +15,9 @@ class Order:
         tp (Optional[float]): Take profit price.
         tag (Optional[object]): Tag for identifying the order.
         is_filled (bool): Indicates if the order has been filled.
+        is_closed (bool): Indicates if the order has been canceled or rejected.
         fill_price (Optional[float]): Price at which the order was filled.
         fill_date (Optional[pd.Timestamp]): Date when the order was filled.
-        reject_reason (Optional[str]): Reason for order rejection, if any.
     """
 
     def __init__(

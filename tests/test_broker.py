@@ -639,6 +639,67 @@ def test_short_take_profit_trigger(broker_no_commission):
     assert closed[0].exit_reason == 'tp'
 
 
+# ---------------------------------------------------------------------------
+# Regression tests for known bugs (will fail until the underlying fix lands)
+# ---------------------------------------------------------------------------
+
+
+def test_long_tp_synthetic_order_records_sell_direction(broker_no_commission):
+    """Bug #2: closing a long position (via TP) is conceptually a sell, so the
+    synthetic Order in filled_orders should have negative size. Currently it
+    copies closed_trade.size (positive), which makes plot_bokeh draw it as a
+    buy marker."""
+    broker_no_commission._open_trade(
+        entry_price=100.0, entry_date=pd.Timestamp('2024-01-01'),
+        size=10, tp=105.0,
+    )
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-03'))  # close=106 → TP hit
+
+    tp_orders = [o for o in broker_no_commission.filled_orders if o.tag == 'tp']
+    assert len(tp_orders) == 1
+    # Closing a long is a SELL: size should be negative, is_short True
+    assert tp_orders[0].size < 0
+    assert tp_orders[0].is_short is True
+    assert tp_orders[0].is_long is False
+
+
+def test_canceled_executing_order_does_not_crash_next_bar(broker_no_commission_trade_on_open):
+    """Bug #9: __remove_closed_orders only filtered _pending_orders, so a market
+    order (queued in _executing_orders under trade_on_close=False) that gets
+    canceled before the next bar would crash inside _fill('Order already closed')."""
+    b = broker_no_commission_trade_on_open
+    b.process_bar(pd.Timestamp('2024-01-01'))
+    o = Order(size=5)
+    b.place_orders(o)  # market order with trade_on_close=False → executing queue
+    assert o in b._executing_orders
+    o.cancel()
+    b.process_bar(pd.Timestamp('2024-01-02'))  # used to ValueError; now should skip o
+    assert o not in b._executing_orders
+    assert o not in b.filled_orders
+    assert o in b.closed_orders
+
+
+def test_short_sl_synthetic_order_records_buy_direction(broker_no_commission):
+    """Bug #2 (sibling): closing a short via SL should record as a buy."""
+    broker_no_commission._open_trade(
+        entry_price=104.0, entry_date=pd.Timestamp('2024-01-01'),
+        size=-10, sl=110.0,
+    )
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-03'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-04'))  # high=111 → SL hit
+
+    sl_orders = [o for o in broker_no_commission.filled_orders if o.tag == 'sl']
+    assert len(sl_orders) == 1
+    # Closing a short is a BUY: size should be positive, is_long True
+    assert sl_orders[0].size > 0
+    assert sl_orders[0].is_long is True
+    assert sl_orders[0].is_short is False
+
+
 def test_pending_stop_executes_on_next_open_when_trade_on_close_false(broker_no_commission_trade_on_open):
     """Stop order triggered with trade_on_close=False queues to _executing_orders."""
     b = broker_no_commission_trade_on_open

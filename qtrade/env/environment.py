@@ -59,6 +59,12 @@ class TradingEnv(gym.Env):
         self.random_start = random_start
         self.window_size = window_size
 
+        if random_start and len(data) <= window_size + max_steps:
+            raise ValueError(
+                f"random_start requires len(data) > window_size + max_steps, "
+                f"got len(data)={len(data)}, window_size={window_size}, max_steps={max_steps}"
+            )
+
         # 初始化图形
         self.fig, self.axes = None, None
         mc = mpf.make_marketcolors(up='limegreen', down='orangered',
