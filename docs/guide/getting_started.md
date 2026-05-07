@@ -13,9 +13,11 @@ class SMAStrategy(Strategy):
 
     def prepare(self):
         # Indicators are computed up-front so on_bar_close can read them cheaply.
-        # self._data is the full DataFrame; mutate it freely here.
-        self._data['SMA3'] = self._data['Close'].rolling(3).mean()
-        self._data['SMA10'] = self._data['Close'].rolling(10).mean()
+        # self._data is dict[str, DataFrame]; for single-asset there's only
+        # one entry — iterate to support both single- and multi-asset.
+        for df in self._data.values():
+            df['SMA3'] = df['Close'].rolling(3).mean()
+            df['SMA10'] = df['Close'].rolling(10).mean()
 
     def on_bar_close(self):
         # self.data is the slice up to the current bar (no look-ahead).

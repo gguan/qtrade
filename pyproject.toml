@@ -37,6 +37,7 @@ rl = [
 ]
 dev = [
     "pytest>=8.0.0",
+    "pytest-benchmark>=4.0",
     "coverage>=7.0.0",
     "ruff",
     "mypy>=1.10",
@@ -73,6 +74,12 @@ keep-runtime-typing = true
 [tool.ruff.lint.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 15
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Benchmarks are slow (multi-second) and platform-dependent; opt in by
+# running `pytest tests/benchmarks/` explicitly.
+addopts = "--ignore=tests/benchmarks"
 
 [tool.mypy]
 python_version = "3.10"

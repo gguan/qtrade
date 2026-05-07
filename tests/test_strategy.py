@@ -157,6 +157,27 @@ def test_strategy_buy_with_negative_explicit_size_still_buys(broker, data):
     assert broker.filled_orders[0].is_long is True
 
 
+def test_strategy_prepare_can_add_indicators_via_data_iteration(broker, data):
+    """Regression: post v0.3.0 ``self._data`` is a dict[str, DataFrame].
+    The recommended pattern (works for single + multi-asset) is to iterate
+    its values. Verify a strategy using this pattern can read its own
+    indicators from on_bar_close."""
+
+    class _SmaStrat(Strategy):
+        def prepare(self):
+            for df in self._data.values():
+                df['ma'] = df['Close'].rolling(3).mean()
+
+        def on_bar_close(self):
+            assert 'ma' in self.data.columns
+
+    s = _SmaStrat(broker, data, {})
+    s.prepare()
+    # Advance broker so self.data has at least 3 rows for the rolling mean.
+    broker.process_bar(data.index[2])
+    s.on_bar_close()
+
+
 def test_strategy_buy_with_zero_default_size_does_not_print(data, capsys):
     """Bug #3: Strategy.buy() has a leftover debug print() when default size resolves to 0."""
     # cash=50 / close=100 → default size = 0
