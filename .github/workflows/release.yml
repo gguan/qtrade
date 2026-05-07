@@ -1,0 +1,129 @@
+name: Release to PyPI
+
+# Trigger by pushing a tag like `v0.4.0`. The full test suite runs first;
+# only on green do we build and publish.
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      test_pypi:
+        description: "Publish to TestPyPI instead of PyPI"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write   # for creating the GitHub Release
+  id-token: write   # for PyPI trusted publishing (OIDC)
+
+jobs:
+  test:
+    name: Test on Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+      - run: pip install -U .[dev]
+      - run: ruff check .
+      - run: mypy
+      - run: pytest
+
+  build:
+    name: Build sdist + wheel
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -U build
+      - run: python -m build
+      - name: Verify built version matches the tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          built_version=$(ls dist/qtrade_lib-*.tar.gz | sed -E 's|dist/qtrade_lib-(.*)\.tar\.gz|\1|')
+          if [ "$tag_version" != "$built_version" ]; then
+            echo "Tag version ($tag_version) does not match pyproject.toml version ($built_version)"
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    if: github.event_name == 'push' || github.event.inputs.test_pypi == 'false'
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/qtrade-lib
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.test_pypi == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/qtrade-lib
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  github-release:
+    name: Create GitHub Release
+    needs: publish-pypi
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+      - name: Extract changelog section for this version
+        id: changelog
+        run: |
+          tag_version="${GITHUB_REF_NAME#v}"
+          # Pull the chunk between this version's heading and the next one.
+          notes=$(awk -v v="$tag_version" '
+            /^## \[/ {
+              if (in_section) exit
+              if (index($0, "[" v "]")) { in_section = 1; next }
+            }
+            in_section { print }
+          ' CHANGELOG.md)
+          {
+            echo "notes<<EOF"
+            echo "$notes"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+      - uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.changelog.outputs.notes }}
+          files: dist/*
+          generate_release_notes: false
