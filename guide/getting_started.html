@@ -373,6 +373,37 @@ Omega Ratio                   : 1.7873724100138564
 <p>The <code class="docutils literal notranslate"><span class="pre">Asset</span></code> column is <code class="docutils literal notranslate"><span class="pre">&quot;default&quot;</span></code> for single-asset backtests and the
 asset symbol when running on a portfolio (see <a class="reference internal" href="multi_asset.html"><span class="std std-doc">Multi-asset / portfolio backtests</span></a>).</p>
 </section>
+<section id="optimizing-parameters-and-avoiding-overfitting">
+<h2>Optimizing parameters (and avoiding overfitting)<a class="headerlink" href="#optimizing-parameters-and-avoiding-overfitting" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Backtest.optimize</span></code> runs a grid search across the parameter space:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">best_params</span><span class="p">,</span> <span class="n">best_stats</span><span class="p">,</span> <span class="n">all_results</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+    <span class="n">n1</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+    <span class="n">n2</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+    <span class="n">maximize</span><span class="o">=</span><span class="s1">&#39;Sharpe Ratio&#39;</span><span class="p">,</span>
+    <span class="n">constraint</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;n1&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;n2&#39;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The catch: those “best” params are picked <strong>on the same data they’re
+evaluated on</strong>. They will look great in the backtest and frequently
+disappoint live. Use <code class="docutils literal notranslate"><span class="pre">walk_forward_optimize</span></code> instead to get an
+out-of-sample estimate:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">walk_forward_optimize</span><span class="p">(</span>
+    <span class="n">train_window</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>        <span class="c1"># bars used for parameter selection per window</span>
+    <span class="n">test_window</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>          <span class="c1"># bars of out-of-sample evaluation that follow</span>
+    <span class="n">maximize</span><span class="o">=</span><span class="s1">&#39;Sharpe Ratio&#39;</span><span class="p">,</span>
+    <span class="n">n1</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
+    <span class="n">n2</span><span class="o">=</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+    <span class="n">constraint</span><span class="o">=</span><span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;n1&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">[</span><span class="s1">&#39;n2&#39;</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">])</span>
+<span class="c1"># {&#39;n_windows&#39;: 7, &#39;mean_oos_return&#39;: 0.84, &#39;hit_rate&#39;: 0.57, ...}</span>
+</pre></div>
+</div>
+<p>Each window picks its own best params on the train slice and is
+evaluated on the immediately following test slice; <code class="docutils literal notranslate"><span class="pre">summary</span></code> reports
+aggregate out-of-sample stats and <code class="docutils literal notranslate"><span class="pre">windows</span></code> has per-window details.</p>
+</section>
 </section>
 
         </article>
@@ -436,6 +467,7 @@ asset symbol when running on a portfolio (see <a class="reference internal" href
 <li><a class="reference internal" href="#backtest">Backtest</a></li>
 <li><a class="reference internal" href="#plot">Plot</a></li>
 <li><a class="reference internal" href="#trades">Trades</a></li>
+<li><a class="reference internal" href="#optimizing-parameters-and-avoiding-overfitting">Optimizing parameters (and avoiding overfitting)</a></li>
 </ul>
 </li>
 </ul>
@@ -447,7 +479,7 @@ asset symbol when running on a portfolio (see <a class="reference internal" href
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

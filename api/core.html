@@ -357,6 +357,12 @@ or a dict of DataFrames keyed by asset symbol for multi-asset.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.Broker.get_trade_history">
+<span class="sig-name descname"><span class="pre">get_trade_history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/qtrade/core/broker.html#Broker.get_trade_history"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Broker.get_trade_history" title="Link to this definition">¶</a></dt>
+<dd><p>Trade-by-trade DataFrame across all assets.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qtrade.core.Broker.place_orders">
 <span class="sig-name descname"><span class="pre">place_orders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.order.Order"><span class="pre">Order</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#qtrade.core.Order" title="qtrade.core.order.Order"><span class="pre">Order</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/qtrade/core/broker.html#Broker.place_orders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Broker.place_orders" title="Link to this definition">¶</a></dt>
 <dd><p>Submit one or multiple orders.</p>
@@ -1087,6 +1093,7 @@ single-asset backtests. Multi-asset support is layered on this field.</p></li>
 <li><a class="reference internal" href="#qtrade.core.Broker.equity"><code class="docutils literal notranslate"><span class="pre">Broker.equity</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Broker.equity_history"><code class="docutils literal notranslate"><span class="pre">Broker.equity_history</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Broker.filled_orders"><code class="docutils literal notranslate"><span class="pre">Broker.filled_orders</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Broker.get_trade_history"><code class="docutils literal notranslate"><span class="pre">Broker.get_trade_history()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Broker.place_orders"><code class="docutils literal notranslate"><span class="pre">Broker.place_orders()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Broker.position"><code class="docutils literal notranslate"><span class="pre">Broker.position</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Broker.positions"><code class="docutils literal notranslate"><span class="pre">Broker.positions</span></code></a></li>
@@ -1170,7 +1177,7 @@ single-asset backtests. Multi-asset support is layered on this field.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

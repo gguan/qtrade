@@ -467,6 +467,26 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a tuple of all closed orders.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_closed_orders</span><span class="p">)</span>
 
+<div class="viewcode-block" id="Broker.get_trade_history">
+<a class="viewcode-back" href="../../../api/core.html#qtrade.core.Broker.get_trade_history">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_trade_history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trade-by-trade DataFrame across all assets.&quot;&quot;&quot;</span>
+        <span class="n">trades</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">closed_trades</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+            <span class="s1">&#39;Asset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">asset</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Type&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Long&#39;</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">is_long</span> <span class="k">else</span> <span class="s1">&#39;Short&#39;</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Size&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Entry Price&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">entry_price</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Exit Price&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">exit_price</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Entry Time&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">entry_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Exit Date&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">exit_date</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Profit&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">profit</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Tag&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">tag</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Exit Reason&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">exit_reason</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+            <span class="s1">&#39;Duration&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">exit_date</span> <span class="o">-</span> <span class="n">t</span><span class="o">.</span><span class="n">entry_date</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">exit_date</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">trades</span><span class="p">],</span>
+        <span class="p">})</span></div>
+
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">equity_history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a copy of the equity history (portfolio-level).&quot;&quot;&quot;</span>
@@ -811,7 +831,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

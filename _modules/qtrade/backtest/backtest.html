@@ -406,6 +406,127 @@
         <span class="k">return</span> <span class="n">best_params</span><span class="p">,</span> <span class="n">best_stats</span><span class="p">,</span> <span class="n">all_results</span></div>
 
 
+<div class="viewcode-block" id="Backtest.walk_forward_optimize">
+<a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.walk_forward_optimize">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">walk_forward_optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="o">*</span><span class="p">,</span>
+                              <span class="n">train_window</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                              <span class="n">test_window</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                              <span class="n">maximize</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                              <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="n">constraint</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="o">**</span><span class="n">params_grid</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Walk-forward optimization: rolling-window training + immediate</span>
+<span class="sd">        out-of-sample test.</span>
+
+<span class="sd">        For each (train, test) window pair:</span>
+
+<span class="sd">        1. Run :meth:`optimize` on the train slice to pick the best params.</span>
+<span class="sd">        2. Run a fresh backtest on the test slice using those params.</span>
+<span class="sd">        3. Record the out-of-sample (OoS) statistics.</span>
+
+<span class="sd">        This is the standard antidote to the in-sample overfitting that bare</span>
+<span class="sd">        :meth:`optimize` produces — every reported metric is on data the</span>
+<span class="sd">        strategy was never tuned on.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            train_window: Number of bars in each training window.</span>
+<span class="sd">            test_window: Number of bars in the test window immediately after.</span>
+<span class="sd">            maximize: Metric name to maximize within each train window</span>
+<span class="sd">                (same as :meth:`optimize`).</span>
+<span class="sd">            step: How many bars to advance between successive train starts.</span>
+<span class="sd">                Defaults to ``test_window`` (non-overlapping test windows).</span>
+<span class="sd">            constraint: Optional filter on parameter dicts.</span>
+<span class="sd">            **params_grid: Parameter ranges, same as :meth:`optimize`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ``{&#39;windows&#39;: [...], &#39;summary&#39;: {...}}``.</span>
+
+<span class="sd">            Each entry in ``windows`` is a dict with ``train_start``,</span>
+<span class="sd">            ``train_end``, ``test_start``, ``test_end``, ``best_params``,</span>
+<span class="sd">            ``train_stats``, ``test_stats``, and ``test_equity``</span>
+<span class="sd">            (the test-window equity Series).</span>
+
+<span class="sd">            ``summary`` contains aggregate OoS metrics: ``n_windows``,</span>
+<span class="sd">            ``mean_oos_return``, ``hit_rate``, ``min_oos_return``,</span>
+<span class="sd">            ``max_oos_return``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">train_window</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">test_window</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;train_window and test_window must be positive&quot;</span><span class="p">)</span>
+
+        <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">()</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">train_window</span> <span class="o">+</span> <span class="n">test_window</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;train_window (</span><span class="si">{</span><span class="n">train_window</span><span class="si">}</span><span class="s2">) + test_window (</span><span class="si">{</span><span class="n">test_window</span><span class="si">}</span><span class="s2">) &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;exceeds data length (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">test_window</span>
+
+        <span class="n">windows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">+</span> <span class="n">train_window</span> <span class="o">+</span> <span class="n">test_window</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="n">train_slc</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">train_window</span><span class="p">)</span>
+            <span class="n">test_slc</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">train_window</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">train_window</span> <span class="o">+</span> <span class="n">test_window</span><span class="p">)</span>
+
+            <span class="c1"># Train: optimize on the train slice</span>
+            <span class="n">train_bt</span> <span class="o">=</span> <span class="n">Backtest</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_slice_data</span><span class="p">(</span><span class="n">train_slc</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">strategy_class</span><span class="p">,</span>
+                <span class="n">cash</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cash</span><span class="p">,</span>
+                <span class="n">commission</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="p">,</span>
+                <span class="n">margin_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span>
+                <span class="n">trade_on_close</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">best_params</span><span class="p">,</span> <span class="n">train_stats</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_bt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+                <span class="n">maximize</span><span class="o">=</span><span class="n">maximize</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">,</span> <span class="o">**</span><span class="n">params_grid</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Test: fresh backtest with the best params, on data the strategy</span>
+            <span class="c1"># has never seen.</span>
+            <span class="n">test_bt</span> <span class="o">=</span> <span class="n">Backtest</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_slice_data</span><span class="p">(</span><span class="n">test_slc</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">strategy_class</span><span class="p">,</span>
+                <span class="n">cash</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cash</span><span class="p">,</span>
+                <span class="n">commission</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="p">,</span>
+                <span class="n">margin_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span>
+                <span class="n">trade_on_close</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">test_bt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="p">(</span><span class="n">best_params</span> <span class="ow">or</span> <span class="p">{}))</span>
+            <span class="n">test_stats</span> <span class="o">=</span> <span class="n">calculate_stats</span><span class="p">(</span><span class="n">test_bt</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span>
+
+            <span class="n">windows</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;train_start&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+                <span class="s1">&#39;train_end&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">train_window</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="s1">&#39;test_start&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">train_window</span><span class="p">],</span>
+                <span class="s1">&#39;test_end&#39;</span><span class="p">:</span> <span class="n">index</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">train_window</span> <span class="o">+</span> <span class="n">test_window</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+                <span class="s1">&#39;best_params&#39;</span><span class="p">:</span> <span class="n">best_params</span><span class="p">,</span>
+                <span class="s1">&#39;train_stats&#39;</span><span class="p">:</span> <span class="n">train_stats</span><span class="p">,</span>
+                <span class="s1">&#39;test_stats&#39;</span><span class="p">:</span> <span class="n">test_stats</span><span class="p">,</span>
+                <span class="s1">&#39;test_equity&#39;</span><span class="p">:</span> <span class="n">test_bt</span><span class="o">.</span><span class="n">broker</span><span class="o">.</span><span class="n">equity_history</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+            <span class="p">})</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="n">step</span>
+
+        <span class="n">oos_returns</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="p">[</span><span class="s1">&#39;test_stats&#39;</span><span class="p">][</span><span class="s1">&#39;Total Return [%]&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">windows</span><span class="p">]</span>
+        <span class="n">summary</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;n_windows&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">windows</span><span class="p">),</span>
+            <span class="s1">&#39;mean_oos_return&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">oos_returns</span><span class="p">))</span> <span class="k">if</span> <span class="n">oos_returns</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s1">&#39;hit_rate&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">r</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">oos_returns</span><span class="p">]))</span> <span class="k">if</span> <span class="n">oos_returns</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s1">&#39;min_oos_return&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">oos_returns</span><span class="p">))</span> <span class="k">if</span> <span class="n">oos_returns</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s1">&#39;max_oos_return&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">oos_returns</span><span class="p">))</span> <span class="k">if</span> <span class="n">oos_returns</span> <span class="k">else</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;windows&#39;</span><span class="p">:</span> <span class="n">windows</span><span class="p">,</span> <span class="s1">&#39;summary&#39;</span><span class="p">:</span> <span class="n">summary</span><span class="p">}</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_slice_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slc</span><span class="p">:</span> <span class="nb">slice</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Slice the input data by row index. Handles single and multi-asset.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_multi_asset</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">asset</span><span class="p">:</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">slc</span><span class="p">]</span> <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>  <span class="c1"># type: ignore[union-attr]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">slc</span><span class="p">]</span>  <span class="c1"># type: ignore[union-attr]</span>
+
 <div class="viewcode-block" id="Backtest.show_stats">
 <a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.show_stats">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">show_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -419,20 +540,7 @@
 <a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.get_trade_history">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_trade_history</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Trade-by-trade DataFrame across all assets.&quot;&quot;&quot;</span>
-        <span class="n">trade_history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="o">.</span><span class="n">closed_trades</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-            <span class="s1">&#39;Asset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">asset</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Type&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Long&#39;</span> <span class="k">if</span> <span class="n">trade</span><span class="o">.</span><span class="n">is_long</span> <span class="k">else</span> <span class="s1">&#39;Short&#39;</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Size&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Entry Price&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">entry_price</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Exit Price&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">exit_price</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Entry Time&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">entry_date</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Exit Date&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">exit_date</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Profit&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">profit</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Tag&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">tag</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Exit Reason&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">exit_reason</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-            <span class="s1">&#39;Duration&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">trade</span><span class="o">.</span><span class="n">exit_date</span> <span class="o">-</span> <span class="n">trade</span><span class="o">.</span><span class="n">entry_date</span> <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">trade_history</span><span class="p">],</span>
-        <span class="p">})</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="o">.</span><span class="n">get_trade_history</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Backtest.plot">
@@ -473,7 +581,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

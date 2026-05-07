@@ -320,6 +320,48 @@ close price; otherwise at the next bar’s open.</p></li>
 <span class="sig-name descname"><span class="pre">show_stats</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.show_stats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.show_stats" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest.walk_forward_optimize">
+<span class="sig-name descname"><span class="pre">walk_forward_optimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params_grid</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.walk_forward_optimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.walk_forward_optimize" title="Link to this definition">¶</a></dt>
+<dd><p>Walk-forward optimization: rolling-window training + immediate
+out-of-sample test.</p>
+<p>For each (train, test) window pair:</p>
+<ol class="arabic simple">
+<li><p>Run <a class="reference internal" href="#qtrade.backtest.Backtest.optimize" title="qtrade.backtest.Backtest.optimize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optimize()</span></code></a> on the train slice to pick the best params.</p></li>
+<li><p>Run a fresh backtest on the test slice using those params.</p></li>
+<li><p>Record the out-of-sample (OoS) statistics.</p></li>
+</ol>
+<p>This is the standard antidote to the in-sample overfitting that bare
+<a class="reference internal" href="#qtrade.backtest.Backtest.optimize" title="qtrade.backtest.Backtest.optimize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optimize()</span></code></a> produces — every reported metric is on data the
+strategy was never tuned on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>train_window</strong> – Number of bars in each training window.</p></li>
+<li><p><strong>test_window</strong> – Number of bars in the test window immediately after.</p></li>
+<li><p><strong>maximize</strong> – Metric name to maximize within each train window
+(same as <a class="reference internal" href="#qtrade.backtest.Backtest.optimize" title="qtrade.backtest.Backtest.optimize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optimize()</span></code></a>).</p></li>
+<li><p><strong>step</strong> – How many bars to advance between successive train starts.
+Defaults to <code class="docutils literal notranslate"><span class="pre">test_window</span></code> (non-overlapping test windows).</p></li>
+<li><p><strong>constraint</strong> – Optional filter on parameter dicts.</p></li>
+<li><p><strong>**params_grid</strong> – Parameter ranges, same as <a class="reference internal" href="#qtrade.backtest.Backtest.optimize" title="qtrade.backtest.Backtest.optimize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optimize()</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>``{‘windows’: […], ‘summary’: {…}}``.</strong></p></li>
+<li><p><strong>Each entry in ``windows`` is a dict with ``train_start``,</strong></p></li>
+<li><p><strong>``train_end``, ``test_start``, ``test_end``, ``best_params``,</strong></p></li>
+<li><p><strong>``train_stats``, ``test_stats``, and ``test_equity``</strong></p></li>
+<li><p><strong>(the test-window equity Series).</strong></p></li>
+<li><p><strong>``summary`` contains aggregate OoS metrics</strong> – <code class="docutils literal notranslate"><span class="pre">n_windows</span></code>,</p></li>
+<li><p><strong>``mean_oos_return``, ``hit_rate``, ``min_oos_return``,</strong></p></li>
+<li><p><strong>``max_oos_return``.</strong></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -388,6 +430,7 @@ close price; otherwise at the next bar’s open.</p></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.plot"><code class="docutils literal notranslate"><span class="pre">Backtest.plot()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.run"><code class="docutils literal notranslate"><span class="pre">Backtest.run()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.show_stats"><code class="docutils literal notranslate"><span class="pre">Backtest.show_stats()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest.walk_forward_optimize"><code class="docutils literal notranslate"><span class="pre">Backtest.walk_forward_optimize()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -403,7 +446,7 @@ close price; otherwise at the next bar’s open.</p></li>
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=e259d695"></script>
+</div><script src="../../_static/documentation_options.js?v=6c02275b"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>
