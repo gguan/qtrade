@@ -1,12 +1,13 @@
 """Tests for qtrade.env.environment.TradingEnv."""
 
 import matplotlib
+
+matplotlib.use('Agg')  # Headless backend for CI; must run before pyplot is imported
+
 import pandas as pd
 import pytest
 
-matplotlib.use('Agg')  # noqa: E402  Headless backend for CI
-
-from qtrade.env.environment import TradingEnv  # noqa: E402
+from qtrade.env.environment import TradingEnv
 
 
 @pytest.fixture

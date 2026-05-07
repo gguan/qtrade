@@ -201,9 +201,9 @@ def _plot_ohlc(source, datetime, trades, orders, plot_volume=True):
     hover = HoverTool(
         tooltips=[
             ("Date", "@datetime{%Y-%m-%d %H:%M:%S}"),
-            ("Price", "@close{0,0.0[0000]}"),
-            ('OHLC', f"O:@open{{0.2f}}{NBSP}H:@high{{0.2f}}{NBSP}L:@low{{0.2f}}{NBSP}C:@close{{0.2f}}"),
-            ("Volume", "@volume{0,0}"),
+            ("Price", "@Close{0,0.0[0000]}"),
+            ('OHLC', f"O:@Open{{0.2f}}{NBSP}H:@High{{0.2f}}{NBSP}L:@Low{{0.2f}}{NBSP}C:@Close{{0.2f}}"),
+            ("Volume", "@Volume{0,0}"),
         ],
         formatters={
             '@datetime': 'datetime',  # Use datetime to format dates
@@ -290,7 +290,7 @@ return this.labels[index] || "";
     return fig_ohlc
 
 def plot_with_bokeh(broker: Broker, filename=None):
-    plot_volume = True if 'volume' in broker.data.columns else False
+    plot_volume = 'Volume' in broker.data.columns
     
     data = broker.data.loc[:broker.current_time].copy(deep=True)
     datetime = data.index.copy(deep=True)
@@ -349,9 +349,9 @@ def plot_with_bokeh(broker: Broker, filename=None):
         const index = source.data['index'];
         const cumulative_return = source.data['cumulative_returns'];
         const buy_and_hold_returns = source.data['buy_and_hold_returns'];
-        const high = source.data['high'];
-        const low = source.data['low'];
-        const volume = source.data['volume'];
+        const high = source.data['High'];
+        const low = source.data['Low'];
+        const volume = source.data['Volume'];
         
         // Get the current x_range start and end values
         const x_start = cb_obj.start;
