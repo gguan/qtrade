@@ -148,3 +148,28 @@ def test_trade_is_closed():
 
     trade.close(10, 90.0, pd.Timestamp('2024-01-02'), 1, 'sl')
     assert trade.is_closed is True
+
+
+def test_trade_entry_index_and_exit_index_propagate():
+    trade = Trade(100.0, pd.Timestamp('2024-01-01'), 7, 10)
+    assert trade.entry_index == 7
+    closed = trade.close(None, 110.0, pd.Timestamp('2024-01-02'), 12, 'signal')
+    assert closed.entry_index == 7
+    assert closed.exit_index == 12
+
+
+def test_trade_repr_contains_size_and_dates():
+    trade = Trade(100.0, pd.Timestamp('2024-01-01'), 0, 10, tag='Entry')
+    text = repr(trade)
+    assert text.startswith('<Trade')
+    assert 'Size: 10' in text
+    assert 'Tag: Entry' in text
+    assert 'N/A' in text  # exit_date / exit_price / profit / reason all None
+
+
+def test_trade_repr_after_close():
+    trade = Trade(100.0, pd.Timestamp('2024-01-01'), 0, 10)
+    closed = trade.close(None, 110.0, pd.Timestamp('2024-01-02'), 1, 'tp')
+    text = repr(closed)
+    assert 'tp' in text
+    assert '110.0' in text

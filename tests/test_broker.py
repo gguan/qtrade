@@ -515,3 +515,139 @@ def test_cancel_order(broker_no_commission):
     # 检查订单是否可以再次取消
     with pytest.raises(ValueError):
         order.cancel()
+
+
+def test_cumulative_returns(broker_no_commission):
+    """Initial cumulative_returns is 1.0; rises with profit."""
+    assert broker_no_commission.cumulative_returns == 1.0
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission._open_trade(entry_price=102.0, entry_date=pd.Timestamp('2024-01-01'), size=10)
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    # close=104, +20 unrealized profit on 10 contracts
+    assert broker_no_commission.cumulative_returns > 1.0
+
+
+def test_unrealized_pnl_pct_zero_when_no_active_trades(broker_no_commission):
+    assert broker_no_commission.unrealized_pnl_pct == 0
+
+
+def test_unrealized_pnl_pct_with_active_trade(broker_no_commission):
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission._open_trade(entry_price=100.0, entry_date=pd.Timestamp('2024-01-01'), size=10)
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    # margin_ratio=0.1 → initial margin=100, unrealized_pnl=(104-100)*10=40 → 40 / 100 * 100 = 40%
+    assert broker_no_commission.unrealized_pnl_pct == pytest.approx(40.0)
+
+
+def test_realized_pnl_zero_with_no_closed_trades(broker_no_commission):
+    assert broker_no_commission.realized_pnl == 0
+
+
+def test_realized_pnl_sums_closed_trade_profits(broker_no_commission):
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission._open_trade(entry_price=100.0, entry_date=pd.Timestamp('2024-01-01'), size=10)
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    broker_no_commission.close_all_positions()  # close at 104 → profit 40
+    assert broker_no_commission.realized_pnl == 40.0
+
+
+def test_place_orders_rejects_non_order_in_list(broker_no_commission):
+    with pytest.raises(TypeError, match=r"All elements must be instances of Order"):
+        broker_no_commission.place_orders([Order(size=1), "not an order"])
+
+
+def test_place_orders_rejects_non_order_argument(broker_no_commission):
+    with pytest.raises(TypeError, match=r"orders must be an Order instance"):
+        broker_no_commission.place_orders("not an order")
+
+
+def test_stop_order_only_triggers_after_stop_hit(broker_no_commission):
+    """Long stop at 110 should not fire on day 1 (high=105) but fires when high crosses 110."""
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    # Stop above current high → goes to pending
+    broker_no_commission.place_orders(Order(size=5, stop=110.0))
+    assert len(broker_no_commission._pending_orders) == 1
+    assert len(broker_no_commission.filled_orders) == 0
+
+    # Day 2: high=107, stop 110 not triggered
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    assert len(broker_no_commission._pending_orders) == 1
+    assert len(broker_no_commission.filled_orders) == 0
+
+    # Day 4: high=111 ≥ 110 — stop is reset and order fills as market on close=108
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-03'))
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-04'))
+    assert len(broker_no_commission.filled_orders) == 1
+
+
+def test_opposite_side_order_closes_existing_trade(broker_no_commission):
+    """Submitting a sell when long should close the long via the opposite-side path."""
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.place_orders(Order(size=10))  # long 10 at close=102
+    assert broker_no_commission.position.size == 10
+
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    broker_no_commission.place_orders(Order(size=-10))  # full close at close=104
+    assert broker_no_commission.position.size == 0
+    assert len(broker_no_commission.position.closed_trades) == 1
+    assert broker_no_commission.position.closed_trades[0].profit == 20  # (104-102)*10
+
+
+def test_partial_opposite_side_closes_some(broker_no_commission):
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.place_orders(Order(size=10))  # long 10 at close=102
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    broker_no_commission.place_orders(Order(size=-3))  # partial close at close=104
+    # Original trade should now have size 7 remaining
+    assert broker_no_commission.position.size == 7
+    assert len(broker_no_commission.position.closed_trades) == 1
+    assert broker_no_commission.position.closed_trades[0].size == 3
+
+
+def test_same_side_order_adds_to_position(broker_no_commission):
+    """Same-direction orders skip the close branch and stack a new trade."""
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.place_orders(Order(size=5))
+    broker_no_commission.place_orders(Order(size=3))  # also long → __process_order continues past existing
+    assert broker_no_commission.position.size == 8
+    assert len(broker_no_commission.position.active_trades) == 2
+
+
+def test_long_stop_loss_trigger(broker_no_commission):
+    broker_no_commission._open_trade(
+        entry_price=100.0, entry_date=pd.Timestamp('2024-01-01'),
+        size=10, sl=98.0,
+    )
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    # day 2: low=97 ≤ 98 → SL triggers
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    closed = broker_no_commission.position.closed_trades
+    assert len(closed) == 1
+    assert closed[0].exit_reason == 'sl'
+
+
+def test_short_take_profit_trigger(broker_no_commission):
+    broker_no_commission._open_trade(
+        entry_price=104.0, entry_date=pd.Timestamp('2024-01-01'),
+        size=-10, tp=98.0,
+    )
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    # day 2: low=97 ≤ 98 → short TP triggers
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    closed = broker_no_commission.position.closed_trades
+    assert len(closed) == 1
+    assert closed[0].exit_reason == 'tp'
+
+
+def test_pending_stop_executes_on_next_open_when_trade_on_close_false(broker_no_commission_trade_on_open):
+    """Stop order triggered with trade_on_close=False queues to _executing_orders."""
+    b = broker_no_commission_trade_on_open
+    b.process_bar(pd.Timestamp('2024-01-01'))
+    b.place_orders(Order(size=5, stop=110.0))
+    # Day 4: high=111 ≥ 110 — stop is reset; with trade_on_close=False the order goes to executing
+    for ts in ['2024-01-02', '2024-01-03', '2024-01-04']:
+        b.process_bar(pd.Timestamp(ts))
+    # Day 5: executes at next open=108
+    b.process_bar(pd.Timestamp('2024-01-05'))
+    assert len(b.filled_orders) == 1
+    assert b.filled_orders[0].fill_price == 108.0
