@@ -129,8 +129,16 @@ class Backtest:
         if isinstance(contracts, Contract):
             resolved = {a: contracts for a in assets}
         else:
-            # Per-asset dict: missing keys fall back to STOCK_CASH so that pure
-            # stock backtests need zero per-asset configuration.
+            # Per-asset dict. Missing keys fall back to STOCK_CASH so pure-
+            # stock backtests need zero configuration; but extra keys are
+            # almost always typos in asset symbols, and silently ignoring
+            # them produces wrong-but-plausible backtests. Reject loudly.
+            extra = set(contracts) - set(assets)
+            if extra:
+                raise ValueError(
+                    f"contracts dict has keys not in data: {sorted(extra)}. "
+                    f"Known assets: {sorted(assets)}."
+                )
             resolved = {a: contracts.get(a, STOCK_CASH) for a in assets}
 
         return (
