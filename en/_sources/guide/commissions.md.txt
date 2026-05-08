@@ -116,6 +116,31 @@ If unsure, **run the backtest both with and without commission**. The
 gap tells you how cost-sensitive your strategy is — high-turnover
 strategies often look great pre-cost and lose money post-cost.
 
+## A note on the built-in `Contract` specs
+
+The `qtrade.contracts` module ships specs for common futures (`GC_COMEX`,
+`ES_CME`, `CL_NYMEX`, etc.) that bundle a `multiplier` and a default
+`margin_ratio`. The `multiplier` values are part of the contract design
+and rarely change. The **`margin_ratio` values are conventional starting
+points only** — actual margin is set by the exchange (SPAN) and your
+broker, and floats over time. Verify against your account before
+trusting backtest leverage numbers.
+
+To override, either tweak with `dataclasses.replace`:
+
+```python
+from dataclasses import replace
+from qtrade.contracts import GC_COMEX
+MY_GC = replace(GC_COMEX, margin_ratio=0.07)
+```
+
+…or define your own:
+
+```python
+from qtrade.contracts import Contract
+SHFE_AU = Contract(multiplier=1000, margin_ratio=0.08, name="SHFE Gold")
+```
+
 ## What's not modeled
 
 - **Maker/taker asymmetry.** All fills are charged at one rate. To

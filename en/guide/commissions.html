@@ -391,6 +391,27 @@ reporting.</p></li>
 gap tells you how cost-sensitive your strategy is — high-turnover
 strategies often look great pre-cost and lose money post-cost.</p>
 </section>
+<section id="a-note-on-the-built-in-contract-specs">
+<h2>A note on the built-in <code class="docutils literal notranslate"><span class="pre">Contract</span></code> specs<a class="headerlink" href="#a-note-on-the-built-in-contract-specs" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">qtrade.contracts</span></code> module ships specs for common futures (<code class="docutils literal notranslate"><span class="pre">GC_COMEX</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ES_CME</span></code>, <code class="docutils literal notranslate"><span class="pre">CL_NYMEX</span></code>, etc.) that bundle a <code class="docutils literal notranslate"><span class="pre">multiplier</span></code> and a default
+<code class="docutils literal notranslate"><span class="pre">margin_ratio</span></code>. The <code class="docutils literal notranslate"><span class="pre">multiplier</span></code> values are part of the contract design
+and rarely change. The <strong><code class="docutils literal notranslate"><span class="pre">margin_ratio</span></code> values are conventional starting
+points only</strong> — actual margin is set by the exchange (SPAN) and your
+broker, and floats over time. Verify against your account before
+trusting backtest leverage numbers.</p>
+<p>To override, either tweak with <code class="docutils literal notranslate"><span class="pre">dataclasses.replace</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">replace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">GC_COMEX</span>
+<span class="n">MY_GC</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="n">GC_COMEX</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="o">=</span><span class="mf">0.07</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>…or define your own:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span>
+<span class="n">SHFE_AU</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="n">multiplier</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SHFE Gold&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="what-s-not-modeled">
 <h2>What’s not modeled<a class="headerlink" href="#what-s-not-modeled" title="Link to this heading">¶</a></h2>
 <ul class="simple">
@@ -476,6 +497,7 @@ per asset, write a custom <code class="docutils literal notranslate"><span class
 </ul>
 </li>
 <li><a class="reference internal" href="#picking-the-right-model">Picking the right model</a></li>
+<li><a class="reference internal" href="#a-note-on-the-built-in-contract-specs">A note on the built-in <code class="docutils literal notranslate"><span class="pre">Contract</span></code> specs</a></li>
 <li><a class="reference internal" href="#what-s-not-modeled">What’s not modeled</a></li>
 </ul>
 </li>

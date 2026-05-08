@@ -264,6 +264,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.trade</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trade</span>
@@ -390,7 +391,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_filled_orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_closed_orders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Rejected and canceled orders</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_equity_history</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cash</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">first_index</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+        <span class="c1"># Initialize equity_history with NaN — process_bar fills each entry as</span>
+        <span class="c1"># the simulation advances. The starting bar gets cash so consumers</span>
+        <span class="c1"># like calculate_stats can use iloc[0] as the initial value. Reading</span>
+        <span class="c1"># equity_history mid-backtest (e.g. from inside a strategy) sees NaN</span>
+        <span class="c1"># for un-processed future bars instead of a misleading flat-cash line.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_equity_history</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">first_index</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_equity_history</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cash</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_per_asset</span><span class="p">(</span>
@@ -658,8 +665,13 @@
         <span class="n">orders_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pending_orders</span><span class="p">:</span>
             <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">]</span>
+            <span class="n">bar_open</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Open&#39;</span><span class="p">]</span>
             <span class="n">high</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">]</span>
             <span class="n">low</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Low&#39;</span><span class="p">]</span>
+
+            <span class="c1"># Remember the stop level before we clear it — used as the fill</span>
+            <span class="c1"># price for pure-stop orders that just triggered.</span>
+            <span class="n">stop_price</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">_stop</span>
 
             <span class="c1"># Check stop conditions</span>
             <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">_stop</span><span class="p">:</span>
@@ -680,13 +692,24 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">continue</span>  <span class="c1"># Limit not triggered, skip to next order</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Market order</span>
+                <span class="c1"># Pure stop order just triggered (no limit). Conservatively</span>
+                <span class="c1"># fill at the trigger price — but if the market gapped past</span>
+                <span class="c1"># the stop on the open, use the open price so the simulation</span>
+                <span class="c1"># reflects the worse fill that real execution would see:</span>
+                <span class="c1">#   long stop  → max(stop, open) (higher = pays more)</span>
+                <span class="c1">#   short stop → min(stop, open) (lower  = receives less)</span>
+                <span class="c1"># Add a SlippageCommission on top to model further slippage.</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">:</span>
                     <span class="n">fill_date</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_time</span>
-                    <span class="n">fill_price</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fill_date</span><span class="p">,</span> <span class="s1">&#39;Close&#39;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">order</span><span class="o">.</span><span class="n">is_long</span><span class="p">:</span>
+                        <span class="n">fill_price</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">stop_price</span><span class="p">,</span> <span class="n">bar_open</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">fill_price</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">stop_price</span><span class="p">,</span> <span class="n">bar_open</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__process_order</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">fill_price</span><span class="p">,</span> <span class="n">fill_date</span><span class="p">)</span>
                     <span class="n">orders_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># trade_on_close=False — defer to next bar&#39;s open like a</span>
+                    <span class="c1"># plain market order.</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_executing_orders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders_to_remove</span><span class="p">:</span>
