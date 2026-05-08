@@ -391,8 +391,16 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contracts</span><span class="p">,</span> <span class="n">Contract</span><span class="p">):</span>
             <span class="n">resolved</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">contracts</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Per-asset dict: missing keys fall back to STOCK_CASH so that pure</span>
-            <span class="c1"># stock backtests need zero per-asset configuration.</span>
+            <span class="c1"># Per-asset dict. Missing keys fall back to STOCK_CASH so pure-</span>
+            <span class="c1"># stock backtests need zero configuration; but extra keys are</span>
+            <span class="c1"># almost always typos in asset symbols, and silently ignoring</span>
+            <span class="c1"># them produces wrong-but-plausible backtests. Reject loudly.</span>
+            <span class="n">extra</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">contracts</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">assets</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;contracts dict has keys not in data: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">extra</span><span class="p">)</span><span class="si">}</span><span class="s2">. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Known assets: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">assets</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
             <span class="n">resolved</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">contracts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">STOCK_CASH</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">}</span>
 
         <span class="k">return</span> <span class="p">(</span>
