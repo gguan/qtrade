@@ -23,9 +23,10 @@ class Backtest:
                  strategy_class: type[Strategy],
                  cash: float = 10_000,
                  commission: Commission | None = None,
-                 margin_ratio: float = 1.0,
+                 margin_ratio: float | dict[str, float] = 1.0,
                  trade_on_close: bool = False,
                  verbose: bool = False,
+                 contract_multiplier: float | dict[str, float] | None = None,
                  ):
         """
         Args:
@@ -35,10 +36,17 @@ class Backtest:
             strategy_class: Strategy class (subclass of Strategy) to instantiate.
             cash: Starting cash.
             commission: Commission calculator (None ⇒ no commission).
-            margin_ratio: Margin requirement (0 < ratio ≤ 1).
+            margin_ratio: Margin requirement. Pass a scalar in (0, 1] to apply
+                uniformly, or a dict keyed by asset for per-asset values
+                (e.g. ``{"AAPL": 1.0, "GC": 0.05}`` for a stock + futures portfolio).
             trade_on_close: If True, market orders fill at the current bar's
                 close price; otherwise at the next bar's open.
             verbose: Verbose logging.
+            contract_multiplier: Contract size for futures-style instruments —
+                the dollar P&L per 1 unit of price movement per contract. ``100``
+                for COMEX gold (GC), ``50`` for E-mini S&P (ES), ``1000`` for
+                crude (CL), ``1`` for stocks (the default). Pass a dict keyed by
+                asset for portfolios mixing stocks and futures across categories.
         """
         self._is_multi_asset = not isinstance(data, pd.DataFrame)
 
@@ -57,13 +65,17 @@ class Backtest:
         else:
             self.data = self._validate_and_sort(data)
 
-        self.broker = Broker(self.data, cash, commission, margin_ratio, trade_on_close)
+        self.broker = Broker(
+            self.data, cash, commission, margin_ratio, trade_on_close,
+            contract_multiplier=contract_multiplier,
+        )
         self.strategy_class = strategy_class
         self.current_bar = 0
         self.cash = cash
         self.commission = commission
         self.margin_ratio = margin_ratio
         self.trade_on_close = trade_on_close
+        self.contract_multiplier = contract_multiplier
 
         self.order_history: list[Order] = []
         self.stats = None
@@ -142,7 +154,10 @@ class Backtest:
                 continue
 
             # Fresh broker for each parameter combination.
-            self.broker = Broker(self.data, self.cash, self.commission, self.margin_ratio, self.trade_on_close)
+            self.broker = Broker(
+                self.data, self.cash, self.commission, self.margin_ratio, self.trade_on_close,
+                contract_multiplier=self.contract_multiplier,
+            )
             self.run(**param_dict)
             stats = calculate_stats(self.broker)
 
@@ -225,6 +240,7 @@ class Backtest:
                 commission=self.commission,
                 margin_ratio=self.margin_ratio,
                 trade_on_close=self.trade_on_close,
+                contract_multiplier=self.contract_multiplier,
             )
             best_params, train_stats, _ = train_bt.optimize(
                 maximize=maximize, constraint=constraint, **params_grid,
@@ -239,6 +255,7 @@ class Backtest:
                 commission=self.commission,
                 margin_ratio=self.margin_ratio,
                 trade_on_close=self.trade_on_close,
+                contract_multiplier=self.contract_multiplier,
             )
             test_bt.run(**(best_params or {}))
             test_stats = calculate_stats(test_bt.broker)

@@ -57,8 +57,9 @@ class Broker:
         data: pd.DataFrame | dict[str, pd.DataFrame],
         cash: float,
         commission: Commission | None,
-        margin_ratio: float,
-        trade_on_close: bool
+        margin_ratio: float | dict[str, float],
+        trade_on_close: bool,
+        contract_multiplier: float | dict[str, float] | None = None,
     ):
         """
         Initialize the Broker with market data and account settings.
@@ -70,14 +71,21 @@ class Broker:
                 or a dict of DataFrames keyed by asset symbol for multi-asset.
             cash (float): Initial cash balance. Must be positive.
             commission (Optional[Commission]): Commission calculator instance.
-            margin_ratio (float): Margin ratio (0 < margin_ratio ≤ 1).
+            margin_ratio (float | dict[str, float]): Margin requirement. Pass a scalar
+                to apply uniformly, or a dict keyed by asset for per-asset settings
+                (e.g. 1.0 for stocks, 0.05 for futures). Each value must be in (0, 1].
             trade_on_close (bool): Execution mode for orders.
+            contract_multiplier (float | dict[str, float] | None, optional): Contract
+                size for futures-style instruments. ``100`` for COMEX gold (1 price tick
+                = $100 P&L per contract), ``50`` for E-mini S&P. Pass a dict keyed by
+                asset for portfolios mixing stocks and futures of different categories.
+                Defaults to ``None`` (multiplier of 1.0 — stock semantics).
 
         Raises:
-            AssertionError: If cash is not positive or margin_ratio is out of bounds.
+            AssertionError: If cash is not positive or any margin_ratio is out of bounds.
+            ValueError: If a per-asset dict is missing keys or has unknown keys.
         """
         assert cash > 0, "Initial cash must be positive."
-        assert 0 < margin_ratio <= 1, "Margin ratio must be between 0 and 1."
 
         # Normalize to dict[str, DataFrame]; canonicalize column names per asset.
         if isinstance(data, pd.DataFrame):
@@ -89,9 +97,23 @@ class Broker:
             _canonicalize_columns(df)
 
         self._data_by_asset: dict[str, pd.DataFrame] = data_by_asset
+
+        # Per-asset margin ratios.
+        self._margin_ratio_by_asset = self._normalize_per_asset(
+            margin_ratio, data_by_asset, name="margin_ratio", default=None,
+        )
+        for asset, mr in self._margin_ratio_by_asset.items():
+            assert 0 < mr <= 1, f"margin_ratio for '{asset}' must be in (0, 1], got {mr}"
+
+        # Per-asset contract multipliers (default 1.0 = stock semantics).
+        self._multiplier_by_asset = self._normalize_per_asset(
+            contract_multiplier, data_by_asset, name="contract_multiplier", default=1.0,
+        )
+        for asset, mult in self._multiplier_by_asset.items():
+            assert mult > 0, f"contract_multiplier for '{asset}' must be positive, got {mult}"
+
         self.cash = cash
         self.commission = commission
-        self.margin_ratio = margin_ratio
         self.trade_on_close = trade_on_close
         self._positions: dict[str, Position] = {a: Position() for a in data_by_asset}
 
@@ -107,6 +129,31 @@ class Broker:
         self._closed_orders: list[Order] = []  # Rejected and canceled orders
 
         self._equity_history = pd.Series(data=self.cash, index=first_index).astype('float64')
+
+    @staticmethod
+    def _normalize_per_asset(
+        value, data_by_asset, *, name: str, default,
+    ) -> dict[str, float]:
+        """Coerce a scalar / dict / None into a per-asset dict.
+
+        - ``None`` and ``default is not None`` → uniform fill with ``default``.
+        - scalar → uniform fill with that scalar.
+        - dict → keys must exactly match ``data_by_asset``.
+        """
+        if value is None:
+            if default is None:
+                raise TypeError(f"{name} is required (no default).")
+            return {a: float(default) for a in data_by_asset}
+        if isinstance(value, dict):
+            missing = set(data_by_asset) - set(value)
+            extra = set(value) - set(data_by_asset)
+            if missing or extra:
+                raise ValueError(
+                    f"{name} dict keys must exactly match data assets. "
+                    f"Missing: {sorted(missing)}, extra: {sorted(extra)}."
+                )
+            return {a: float(value[a]) for a in data_by_asset}
+        return {a: float(value) for a in data_by_asset}
 
     # ------------------------------------------------------------------
     # Backwards-compatible single-asset accessors.
@@ -145,6 +192,25 @@ class Broker:
         """List of asset symbols this broker tracks."""
         return list(self._data_by_asset.keys())
 
+    @property
+    def margin_ratio(self) -> float:
+        """Single-asset margin ratio. For multi-asset, use :attr:`margin_ratio_by_asset`."""
+        if len(self._margin_ratio_by_asset) > 1:
+            raise AttributeError(
+                "Broker has multiple assets; use broker.margin_ratio_by_asset[symbol]"
+            )
+        return next(iter(self._margin_ratio_by_asset.values()))
+
+    @property
+    def margin_ratio_by_asset(self) -> dict[str, float]:
+        """Per-asset margin ratios."""
+        return dict(self._margin_ratio_by_asset)
+
+    @property
+    def multiplier_by_asset(self) -> dict[str, float]:
+        """Per-asset contract multipliers (1.0 = stock semantics)."""
+        return dict(self._multiplier_by_asset)
+
     # ------------------------------------------------------------------
     # Aggregate properties (portfolio-level for multi-asset, identical to
     # single-asset behavior when only "default" is present).
@@ -162,33 +228,41 @@ class Broker:
 
     @property
     def available_margin(self) -> float:
-        """Available margin for new trades, summed across all assets."""
+        """Available margin for new trades, summed across all assets.
+
+        Per-asset margin = ``abs(size) × multiplier × current_price × margin_ratio[asset]``.
+        """
         used_margin = 0.0
         for asset, position in self._positions.items():
             current_price = self._data_by_asset[asset].loc[self.current_time, 'Close']
+            mr = self._margin_ratio_by_asset[asset]
             used_margin += sum(
-                abs(trade.size) * current_price * self.margin_ratio
+                abs(trade.size) * trade.multiplier * current_price * mr
                 for trade in position.active_trades
             )
         return max(0, self.equity - used_margin)
 
     @property
     def unrealized_pnl(self) -> float:
-        """Sum of unrealized P&L across all active trades on every asset."""
+        """Sum of unrealized P&L across all active trades on every asset.
+
+        Per-trade P&L = ``size × multiplier × (current_price − entry_price)``.
+        """
         total = 0.0
         for asset, position in self._positions.items():
             current_price = self._data_by_asset[asset].loc[self.current_time, 'Close']
             for trade in position.active_trades:
-                total += trade.size * (current_price - trade.entry_price)
+                total += trade.size * trade.multiplier * (current_price - trade.entry_price)
         return total
 
     @property
     def unrealized_pnl_pct(self) -> float:
         """Unrealized P&L as a percentage of total initial margin (across all assets)."""
         total_initial_margin = 0.0
-        for position in self._positions.values():
+        for asset, position in self._positions.items():
+            mr = self._margin_ratio_by_asset[asset]
             total_initial_margin += sum(
-                abs(trade.size) * trade.entry_price * self.margin_ratio
+                abs(trade.size) * trade.multiplier * trade.entry_price * mr
                 for trade in position.active_trades
             )
         return self.unrealized_pnl / total_initial_margin * 100 if total_initial_margin != 0 else 0
@@ -408,9 +482,11 @@ class Broker:
 
     def __is_margin_sufficient(self, order: Order, fill_price: float) -> bool:
         """Check if there's enough portfolio margin to take on the order on its asset."""
+        order_mult = self._multiplier_by_asset[order.asset]
+        order_mr = self._margin_ratio_by_asset[order.asset]
         position = self._positions[order.asset]
         new_position_size = position.size + order.size
-        new_margin = abs(new_position_size) * fill_price * self.margin_ratio
+        new_margin = abs(new_position_size) * order_mult * fill_price * order_mr
 
         # Account value uses the prospective fill_price for the order's asset
         # and current Close for everyone else.
@@ -418,7 +494,7 @@ class Broker:
         for asset, pos in self._positions.items():
             price = fill_price if asset == order.asset else self._data_by_asset[asset].loc[self.current_time, 'Close']
             for trade in pos.active_trades:
-                unrealized_pnl += trade.size * (price - trade.entry_price)
+                unrealized_pnl += trade.size * trade.multiplier * (price - trade.entry_price)
         account_value = self.cash + unrealized_pnl
 
         # Other assets' used margin counts against the available pool.
@@ -427,7 +503,10 @@ class Broker:
             if asset == order.asset:
                 continue
             price = self._data_by_asset[asset].loc[self.current_time, 'Close']
-            other_used_margin += sum(abs(t.size) * price * self.margin_ratio for t in pos.active_trades)
+            mr = self._margin_ratio_by_asset[asset]
+            other_used_margin += sum(
+                abs(t.size) * t.multiplier * price * mr for t in pos.active_trades
+            )
 
         return account_value >= new_margin + other_used_margin
 
@@ -518,6 +597,7 @@ class Broker:
             tp=tp,
             tag=tag,
             asset=asset,
+            multiplier=self._multiplier_by_asset[asset],
         )
         self._positions[asset]._active_trades.append(new_trade)
 
