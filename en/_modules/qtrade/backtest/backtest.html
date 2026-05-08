@@ -285,9 +285,10 @@
                  <span class="n">strategy_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Strategy</span><span class="p">],</span>
                  <span class="n">cash</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
                  <span class="n">commission</span><span class="p">:</span> <span class="n">Commission</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">margin_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">margin_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
                  <span class="n">trade_on_close</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                 <span class="n">contract_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -297,10 +298,17 @@
 <span class="sd">            strategy_class: Strategy class (subclass of Strategy) to instantiate.</span>
 <span class="sd">            cash: Starting cash.</span>
 <span class="sd">            commission: Commission calculator (None ⇒ no commission).</span>
-<span class="sd">            margin_ratio: Margin requirement (0 &lt; ratio ≤ 1).</span>
+<span class="sd">            margin_ratio: Margin requirement. Pass a scalar in (0, 1] to apply</span>
+<span class="sd">                uniformly, or a dict keyed by asset for per-asset values</span>
+<span class="sd">                (e.g. ``{&quot;AAPL&quot;: 1.0, &quot;GC&quot;: 0.05}`` for a stock + futures portfolio).</span>
 <span class="sd">            trade_on_close: If True, market orders fill at the current bar&#39;s</span>
 <span class="sd">                close price; otherwise at the next bar&#39;s open.</span>
 <span class="sd">            verbose: Verbose logging.</span>
+<span class="sd">            contract_multiplier: Contract size for futures-style instruments —</span>
+<span class="sd">                the dollar P&amp;L per 1 unit of price movement per contract. ``100``</span>
+<span class="sd">                for COMEX gold (GC), ``50`` for E-mini S&amp;P (ES), ``1000`` for</span>
+<span class="sd">                crude (CL), ``1`` for stocks (the default). Pass a dict keyed by</span>
+<span class="sd">                asset for portfolios mixing stocks and futures across categories.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_multi_asset</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
 
@@ -319,13 +327,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_and_sort</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">broker</span> <span class="o">=</span> <span class="n">Broker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">cash</span><span class="p">,</span> <span class="n">commission</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="p">,</span> <span class="n">trade_on_close</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">broker</span> <span class="o">=</span> <span class="n">Broker</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">cash</span><span class="p">,</span> <span class="n">commission</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="p">,</span> <span class="n">trade_on_close</span><span class="p">,</span>
+            <span class="n">contract_multiplier</span><span class="o">=</span><span class="n">contract_multiplier</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strategy_class</span> <span class="o">=</span> <span class="n">strategy_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_bar</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cash</span> <span class="o">=</span> <span class="n">cash</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">commission</span> <span class="o">=</span> <span class="n">commission</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span> <span class="o">=</span> <span class="n">margin_ratio</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span> <span class="o">=</span> <span class="n">trade_on_close</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contract_multiplier</span> <span class="o">=</span> <span class="n">contract_multiplier</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">order_history</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="kc">None</span>
@@ -409,7 +421,10 @@
                 <span class="k">continue</span>
 
             <span class="c1"># Fresh broker for each parameter combination.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">broker</span> <span class="o">=</span> <span class="n">Broker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cash</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">broker</span> <span class="o">=</span> <span class="n">Broker</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cash</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">,</span>
+                <span class="n">contract_multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contract_multiplier</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="n">param_dict</span><span class="p">)</span>
             <span class="n">stats</span> <span class="o">=</span> <span class="n">calculate_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span>
 
@@ -495,6 +510,7 @@
                 <span class="n">commission</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="p">,</span>
                 <span class="n">margin_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span>
                 <span class="n">trade_on_close</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">,</span>
+                <span class="n">contract_multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contract_multiplier</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">best_params</span><span class="p">,</span> <span class="n">train_stats</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_bt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
                 <span class="n">maximize</span><span class="o">=</span><span class="n">maximize</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">,</span> <span class="o">**</span><span class="n">params_grid</span><span class="p">,</span>
@@ -509,6 +525,7 @@
                 <span class="n">commission</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">commission</span><span class="p">,</span>
                 <span class="n">margin_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span>
                 <span class="n">trade_on_close</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">,</span>
+                <span class="n">contract_multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contract_multiplier</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">test_bt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="p">(</span><span class="n">best_params</span> <span class="ow">or</span> <span class="p">{}))</span>
             <span class="n">test_stats</span> <span class="o">=</span> <span class="n">calculate_stats</span><span class="p">(</span><span class="n">test_bt</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span>
