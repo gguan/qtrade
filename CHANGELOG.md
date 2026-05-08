@@ -8,6 +8,29 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 ## [Unreleased]
 
 ### Added
+- **High-level `contracts=` API** on `Backtest`. Pass a single
+  `Contract` (applies uniformly) or a dict keyed by asset symbol
+  (per-asset; missing keys fall back to `STOCK_CASH` so pure-stock
+  backtests need zero configuration). Example:
+  ```python
+  from qtrade.contracts import GC_COMEX, ES_CME
+  bt = Backtest(data, MyStrat, cash=100_000, contracts={
+      "GC=F": GC_COMEX,   # 1 contract = $100/$1 move, 5% margin
+      "ES=F": ES_CME,
+      # AAPL omitted → STOCK_CASH (multiplier 1, no leverage)
+  })
+  ```
+- New `qtrade.contracts` module with `Contract` dataclass and a
+  registry of built-in specs: `STOCK_CASH`, `STOCK_REGT`, CME equity
+  (`ES_CME`, `NQ_CME`, `MES_CME`, `MNQ_CME`, …), COMEX metals
+  (`GC_COMEX`, `MGC_COMEX`, `SI_COMEX`, `HG_COMEX`), NYMEX energy
+  (`CL_NYMEX`, `NG_NYMEX`, …), and CBOT agriculture. `Contract` is
+  frozen — define your own for non-listed instruments.
+- New `qtrade.data` module (optional `[data]` extra):
+  - `from_yfinance(symbols, start=, end=, ...)` — multi-ticker download
+    that returns an index-aligned `dict[str, DataFrame]` ready for
+    `Backtest`. One line replaces ~30 lines of yfinance boilerplate.
+  - `align_indexes(data)` — utility for any other dict-of-DataFrames.
 - **Contract multiplier support** for futures-style instruments. New
   `contract_multiplier` parameter on `Backtest` / `Broker` accepts a
   scalar (single asset) or a `dict[str, float]` (per-asset, e.g.

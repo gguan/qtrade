@@ -35,6 +35,9 @@ dependencies = [
 rl = [
     "stable-baselines3>=2.0",
 ]
+data = [
+    "yfinance>=0.2.40",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-benchmark>=4.0",
