@@ -7,11 +7,11 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 
 ## [Unreleased]
 
-## [0.6.0]
+## [0.5.1]
 
-The v0.6 theme: **outputs you'd actually share with someone.** New data
-adapters for the Chinese market, post-run analytics, an optimization
-heatmap, and a self-contained HTML backtest report.
+Additive release — new data adapters for the Chinese market, post-run
+analytics, an optimization heatmap, and a self-contained HTML backtest
+report. No behavior changes for existing code.
 
 ### Added
 - **AKShare adapter** for Chinese A-shares and futures (optional `[cn]`
@@ -221,8 +221,8 @@ Initial development versions: single-asset Broker / Strategy / Backtest,
 basic Gymnasium TradingEnv, Bokeh plotting, stats calculation. See git
 history for details.
 
-[Unreleased]: https://github.com/gguan/qtrade/compare/v0.6.0...HEAD
-[0.6.0]: https://github.com/gguan/qtrade/compare/v0.5.0...v0.6.0
+[Unreleased]: https://github.com/gguan/qtrade/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/gguan/qtrade/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/gguan/qtrade/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/gguan/qtrade/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/gguan/qtrade/compare/v0.3.0...v0.4.0
