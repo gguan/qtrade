@@ -7,6 +7,57 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 
 ## [Unreleased]
 
+## [0.5.1]
+
+Additive release — new data adapters for the Chinese market, post-run
+analytics, an optimization heatmap, and a self-contained HTML backtest
+report. No behavior changes for existing code.
+
+### Added
+- **AKShare adapter** for Chinese A-shares and futures (optional `[cn]`
+  extra). New helpers in `qtrade.data`:
+  - `from_akshare_stock_a(symbols, start, end, period="daily", adjust="qfq")`
+    — A-shares (Shanghai/Shenzhen) by 6-digit code. Translates
+    `日期/开盘/最高/最低/收盘/成交量` to standard `Open/High/Low/Close/Volume`.
+  - `from_akshare_futures(symbols, start, end)` — main-contract continuous
+    series for SHFE / DCE / CZCE / CFFEX. Pair with custom `Contract`
+    specs for the right multiplier and margin.
+  - Both accept either `"YYYY-MM-DD"` or `"YYYYMMDD"` date strings,
+    a single symbol or a list, and align indexes on intersection.
+- **`qtrade.analytics` module** — trade-level analytics that go past the
+  aggregate stats:
+  - `hold_duration_distribution(broker)` — describe-style summary of trade
+    hold times in hours, optionally split by winners / losers.
+  - `entries_by_weekday(broker, metric=...)` and
+    `entries_by_month(broker, metric=...)` — calendar-bias detection.
+    Metrics: `count`, `profit_sum`, `profit_mean`, `win_rate`. Always
+    indexed in calendar order.
+  - `win_loss_feature_comparison(broker)` — DataFrame comparing mean /
+    median Size, Entry Price, Exit Price, hold duration of winning vs
+    losing trades. `extra_features=` for custom columns from the trade
+    history.
+- **`Backtest.plot_heatmap(results, x=, y=, metric=)`** — render an
+  `optimize()` grid as a 2D Bokeh heatmap. Categorical axes, hover
+  tooltips, RdYlGn palette by default. Lets you check whether the "best"
+  point sits on a robust plateau or a lone spike (likely overfit). 3+
+  parameter grids marginalize via `aggfunc=`. Lower-level entry point:
+  `qtrade.utils.heatmap.plot_optimization_heatmap`.
+- **`Backtest.export_report(path)`** — single self-contained HTML file
+  bundling stats + Bokeh charts + per-asset breakdown + trade analytics
+  + trade history. CDN-hosted Bokeh JS, so the file stays small (~50 KB)
+  regardless of trade count. Lower-level entry point:
+  `qtrade.utils.report.build_html_report`.
+- New optional `[cn]` extra in `pyproject.toml` (pulls in `akshare>=1.13`).
+- Three new docs guide pages: `docs/guide/data_sources.md`,
+  `docs/guide/analytics.md`, `docs/guide/reports.md`.
+
+### Changed
+- `qtrade.utils.plot_bokeh` refactored: layout-builder functions
+  `_plot_single_asset_layout` / `_plot_multi_asset_layout` are now
+  separate from the show/save side effects, so the report module can
+  embed the chart layout via `bokeh.embed.components`. No public-API
+  change.
+
 ## [0.5.0]
 
 The big v0.5 theme: **futures support**. Run portfolios that mix
@@ -170,7 +221,8 @@ Initial development versions: single-asset Broker / Strategy / Backtest,
 basic Gymnasium TradingEnv, Bokeh plotting, stats calculation. See git
 history for details.
 
-[Unreleased]: https://github.com/gguan/qtrade/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/gguan/qtrade/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/gguan/qtrade/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/gguan/qtrade/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/gguan/qtrade/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/gguan/qtrade/compare/v0.3.0...v0.4.0
