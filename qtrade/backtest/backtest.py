@@ -7,6 +7,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from qtrade.backtest.strategy import Strategy
+from qtrade.contracts import STOCK_CASH, Contract
 from qtrade.core import Broker, Commission, Order
 from qtrade.utils import calculate_stats, plot_with_bokeh
 
@@ -23,10 +24,11 @@ class Backtest:
                  strategy_class: type[Strategy],
                  cash: float = 10_000,
                  commission: Commission | None = None,
-                 margin_ratio: float | dict[str, float] = 1.0,
+                 margin_ratio: float | dict[str, float] | None = None,
                  trade_on_close: bool = False,
                  verbose: bool = False,
                  contract_multiplier: float | dict[str, float] | None = None,
+                 contracts: dict[str, Contract] | Contract | None = None,
                  ):
         """
         Args:
@@ -36,17 +38,21 @@ class Backtest:
             strategy_class: Strategy class (subclass of Strategy) to instantiate.
             cash: Starting cash.
             commission: Commission calculator (None ⇒ no commission).
-            margin_ratio: Margin requirement. Pass a scalar in (0, 1] to apply
-                uniformly, or a dict keyed by asset for per-asset values
-                (e.g. ``{"AAPL": 1.0, "GC": 0.05}`` for a stock + futures portfolio).
+            contracts: **Preferred** way to specify per-asset multiplier and
+                margin. Pass a single :class:`~qtrade.contracts.Contract` to
+                apply to all assets, or a dict keyed by asset symbol — assets
+                you don't list resolve to :data:`~qtrade.contracts.STOCK_CASH`
+                (no leverage, multiplier 1.0). Built-in specs live in
+                :mod:`qtrade.contracts` (``STOCK_CASH``, ``GC_COMEX``,
+                ``ES_CME``, etc.); custom ``Contract(multiplier=…, margin_ratio=…)``
+                instances work the same way.
+            margin_ratio: Lower-level escape hatch (scalar or dict).
+                Mutually exclusive with ``contracts``.
+            contract_multiplier: Lower-level escape hatch (scalar or dict).
+                Mutually exclusive with ``contracts``.
             trade_on_close: If True, market orders fill at the current bar's
                 close price; otherwise at the next bar's open.
             verbose: Verbose logging.
-            contract_multiplier: Contract size for futures-style instruments —
-                the dollar P&L per 1 unit of price movement per contract. ``100``
-                for COMEX gold (GC), ``50`` for E-mini S&P (ES), ``1000`` for
-                crude (CL), ``1`` for stocks (the default). Pass a dict keyed by
-                asset for portfolios mixing stocks and futures across categories.
         """
         self._is_multi_asset = not isinstance(data, pd.DataFrame)
 
@@ -65,6 +71,14 @@ class Backtest:
         else:
             self.data = self._validate_and_sort(data)
 
+        # Resolve the contracts API into the lower-level (margin_ratio,
+        # contract_multiplier) pair the Broker consumes. The two APIs are
+        # mutually exclusive — pass `contracts` OR the explicit dicts/scalars,
+        # not both.
+        margin_ratio, contract_multiplier = self._resolve_contracts(
+            self.data, contracts, margin_ratio, contract_multiplier,
+        )
+
         self.broker = Broker(
             self.data, cash, commission, margin_ratio, trade_on_close,
             contract_multiplier=contract_multiplier,
@@ -76,12 +90,53 @@ class Backtest:
         self.margin_ratio = margin_ratio
         self.trade_on_close = trade_on_close
         self.contract_multiplier = contract_multiplier
+        self.contracts = contracts
 
         self.order_history: list[Order] = []
         self.stats = None
 
         logging.basicConfig(level=logging.INFO if verbose else logging.WARNING)
         self.logger = logging.getLogger(__name__)
+
+    @staticmethod
+    def _resolve_contracts(data, contracts, margin_ratio, contract_multiplier):
+        """Map the user-facing ``contracts`` API onto Broker's (margin_ratio,
+        contract_multiplier) pair. Returns ``(margin_ratio, contract_multiplier)``.
+
+        Rules:
+        - If ``contracts`` is None: use the explicit args verbatim (or 1.0 default).
+        - If ``contracts`` is a Contract: applies uniformly to every asset.
+        - If ``contracts`` is a dict: per-asset; missing keys fall back to STOCK_CASH.
+        - Mixing ``contracts`` with ``margin_ratio`` / ``contract_multiplier`` raises.
+        """
+        if contracts is None:
+            # Legacy / lower-level path. Default scalar margin to 1.0 for stocks.
+            return (margin_ratio if margin_ratio is not None else 1.0,
+                    contract_multiplier)
+
+        if margin_ratio is not None or contract_multiplier is not None:
+            raise ValueError(
+                "Pass either `contracts=` OR (`margin_ratio=` / `contract_multiplier=`), "
+                "not both."
+            )
+
+        # Determine the asset set from data (for both single- and multi-asset).
+        if isinstance(data, dict):
+            assets = list(data.keys())
+        else:
+            assets = ["default"]
+
+        if isinstance(contracts, Contract):
+            resolved = {a: contracts for a in assets}
+        else:
+            # Per-asset dict: missing keys fall back to STOCK_CASH so that pure
+            # stock backtests need zero per-asset configuration.
+            resolved = {a: contracts.get(a, STOCK_CASH) for a in assets}
+
+        return (
+            {a: c.margin_ratio for a, c in resolved.items()},
+            {a: c.multiplier for a, c in resolved.items()},
+        )
 
     @staticmethod
     def _validate_and_sort(df: pd.DataFrame, asset: str | None = None) -> pd.DataFrame:
@@ -241,7 +296,7 @@ class Backtest:
                 margin_ratio=self.margin_ratio,
                 trade_on_close=self.trade_on_close,
                 contract_multiplier=self.contract_multiplier,
-            )
+            )  # contracts already resolved to margin_ratio/multiplier above
             best_params, train_stats, _ = train_bt.optimize(
                 maximize=maximize, constraint=constraint, **params_grid,
             )
@@ -256,7 +311,7 @@ class Backtest:
                 margin_ratio=self.margin_ratio,
                 trade_on_close=self.trade_on_close,
                 contract_multiplier=self.contract_multiplier,
-            )
+            )  # contracts already resolved to margin_ratio/multiplier above
             test_bt.run(**(best_params or {}))
             test_stats = calculate_stats(test_bt.broker)
 

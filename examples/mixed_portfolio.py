@@ -1,49 +1,31 @@
-"""Mixed portfolio: stocks + multi-category futures with different multipliers.
+"""Mixed portfolio: stocks + multi-category futures, end-to-end with the
+high-level Contract API and yfinance data loader.
 
-Demonstrates how to model a realistic portfolio that holds:
-- AAPL (stock, multiplier=1, margin_ratio=1.0 — no leverage)
-- ES   (E-mini S&P 500 futures, multiplier=50, ~5% initial margin)
-- GC   (COMEX gold futures, multiplier=100, ~5% initial margin)
-- CL   (NYMEX crude oil futures, multiplier=1000, ~10% initial margin)
+Demonstrates:
+
+- :func:`qtrade.data.from_yfinance` — multi-ticker download + aligned dict
+  in one call.
+- :mod:`qtrade.contracts` registry — built-in specs (``ES_CME``, ``GC_COMEX``,
+  ``CL_NYMEX``) plus ``STOCK_CASH`` defaults for assets you don't list.
+- ``Backtest(..., contracts={...})`` for clean per-asset configuration.
 
 Run with:
-    pip install yfinance
+    pip install "qtrade-lib[data]"
     python examples/mixed_portfolio.py
 """
 
 from __future__ import annotations
 
 import pandas as pd
-import yfinance as yf
 
 from qtrade.backtest import Backtest, Strategy
+from qtrade.contracts import CL_NYMEX, ES_CME, GC_COMEX, STOCK_CASH
 from qtrade.core import FixedCommission
-
-
-CONTRACT_SPECS = {
-    # symbol: (yfinance_ticker, multiplier, margin_ratio_approx)
-    "AAPL": ("AAPL", 1,    1.0),     # stock, no leverage
-    "ES":   ("ES=F", 50,   0.05),    # E-mini S&P
-    "GC":   ("GC=F", 100,  0.05),    # COMEX gold
-    "CL":   ("CL=F", 1000, 0.10),    # NYMEX crude
-}
-
-
-def load_data() -> dict[str, pd.DataFrame]:
-    """Pull each ticker from yfinance and align on the common index."""
-    raw = {
-        sym: yf.download(spec[0], start="2023-01-01", end="2024-01-01",
-                         interval="1d", multi_level_index=False)
-        for sym, spec in CONTRACT_SPECS.items()
-    }
-    common = raw["AAPL"].index
-    for df in raw.values():
-        common = common.intersection(df.index)
-    return {sym: df.loc[common] for sym, df in raw.items()}
+from qtrade.data import from_yfinance
 
 
 class EqualWeightMomentum(Strategy):
-    """Hold 1 contract / share of each asset whose 20-bar momentum is positive."""
+    """Hold 1 share / contract of each asset whose 20-bar momentum is positive."""
 
     def prepare(self):
         for df in self._data.values():
@@ -63,18 +45,30 @@ class EqualWeightMomentum(Strategy):
 
 
 def main() -> None:
-    data = load_data()
+    # 1. Download — one call, aligned indexes, ready to feed Backtest.
+    data = from_yfinance(
+        ["AAPL", "ES=F", "GC=F", "CL=F"],
+        start="2023-01-01",
+        end="2024-01-01",
+    )
 
-    multiplier = {sym: spec[1] for sym, spec in CONTRACT_SPECS.items()}
-    margin_ratio = {sym: spec[2] for sym, spec in CONTRACT_SPECS.items()}
+    # 2. Map symbols to contract specs. AAPL is omitted on purpose — assets
+    #    not in this dict default to STOCK_CASH (no leverage, multiplier=1).
+    contracts = {
+        "ES=F": ES_CME,
+        "GC=F": GC_COMEX,
+        "CL=F": CL_NYMEX,
+        # "AAPL" → STOCK_CASH automatically
+    }
+    # Equivalent explicit form:
+    #     contracts["AAPL"] = STOCK_CASH
 
     bt = Backtest(
         data,
         EqualWeightMomentum,
         cash=200_000,
-        commission=FixedCommission(2.50),     # round-turn for futures; OK for stocks too
-        margin_ratio=margin_ratio,
-        contract_multiplier=multiplier,
+        commission=FixedCommission(2.50),
+        contracts=contracts,
         trade_on_close=True,
     )
     bt.run(lookback=20)
@@ -93,4 +87,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    # Re-export STOCK_CASH so the import is tested when the module is loaded.
+    _ = STOCK_CASH
     main()
