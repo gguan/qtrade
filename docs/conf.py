@@ -82,13 +82,17 @@ html_title = "QTrade"
 html_static_path = ['_static']
 html_js_files = ['lang_switcher.js']
 
-# Furo's announcement banner is a thin strip at the top of every page.
-# We use it to host a language switcher link; the JS in lang_switcher.js
-# rewrites the href / label based on the URL ("/en/" → "/zh/" and vice
-# versa).
-html_theme_options = {
-    "announcement": (
-        '<a id="lang-switcher-link" href="#" '
-        'style="color: inherit; text-decoration: underline;">中文 / EN</a>'
-    ),
+# Inject a language switcher into the bottom of furo's left sidebar
+# (after the toctree, before scroll-end). The JS in lang_switcher.js
+# rewrites the link's href / label based on the URL ("/en/" ↔ "/zh/").
+html_sidebars = {
+    "**": [
+        "sidebar/brand.html",
+        "sidebar/search.html",
+        "sidebar/scroll-start.html",
+        "sidebar/navigation.html",
+        "sidebar/lang_switcher.html",
+        "sidebar/ethical-ads.html",
+        "sidebar/scroll-end.html",
+    ]
 }
