@@ -30,6 +30,7 @@ class Trade:
         tp: float | None = None,
         tag: object | None = None,
         asset: str = "default",
+        multiplier: float = 1.0,
     ):
         """
         Initialize a Trade instance.
@@ -43,6 +44,9 @@ class Trade:
             tag (Optional[object], optional): Tag for identifying the trade. Defaults to None.
             asset (str, optional): Asset symbol this trade is on. Defaults to "default" for
                 single-asset backtests. Multi-asset support is layered on this field.
+            multiplier (float, optional): Contract multiplier for futures-style instruments
+                (e.g. 100 for COMEX gold, 50 for E-mini S&P). 1 share = 1 unit of price for
+                stocks. Profit and margin both scale with this. Defaults to 1.0.
 
         Raises:
             ValueError: If the trade size is zero.
@@ -57,6 +61,7 @@ class Trade:
         self._tp: float | None = tp
         self._tag: object | None = tag
         self._asset: str = asset
+        self._multiplier: float = multiplier
 
         self._exit_price: float | None = None
         self._exit_date: pd.Timestamp | None = None
@@ -94,8 +99,8 @@ class Trade:
 
         size_to_close = size if size is not None else self._size
 
-        # Calculate profit for the closed portion
-        profit = (exit_price - self._entry_price) * size_to_close
+        # Calculate profit for the closed portion (scaled by contract multiplier)
+        profit = (exit_price - self._entry_price) * size_to_close * self._multiplier
 
         # Create a new Trade object to record the closed portion
         closed_trade = Trade(
@@ -107,6 +112,7 @@ class Trade:
             tp=self._tp,
             tag=self._tag,
             asset=self._asset,
+            multiplier=self._multiplier,
         )
         closed_trade._exit_price = exit_price
         closed_trade._exit_date = exit_date
@@ -153,6 +159,11 @@ class Trade:
     def asset(self) -> str:
         """str: Asset symbol this trade is on."""
         return self._asset
+
+    @property
+    def multiplier(self) -> float:
+        """float: Contract multiplier (1.0 for stocks, e.g. 100 for COMEX GC)."""
+        return self._multiplier
 
     @property
     def sl(self) -> float | None:

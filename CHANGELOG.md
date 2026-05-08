@@ -7,6 +7,21 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 
 ## [Unreleased]
 
+### Added
+- **Contract multiplier support** for futures-style instruments. New
+  `contract_multiplier` parameter on `Backtest` / `Broker` accepts a
+  scalar (single asset) or a `dict[str, float]` (per-asset, e.g.
+  `{"AAPL": 1, "GC": 100, "ES": 50, "CL": 1000}`). PnL and margin scale
+  by `size × multiplier × price`, so 1 GC contract moving $1 → $100 P&L
+  matches reality. Backwards compatible — default is 1.0.
+- **Per-asset `margin_ratio`**. Same parameter now accepts a dict so
+  mixed portfolios can put `1.0` on stocks and `0.05` on futures.
+- New `Broker.multiplier_by_asset` and `Broker.margin_ratio_by_asset`
+  properties for inspecting the resolved per-asset settings.
+- `examples/mixed_portfolio.py` — realistic stock + multi-category
+  futures portfolio (AAPL + ES + GC + CL) with different multipliers
+  and margins per asset.
+
 ## [0.4.1]
 
 ### Added
