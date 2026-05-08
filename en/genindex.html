@@ -197,6 +197,9 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/walk_forward.html">Walk-forward optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/commissions.html">Commissions and slippage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/plot.html">Reading the Bokeh report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/data_sources.html">Loading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/analytics.html">Trade analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/reports.html">HTML reports &amp; optimization heatmaps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/trading_environment.html">Gym Trading Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/customize_environment.html">Customizing Trading Environment</a></li>
 </ul>
@@ -383,10 +386,10 @@
 </li>
         <li><a href="api/core.html#qtrade.core.Broker.equity">equity (qtrade.core.Broker property)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/core.html#qtrade.core.Broker.equity_history">equity_history (qtrade.core.Broker property)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/core.html#qtrade.core.Trade.exit_date">exit_date (qtrade.core.Trade property)</a>
 </li>
         <li><a href="api/core.html#qtrade.core.Trade.exit_index">exit_index (qtrade.core.Trade property)</a>
@@ -394,6 +397,8 @@
         <li><a href="api/core.html#qtrade.core.Trade.exit_price">exit_price (qtrade.core.Trade property)</a>
 </li>
         <li><a href="api/core.html#qtrade.core.Trade.exit_reason">exit_reason (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/backtest/index.html#qtrade.backtest.Backtest.export_report">export_report() (qtrade.backtest.Backtest method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -558,10 +563,12 @@
           <li><a href="api/env.html#qtrade.env.TradingEnv.plot">(qtrade.env.TradingEnv method)</a>
 </li>
         </ul></li>
-        <li><a href="api/core.html#qtrade.core.Position">Position (class in qtrade.core)</a>
+        <li><a href="api/backtest/index.html#qtrade.backtest.Backtest.plot_heatmap">plot_heatmap() (qtrade.backtest.Backtest method)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Position">Position (class in qtrade.core)</a>
+</li>
         <li><a href="api/core.html#qtrade.core.Broker.position">position (qtrade.core.Broker property)</a>
 
         <ul>
@@ -743,7 +750,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=1dd76d02"></script>
+</div><script src="_static/documentation_options.js?v=b9afe91b"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

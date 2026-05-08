@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Loading data" href="data_sources.html"><link rel="prev" title="Commissions and slippage" href="commissions.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="HTML reports &amp; optimization heatmaps" href="reports.html"><link rel="prev" title="Loading data" href="data_sources.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Reading the Bokeh report - QTrade</title>
+        <title>Trade analytics - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,9 +198,9 @@
 <li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Reading the Bokeh report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_sources.html">Loading data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="analytics.html">Trade analytics</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Trade analytics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reports.html">HTML reports &amp; optimization heatmaps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
@@ -249,7 +249,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/guide/plot.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/guide/analytics.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -267,152 +267,102 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="reading-the-bokeh-report">
-<h1>Reading the Bokeh report<a class="headerlink" href="#reading-the-bokeh-report" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Backtest.plot()</span></code> (and <code class="docutils literal notranslate"><span class="pre">TradingEnv.plot()</span></code>) renders an interactive
-Bokeh report combining equity, trade returns, and per-asset OHLC
-panels. This page explains what each panel shows and how to interpret
-it.</p>
-<section id="saving-to-file">
-<h2>Saving to file<a class="headerlink" href="#saving-to-file" title="Link to this heading">¶</a></h2>
-<p>By default <code class="docutils literal notranslate"><span class="pre">plot()</span></code> calls <code class="docutils literal notranslate"><span class="pre">bokeh.io.show()</span></code> which opens the report in
-a browser. To save a self-contained HTML for sharing or archiving:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.plot_bokeh</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_with_bokeh</span>
-<span class="n">plot_with_bokeh</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>
+          <section id="trade-analytics">
+<h1>Trade analytics<a class="headerlink" href="#trade-analytics" title="Link to this heading">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">qtrade.analytics</span></code> module slices closed trades by time, duration, and
+outcome — turning the raw trade history into questions you actually want
+answered after a backtest:</p>
+<ul class="simple">
+<li><p><em>How long do my winners hold vs my losers?</em></p></li>
+<li><p><em>Are my entries clustered on Mondays? In specific months?</em></p></li>
+<li><p><em>What’s different about the trades I lose money on — bigger size, longer
+hold, lower entry price?</em></p></li>
+</ul>
+<p>Every function takes either a <code class="docutils literal notranslate"><span class="pre">Broker</span></code> (so you can pass <code class="docutils literal notranslate"><span class="pre">bt.broker</span></code>
+directly) or the trade-history <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> from
+<code class="docutils literal notranslate"><span class="pre">Broker.get_trade_history()</span></code>. They return plain pandas objects so you
+can <code class="docutils literal notranslate"><span class="pre">.plot()</span></code> them inline, hand them to seaborn, or render them yourself.</p>
+<section id="hold-duration-distribution">
+<h2>Hold duration distribution<a class="headerlink" href="#hold-duration-distribution" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.analytics</span><span class="w"> </span><span class="kn">import</span> <span class="n">hold_duration_distribution</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">hold_duration_distribution</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">))</span>
+<span class="c1">#           count   mean  median    std   min   25%   50%   75%   max</span>
+<span class="c1"># all        42.0  18.50    12.0  14.20   1.0   8.0  12.0  24.0  72.0</span>
+<span class="c1"># winners    25.0  22.10    18.0  13.80   2.0  12.0  18.0  30.0  72.0</span>
+<span class="c1"># losers     17.0  13.20     8.0  12.50   1.0   4.0   8.0  16.0  48.0</span>
 </pre></div>
 </div>
-<p>The HTML has all data inlined — no Bokeh server, no external assets.
-Email it, commit it, drop it in a wiki.</p>
+<p>All durations are reported in <strong>hours</strong> so intraday and daily strategies
+share one scale. Pass <code class="docutils literal notranslate"><span class="pre">by_outcome=False</span></code> to get just the <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> row.</p>
+<p>A common pattern: do my winners hold <em>longer</em> than my losers? If so, your
+strategy is probably riding trends well — and you might be cutting some
+losers too late. If winners are <em>shorter</em>, the opposite — you’re scalping
+small wins and letting losers run.</p>
 </section>
-<section id="single-asset-layout">
-<h2>Single-asset layout<a class="headerlink" href="#single-asset-layout" title="Link to this heading">¶</a></h2>
-<p>Three stacked panels with linked x-axes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────┐
-│ ▒▓▒  Equity vs. Buy &amp; Hold (cumulative returns) │
-│                                                 │
-├─────────────────────────────────────────────────┤
-│ ▲ ▼ ▲       Trade returns (long / short)        │
-├─────────────────────────────────────────────────┤
-│       OHLC + volume + win/lose trade boxes      │
-│       + buy/sell markers                        │
-│                                                 │
-└─────────────────────────────────────────────────┘
+<section id="calendar-bias">
+<h2>Calendar bias<a class="headerlink" href="#calendar-bias" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.analytics</span><span class="w"> </span><span class="kn">import</span> <span class="n">entries_by_weekday</span><span class="p">,</span> <span class="n">entries_by_month</span>
+
+<span class="c1"># How many entries fire each weekday?</span>
+<span class="n">entries_by_weekday</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;count&quot;</span><span class="p">)</span>
+<span class="c1"># Monday       12</span>
+<span class="c1"># Tuesday       8</span>
+<span class="c1"># ...</span>
+
+<span class="c1"># Are some weekdays consistently negative?</span>
+<span class="n">entries_by_weekday</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;profit_sum&quot;</span><span class="p">)</span>
+
+<span class="c1"># Win rate by weekday — useful for a &quot;skip Friday&quot; filter check</span>
+<span class="n">entries_by_weekday</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;win_rate&quot;</span><span class="p">)</span>
+
+<span class="c1"># Same shape, monthly</span>
+<span class="n">entries_by_month</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;profit_mean&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<section id="top-equity-panel">
-<h3>Top: Equity panel<a class="headerlink" href="#top-equity-panel" title="Link to this heading">¶</a></h3>
+<p>Available <code class="docutils literal notranslate"><span class="pre">metric</span></code> values:</p>
 <ul class="simple">
-<li><p><strong>Solid blue line</strong>: portfolio equity (cumulative returns, normalized to
-1.0 at the start).</p></li>
-<li><p><strong>Gray dotted line</strong>: Buy &amp; Hold returns on the same scale.</p></li>
-<li><p><strong>Purple dot</strong>: peak equity point.</p></li>
-<li><p><strong>Blue dot</strong>: final equity point (legend shows the final pct).</p></li>
-<li><p><strong>Gray dot</strong>: final B&amp;H point.</p></li>
-<li><p><strong>Red dot</strong>: max drawdown trough.</p></li>
-<li><p><strong>Red shaded area</strong>: the drawdown region (gap between equity and its
-running max).</p></li>
-<li><p><strong>Red horizontal segment</strong>: the longest drawdown duration.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;count&quot;</span></code> — number of entries per bucket.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;profit_sum&quot;</span></code> — total profit per bucket.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;profit_mean&quot;</span></code> — average profit per bucket.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;win_rate&quot;</span></code> — fraction of trades closing positive (0.0–1.0).</p></li>
 </ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Is the blue line above the gray? You’re beating Buy &amp; Hold.</p></li>
-<li><p>How “smooth” is the blue line vs gray? Smoother = lower volatility =
-better risk-adjusted return (the Sharpe story).</p></li>
-<li><p>Is the red shaded area concentrated in one period or spread out?
-Concentrated = strategy has one weak regime; spread out = systemic
-drag.</p></li>
-</ul>
+<p>Empty buckets are filled with 0 (count / profit_sum) or NaN
+(profit_mean / win_rate). The result is always indexed in calendar order
+(Monday → Sunday, January → December).</p>
 </section>
-<section id="middle-trade-returns">
-<h3>Middle: Trade returns<a class="headerlink" href="#middle-trade-returns" title="Link to this heading">¶</a></h3>
-<p>A scatter of every closed trade plotted at its exit time:</p>
-<ul class="simple">
-<li><p><strong>Green up-triangles</strong>: long trades. y-axis is <code class="docutils literal notranslate"><span class="pre">(exit/entry</span> <span class="pre">−</span> <span class="pre">1)</span></code>.</p></li>
-<li><p><strong>Red down-triangles</strong>: short trades. y-axis is the equivalent for shorts.</p></li>
-<li><p><strong>Marker size</strong>: scaled to position size (bigger = larger trade).</p></li>
-<li><p><strong>Dashed horizontal at 0</strong>: break-even line.</p></li>
-</ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Are most markers above the 0-line? That’s your win rate eyeballed.</p></li>
-<li><p>Is there a cluster of large-magnitude losses (way below 0)? That’s
-where stop-losses (or lack thereof) hurt.</p></li>
-<li><p>Are big winners and big losers symmetric around 0? Asymmetric is
-good — small losses + large gains is the trend-following sweet spot.</p></li>
-</ul>
-</section>
-<section id="bottom-ohlc-volume-trade-boxes">
-<h3>Bottom: OHLC + volume + trade boxes<a class="headerlink" href="#bottom-ohlc-volume-trade-boxes" title="Link to this heading">¶</a></h3>
-<p>The price action with overlays:</p>
-<ul class="simple">
-<li><p><strong>Black line</strong>: closing prices.</p></li>
-<li><p><strong>Bottom bars (faint green/red)</strong>: volume (right y-axis), color-coded
-by close ≥/&lt; open.</p></li>
-<li><p><strong>Translucent green rectangles</strong>: winning trades — left/right edges
-are entry/exit times, top/bottom are entry/exit prices.</p></li>
-<li><p><strong>Translucent red rectangles</strong>: losing trades, same convention.</p></li>
-<li><p><strong>Triangle markers</strong>: order fills. Up = buy; down = sell. Size scaled
-to order magnitude.</p></li>
-</ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Trade boxes that span long horizontal stretches = you held through
-noise. Short stretches = quick in-out trades.</p></li>
-<li><p>Buy markers at local highs / sell markers at local lows = bad
-timing, possibly a sign of late signal generation.</p></li>
-<li><p>Boxes piling up densely = high turnover. Watch the
-<code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Commission</span> <span class="pre">Cost</span></code> metric in <code class="docutils literal notranslate"><span class="pre">show_stats()</span></code>.</p></li>
-</ul>
-</section>
-</section>
-<section id="multi-asset-layout">
-<h2>Multi-asset layout<a class="headerlink" href="#multi-asset-layout" title="Link to this heading">¶</a></h2>
-<p>The report adds one OHLC panel per asset, all stacked, all sharing the
-same x-axis:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────┐
-│  Portfolio equity vs equal-weighted Buy &amp; Hold  │
-├─────────────────────────────────────────────────┤
-│  Trade returns scatter (all assets combined)    │
-├─────────────────────────────────────────────────┤
-│  OHLC — AAPL                                    │
-├─────────────────────────────────────────────────┤
-│  OHLC — MSFT                                    │
-├─────────────────────────────────────────────────┤
-│  OHLC — NVDA                                    │
-└─────────────────────────────────────────────────┘
+<section id="winning-vs-losing-trade-comparison">
+<h2>Winning vs losing trade comparison<a class="headerlink" href="#winning-vs-losing-trade-comparison" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.analytics</span><span class="w"> </span><span class="kn">import</span> <span class="n">win_loss_feature_comparison</span>
+
+<span class="n">win_loss_feature_comparison</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span>
+<span class="c1">#                  winners_mean  losers_mean   diff  winners_median  losers_median</span>
+<span class="c1"># Size                    85.20        92.10  -6.90           80.00          90.00</span>
+<span class="c1"># Entry Price            172.40       175.80  -3.40          170.50         174.00</span>
+<span class="c1"># Exit Price             184.30       170.20  14.10          181.00         169.50</span>
+<span class="c1"># Duration (h)            22.10        13.20   8.90           18.00           8.00</span>
 </pre></div>
 </div>
-<p>Each per-asset OHLC panel shows trades and orders <strong>filtered to that
-asset only</strong>, so you can see exactly when the strategy moved in each
-name. The equity panel up top is portfolio-level (one curve, summing
-across all assets).</p>
-<p>The Buy &amp; Hold benchmark is the <strong>equal-weighted average</strong> of each
-asset’s first-to-last return — a fair “naive portfolio” comparison.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Size</span></code> is compared as <code class="docutils literal notranslate"><span class="pre">abs(size)</span></code> so longs and shorts pool by magnitude.
+<code class="docutils literal notranslate"><span class="pre">diff</span></code> is <code class="docutils literal notranslate"><span class="pre">winners_mean</span> <span class="pre">−</span> <span class="pre">losers_mean</span></code> — quick visual scan to see which
+features separate good from bad trades.</p>
+<p>To compare extra columns from your trade history (e.g. a custom tag):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trades</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">get_trade_history</span><span class="p">()</span>
+<span class="n">trades</span><span class="p">[</span><span class="s2">&quot;RSI at Entry&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span>   <span class="c1"># populate however you like</span>
+<span class="n">win_loss_feature_comparison</span><span class="p">(</span><span class="n">trades</span><span class="p">,</span> <span class="n">extra_features</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;RSI at Entry&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 </section>
-<section id="interactive-features">
-<h2>Interactive features<a class="headerlink" href="#interactive-features" title="Link to this heading">¶</a></h2>
+<section id="what-s-not-modeled">
+<h2>What’s not modeled<a class="headerlink" href="#what-s-not-modeled" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><strong>Drag the x-axis</strong> on any panel to pan; <strong>scroll</strong> to zoom.</p></li>
-<li><p><strong>Click a legend entry</strong> to toggle that series on/off.</p></li>
-<li><p><strong>Hover</strong> for tooltips: dates, prices, returns, profit per trade.</p></li>
-<li><p><strong>Auto-rescaling</strong>: zooming the x-axis triggers a JS callback that
-rescales the y-axes for the visible range only (single-asset layout).</p></li>
-</ul>
-</section>
-<section id="common-surprises">
-<h2>Common surprises<a class="headerlink" href="#common-surprises" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><strong>Trade-return scatter looks empty</strong>: the strategy hasn’t closed any
-trades yet. SL/TP not triggered + no signal exits = no closed trades.</p></li>
-<li><p><strong>OHLC shows a gap at the end with no buy/sell</strong>: the
-<code class="docutils literal notranslate"><span class="pre">close_all_positions()</span></code> end-of-run sweep records exits at the last
-bar’s close, which can produce a flurry of markers right at the
-right edge.</p></li>
-<li><p><strong>Volume is missing</strong>: your input data didn’t have a <code class="docutils literal notranslate"><span class="pre">Volume</span></code> column.
-Add one (or accept volume bars don’t show).</p></li>
-<li><p><strong>Equity line drops sharply with no visible trade</strong>: you took a
-large mark-to-market loss without exiting. Check <code class="docutils literal notranslate"><span class="pre">unrealized_pnl</span></code>
-in your strategy logic.</p></li>
+<li><p><strong>Time-of-day distribution.</strong> For intraday strategies you’d want
+entries-by-hour. Easy to roll yourself: <code class="docutils literal notranslate"><span class="pre">pd.to_datetime(trades['Entry</span> <span class="pre">Time']).dt.hour.value_counts()</span></code>.</p></li>
+<li><p><strong>Equity-curve drawdown analysis.</strong> That’s portfolio-level, not
+trade-level — see <code class="docutils literal notranslate"><span class="pre">calculate_stats</span></code> for the equity-curve metrics.</p></li>
+<li><p><strong>Significance testing.</strong> The win/loss comparison shows magnitudes,
+not p-values. Consider sample size before drawing conclusions —
+with 10 winners and 10 losers you’re in noise territory.</p></li>
 </ul>
 </section>
 </section>
@@ -422,23 +372,23 @@ in your strategy logic.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="data_sources.html">
+          <a class="next-page" href="reports.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Loading data</div>
+                <div class="title">HTML reports &amp; optimization heatmaps</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="commissions.html">
+          <a class="prev-page" href="data_sources.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Commissions and slippage</div>
+                <div class="title">Loading data</div>
                 
               </div>
             </a>
@@ -472,17 +422,11 @@ in your strategy logic.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Reading the Bokeh report</a><ul>
-<li><a class="reference internal" href="#saving-to-file">Saving to file</a></li>
-<li><a class="reference internal" href="#single-asset-layout">Single-asset layout</a><ul>
-<li><a class="reference internal" href="#top-equity-panel">Top: Equity panel</a></li>
-<li><a class="reference internal" href="#middle-trade-returns">Middle: Trade returns</a></li>
-<li><a class="reference internal" href="#bottom-ohlc-volume-trade-boxes">Bottom: OHLC + volume + trade boxes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#multi-asset-layout">Multi-asset layout</a></li>
-<li><a class="reference internal" href="#interactive-features">Interactive features</a></li>
-<li><a class="reference internal" href="#common-surprises">Common surprises</a></li>
+<li><a class="reference internal" href="#">Trade analytics</a><ul>
+<li><a class="reference internal" href="#hold-duration-distribution">Hold duration distribution</a></li>
+<li><a class="reference internal" href="#calendar-bias">Calendar bias</a></li>
+<li><a class="reference internal" href="#winning-vs-losing-trade-comparison">Winning vs losing trade comparison</a></li>
+<li><a class="reference internal" href="#what-s-not-modeled">What’s not modeled</a></li>
 </ul>
 </li>
 </ul>

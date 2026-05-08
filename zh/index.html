@@ -199,6 +199,9 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/walk_forward.html">Walk-forward 优化</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/commissions.html">佣金与滑点</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/data_sources.html">Loading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/analytics.html">Trade analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/reports.html">HTML reports &amp; optimization heatmaps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/trading_environment.html">Gym 交易环境</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/customize_environment.html">自定义交易环境</a></li>
 </ul>
@@ -299,8 +302,10 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>qtrade-lib
 </pre></div>
 </div>
-<p>如需 RL 评估工具，安装可选的 <code class="docutils literal notranslate"><span class="pre">rl</span></code> 附加依赖（会引入 stable-baselines3）：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;qtrade-lib[rl]&quot;</span>
+<p>QTrade ships several optional extras for things you don't always need:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;qtrade-lib[rl]&quot;</span><span class="w">     </span><span class="c1"># RL training utilities (stable-baselines3)</span>
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;qtrade-lib[data]&quot;</span><span class="w">   </span><span class="c1"># yfinance loader for US tickers</span>
+$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;qtrade-lib[cn]&quot;</span><span class="w">     </span><span class="c1"># akshare loader for Chinese A-shares + futures</span>
 </pre></div>
 </div>
 <p>或者从 <a class="reference external" href="https://github.com/gguan/qtrade">GitHub</a> 获取最新源代码：</p>
@@ -361,7 +366,7 @@ $<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </sp
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=c71fe3f7"></script>
+</div><script src="_static/documentation_options.js?v=d5d9dfed"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -198,6 +198,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/walk_forward.html">Walk-forward optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/commissions.html">Commissions and slippage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/plot.html">Reading the Bokeh report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/data_sources.html">Loading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/analytics.html">Trade analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/reports.html">HTML reports &amp; optimization heatmaps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/trading_environment.html">Gym Trading Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/customize_environment.html">Customizing Trading Environment</a></li>
 </ul>
@@ -643,6 +646,62 @@
 <a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.plot">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">plot_with_bokeh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Backtest.plot_heatmap">
+<a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.plot_heatmap">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_heatmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+                     <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">y</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                     <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render a 2D heatmap of an optimization grid.</span>
+
+<span class="sd">        Thin wrapper around</span>
+<span class="sd">        :func:`qtrade.utils.heatmap.plot_optimization_heatmap` — pass the</span>
+<span class="sd">        ``all_results`` returned by :meth:`optimize`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            results: ``all_results`` list from :meth:`optimize`.</span>
+<span class="sd">            x, y: Parameter names to lay out on the axes.</span>
+<span class="sd">            metric: Stats key to color by (e.g. ``&quot;Sharpe Ratio&quot;``).</span>
+<span class="sd">            **kwargs: Forwarded to ``plot_optimization_heatmap``</span>
+<span class="sd">                (``filename``, ``palette``, ``title``, ``aggfunc``,</span>
+<span class="sd">                ``show_plot``, ``width``, ``height``).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The Bokeh ``figure`` object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.heatmap</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_optimization_heatmap</span>
+        <span class="k">return</span> <span class="n">plot_optimization_heatmap</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Backtest.export_report">
+<a class="viewcode-back" href="../../../api/backtest/index.html#qtrade.backtest.Backtest.export_report">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">export_report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                      <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                      <span class="o">*</span><span class="p">,</span>
+                      <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;QTrade Backtest Report&quot;</span><span class="p">,</span>
+                      <span class="n">strategy_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export a single-file HTML report (stats + charts + trades).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            output_path: Destination file path.</span>
+<span class="sd">            title: Document title and main heading.</span>
+<span class="sd">            strategy_name: Optional label shown in the header. Defaults to</span>
+<span class="sd">                the strategy class name.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Absolute path (string) to the written file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.report</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_html_report</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">build_html_report</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span>
+            <span class="n">output_path</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">strategy_name</span><span class="o">=</span><span class="n">strategy_name</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_class</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+        <span class="p">))</span></div>
 </div>
 
 </pre></div>
@@ -677,7 +736,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=1dd76d02"></script>
+</div><script src="../../../_static/documentation_options.js?v=b9afe91b"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

@@ -1,12 +1,12 @@
 <!doctype html>
-<html class="no-js" lang="en" data-content_root="../">
+<html class="no-js" lang="zh-CN" data-content_root="../">
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Loading data" href="data_sources.html"><link rel="prev" title="Commissions and slippage" href="commissions.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Trade analytics" href="analytics.html"><link rel="prev" title="解读 Bokeh 报告" href="plot.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Reading the Bokeh report - QTrade</title>
+        <title>Loading data - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -186,28 +186,28 @@
   <span class="sidebar-brand-text">QTrade</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="搜索" name="q" aria-label="搜索">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+  <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
-<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
-<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Reading the Bokeh report</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_sources.html">Loading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward 优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="commissions.html">佣金与滑点</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Loading data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analytics.html">Trade analytics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reports.html">HTML reports &amp; optimization heatmaps</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<p class="caption" role="heading"><span class="caption-text">参考</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">Stats glossary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -219,7 +219,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../api/env.html">Environment (RL)</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<p class="caption" role="heading"><span class="caption-text">开发</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gguan/qtrade">GitHub</a></li>
 </ul>
@@ -249,7 +249,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/guide/plot.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/guide/data_sources.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -267,153 +267,102 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="reading-the-bokeh-report">
-<h1>Reading the Bokeh report<a class="headerlink" href="#reading-the-bokeh-report" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Backtest.plot()</span></code> (and <code class="docutils literal notranslate"><span class="pre">TradingEnv.plot()</span></code>) renders an interactive
-Bokeh report combining equity, trade returns, and per-asset OHLC
-panels. This page explains what each panel shows and how to interpret
-it.</p>
-<section id="saving-to-file">
-<h2>Saving to file<a class="headerlink" href="#saving-to-file" title="Link to this heading">¶</a></h2>
-<p>By default <code class="docutils literal notranslate"><span class="pre">plot()</span></code> calls <code class="docutils literal notranslate"><span class="pre">bokeh.io.show()</span></code> which opens the report in
-a browser. To save a self-contained HTML for sharing or archiving:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.plot_bokeh</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_with_bokeh</span>
-<span class="n">plot_with_bokeh</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>
+          <section id="loading-data">
+<h1>Loading data<a class="headerlink" href="#loading-data" title="Link to this heading">¶</a></h1>
+<p>A <code class="docutils literal notranslate"><span class="pre">Backtest</span></code> accepts any <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code> (single-asset) or
+<code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">pd.DataFrame]</span></code> (multi-asset) as long as the index is a
+<code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code> and the columns include <code class="docutils literal notranslate"><span class="pre">Open,</span> <span class="pre">High,</span> <span class="pre">Low,</span> <span class="pre">Close</span></code> (Volume is
+nice-to-have). You can build that yourself from a CSV / database / API,
+but for the common cases QTrade ships two loaders.</p>
+<section id="us-markets-from-yfinance">
+<h2>US markets — <code class="docutils literal notranslate"><span class="pre">from_yfinance</span></code><a class="headerlink" href="#us-markets-from-yfinance" title="Link to this heading">¶</a></h2>
+<p>Install the <code class="docutils literal notranslate"><span class="pre">[data]</span></code> extra:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;qtrade-lib[data]&quot;</span>
 </pre></div>
 </div>
-<p>The HTML has all data inlined — no Bokeh server, no external assets.
-Email it, commit it, drop it in a wiki.</p>
-</section>
-<section id="single-asset-layout">
-<h2>Single-asset layout<a class="headerlink" href="#single-asset-layout" title="Link to this heading">¶</a></h2>
-<p>Three stacked panels with linked x-axes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────┐
-│ ▒▓▒  Equity vs. Buy &amp; Hold (cumulative returns) │
-│                                                 │
-├─────────────────────────────────────────────────┤
-│ ▲ ▼ ▲       Trade returns (long / short)        │
-├─────────────────────────────────────────────────┤
-│       OHLC + volume + win/lose trade boxes      │
-│       + buy/sell markers                        │
-│                                                 │
-└─────────────────────────────────────────────────┘
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_yfinance</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">from_yfinance</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;AAPL&quot;</span><span class="p">,</span> <span class="s2">&quot;MSFT&quot;</span><span class="p">,</span> <span class="s2">&quot;GC=F&quot;</span><span class="p">],</span>          <span class="c1"># one ticker or a list</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">&quot;2023-01-01&quot;</span><span class="p">,</span>
+    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;2024-12-31&quot;</span><span class="p">,</span>
+    <span class="n">interval</span><span class="o">=</span><span class="s2">&quot;1d&quot;</span><span class="p">,</span>                      <span class="c1"># &quot;1h&quot;, &quot;5m&quot;, etc. all supported</span>
+    <span class="n">auto_adjust</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>                   <span class="c1"># split / dividend adjusted closes</span>
+<span class="p">)</span>
+<span class="c1"># data is a dict[str, DataFrame] aligned on the intersection of indexes</span>
+<span class="c1"># — pass straight to Backtest.</span>
 </pre></div>
 </div>
-<section id="top-equity-panel">
-<h3>Top: Equity panel<a class="headerlink" href="#top-equity-panel" title="Link to this heading">¶</a></h3>
+<p>What the helper does for you:</p>
 <ul class="simple">
-<li><p><strong>Solid blue line</strong>: portfolio equity (cumulative returns, normalized to
-1.0 at the start).</p></li>
-<li><p><strong>Gray dotted line</strong>: Buy &amp; Hold returns on the same scale.</p></li>
-<li><p><strong>Purple dot</strong>: peak equity point.</p></li>
-<li><p><strong>Blue dot</strong>: final equity point (legend shows the final pct).</p></li>
-<li><p><strong>Gray dot</strong>: final B&amp;H point.</p></li>
-<li><p><strong>Red dot</strong>: max drawdown trough.</p></li>
-<li><p><strong>Red shaded area</strong>: the drawdown region (gap between equity and its
-running max).</p></li>
-<li><p><strong>Red horizontal segment</strong>: the longest drawdown duration.</p></li>
-</ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Is the blue line above the gray? You’re beating Buy &amp; Hold.</p></li>
-<li><p>How “smooth” is the blue line vs gray? Smoother = lower volatility =
-better risk-adjusted return (the Sharpe story).</p></li>
-<li><p>Is the red shaded area concentrated in one period or spread out?
-Concentrated = strategy has one weak regime; spread out = systemic
-drag.</p></li>
+<li><p>Loops over symbols, raises a clean <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if any returned empty.</p></li>
+<li><p>Drops <code class="docutils literal notranslate"><span class="pre">NaN</span></code> rows from each frame (yfinance occasionally returns them
+on early-listing dates).</p></li>
+<li><p>Aligns every frame on the <strong>intersection</strong> of their <code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code> so
+<code class="docutils literal notranslate"><span class="pre">Backtest</span></code> accepts them as a multi-asset input.</p></li>
 </ul>
 </section>
-<section id="middle-trade-returns">
-<h3>Middle: Trade returns<a class="headerlink" href="#middle-trade-returns" title="Link to this heading">¶</a></h3>
-<p>A scatter of every closed trade plotted at its exit time:</p>
-<ul class="simple">
-<li><p><strong>Green up-triangles</strong>: long trades. y-axis is <code class="docutils literal notranslate"><span class="pre">(exit/entry</span> <span class="pre">−</span> <span class="pre">1)</span></code>.</p></li>
-<li><p><strong>Red down-triangles</strong>: short trades. y-axis is the equivalent for shorts.</p></li>
-<li><p><strong>Marker size</strong>: scaled to position size (bigger = larger trade).</p></li>
-<li><p><strong>Dashed horizontal at 0</strong>: break-even line.</p></li>
-</ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Are most markers above the 0-line? That’s your win rate eyeballed.</p></li>
-<li><p>Is there a cluster of large-magnitude losses (way below 0)? That’s
-where stop-losses (or lack thereof) hurt.</p></li>
-<li><p>Are big winners and big losers symmetric around 0? Asymmetric is
-good — small losses + large gains is the trend-following sweet spot.</p></li>
-</ul>
-</section>
-<section id="bottom-ohlc-volume-trade-boxes">
-<h3>Bottom: OHLC + volume + trade boxes<a class="headerlink" href="#bottom-ohlc-volume-trade-boxes" title="Link to this heading">¶</a></h3>
-<p>The price action with overlays:</p>
-<ul class="simple">
-<li><p><strong>Black line</strong>: closing prices.</p></li>
-<li><p><strong>Bottom bars (faint green/red)</strong>: volume (right y-axis), color-coded
-by close ≥/&lt; open.</p></li>
-<li><p><strong>Translucent green rectangles</strong>: winning trades — left/right edges
-are entry/exit times, top/bottom are entry/exit prices.</p></li>
-<li><p><strong>Translucent red rectangles</strong>: losing trades, same convention.</p></li>
-<li><p><strong>Triangle markers</strong>: order fills. Up = buy; down = sell. Size scaled
-to order magnitude.</p></li>
-</ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Trade boxes that span long horizontal stretches = you held through
-noise. Short stretches = quick in-out trades.</p></li>
-<li><p>Buy markers at local highs / sell markers at local lows = bad
-timing, possibly a sign of late signal generation.</p></li>
-<li><p>Boxes piling up densely = high turnover. Watch the
-<code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Commission</span> <span class="pre">Cost</span></code> metric in <code class="docutils literal notranslate"><span class="pre">show_stats()</span></code>.</p></li>
-</ul>
-</section>
-</section>
-<section id="multi-asset-layout">
-<h2>Multi-asset layout<a class="headerlink" href="#multi-asset-layout" title="Link to this heading">¶</a></h2>
-<p>The report adds one OHLC panel per asset, all stacked, all sharing the
-same x-axis:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────┐
-│  Portfolio equity vs equal-weighted Buy &amp; Hold  │
-├─────────────────────────────────────────────────┤
-│  Trade returns scatter (all assets combined)    │
-├─────────────────────────────────────────────────┤
-│  OHLC — AAPL                                    │
-├─────────────────────────────────────────────────┤
-│  OHLC — MSFT                                    │
-├─────────────────────────────────────────────────┤
-│  OHLC — NVDA                                    │
-└─────────────────────────────────────────────────┘
+<section id="chinese-markets-from-akshare">
+<h2>Chinese markets — <code class="docutils literal notranslate"><span class="pre">from_akshare_*</span></code><a class="headerlink" href="#chinese-markets-from-akshare" title="Link to this heading">¶</a></h2>
+<p>For A-shares and Chinese futures, install the <code class="docutils literal notranslate"><span class="pre">[cn]</span></code> extra:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;qtrade-lib[cn]&quot;</span>
 </pre></div>
 </div>
-<p>Each per-asset OHLC panel shows trades and orders <strong>filtered to that
-asset only</strong>, so you can see exactly when the strategy moved in each
-name. The equity panel up top is portfolio-level (one curve, summing
-across all assets).</p>
-<p>The Buy &amp; Hold benchmark is the <strong>equal-weighted average</strong> of each
-asset’s first-to-last return — a fair “naive portfolio” comparison.</p>
+<section id="a-shares">
+<h3>A-shares<a class="headerlink" href="#a-shares" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_akshare_stock_a</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">from_akshare_stock_a</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;600519&quot;</span><span class="p">,</span> <span class="s2">&quot;000001&quot;</span><span class="p">],</span>                 <span class="c1"># 6-digit codes, no exchange prefix</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">&quot;2024-01-01&quot;</span><span class="p">,</span>                   <span class="c1"># accepts &quot;YYYY-MM-DD&quot; or &quot;YYYYMMDD&quot;</span>
+    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;2024-12-31&quot;</span><span class="p">,</span>
+    <span class="n">period</span><span class="o">=</span><span class="s2">&quot;daily&quot;</span><span class="p">,</span>                       <span class="c1"># or &quot;weekly&quot; / &quot;monthly&quot;</span>
+    <span class="n">adjust</span><span class="o">=</span><span class="s2">&quot;qfq&quot;</span><span class="p">,</span>                         <span class="c1"># 前复权 (default; recommended for backtests)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </section>
-<section id="interactive-features">
-<h2>Interactive features<a class="headerlink" href="#interactive-features" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><strong>Drag the x-axis</strong> on any panel to pan; <strong>scroll</strong> to zoom.</p></li>
-<li><p><strong>Click a legend entry</strong> to toggle that series on/off.</p></li>
-<li><p><strong>Hover</strong> for tooltips: dates, prices, returns, profit per trade.</p></li>
-<li><p><strong>Auto-rescaling</strong>: zooming the x-axis triggers a JS callback that
-rescales the y-axes for the visible range only (single-asset layout).</p></li>
-</ul>
+<section id="futures-main-contract-continuous">
+<h3>Futures (main-contract continuous)<a class="headerlink" href="#futures-main-contract-continuous" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">Contract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">from_akshare_futures</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">from_akshare_futures</span><span class="p">(</span>
+    <span class="p">[</span><span class="s2">&quot;AU0&quot;</span><span class="p">,</span> <span class="s2">&quot;RB0&quot;</span><span class="p">],</span>                       <span class="c1"># main-contract codes (trailing 0)</span>
+    <span class="n">start</span><span class="o">=</span><span class="s2">&quot;2024-01-01&quot;</span><span class="p">,</span>
+    <span class="n">end</span><span class="o">=</span><span class="s2">&quot;2024-12-31&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Pair with Contract specs for the right multipliers / margins:</span>
+<span class="n">SHFE_AU</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="n">multiplier</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="o">=</span><span class="mf">0.08</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SHFE Gold&quot;</span><span class="p">)</span>
+<span class="n">SHFE_RB</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="n">multiplier</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>   <span class="n">margin_ratio</span><span class="o">=</span><span class="mf">0.10</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;SHFE Rebar&quot;</span><span class="p">)</span>
+
+<span class="n">bt</span> <span class="o">=</span> <span class="n">Backtest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">MyStrategy</span><span class="p">,</span> <span class="n">contracts</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;AU0&quot;</span><span class="p">:</span> <span class="n">SHFE_AU</span><span class="p">,</span> <span class="s2">&quot;RB0&quot;</span><span class="p">:</span> <span class="n">SHFE_RB</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>Same shape as the yfinance loader — Chinese column names are translated to
+standard <code class="docutils literal notranslate"><span class="pre">Open,</span> <span class="pre">High,</span> <span class="pre">Low,</span> <span class="pre">Close,</span> <span class="pre">Volume</span></code>, the index becomes a tz-naive
+<code class="docutils literal notranslate"><span class="pre">DatetimeIndex</span></code>, and frames are aligned on intersection.</p>
 </section>
-<section id="common-surprises">
-<h2>Common surprises<a class="headerlink" href="#common-surprises" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><strong>Trade-return scatter looks empty</strong>: the strategy hasn’t closed any
-trades yet. SL/TP not triggered + no signal exits = no closed trades.</p></li>
-<li><p><strong>OHLC shows a gap at the end with no buy/sell</strong>: the
-<code class="docutils literal notranslate"><span class="pre">close_all_positions()</span></code> end-of-run sweep records exits at the last
-bar’s close, which can produce a flurry of markers right at the
-right edge.</p></li>
-<li><p><strong>Volume is missing</strong>: your input data didn’t have a <code class="docutils literal notranslate"><span class="pre">Volume</span></code> column.
-Add one (or accept volume bars don’t show).</p></li>
-<li><p><strong>Equity line drops sharply with no visible trade</strong>: you took a
-large mark-to-market loss without exiting. Check <code class="docutils literal notranslate"><span class="pre">unrealized_pnl</span></code>
-in your strategy logic.</p></li>
-</ul>
+</section>
+<section id="aligning-external-data">
+<h2>Aligning external data<a class="headerlink" href="#aligning-external-data" title="Link to this heading">¶</a></h2>
+<p>If you've assembled <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">DataFrame]</span></code> yourself (e.g. from a CSV folder)
+and the indexes don't perfectly match, run:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">align_indexes</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">align_indexes</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">align_indexes</span></code> reindexes every frame on the intersection of their indexes
+— a no-op when they already match, a one-liner when they don't.</p>
+</section>
+<section id="other-data-sources">
+<h2>Other data sources<a class="headerlink" href="#other-data-sources" title="Link to this heading">¶</a></h2>
+<p>The two helpers here are convenience wrappers, not framework constraints.
+For Tushare, JoinQuant, IB, or your own pipeline, just produce a
+<code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">DataFrame]</span></code> (each indexed by datetime, OHLC capitalized) and
+hand it to <code class="docutils literal notranslate"><span class="pre">Backtest</span></code>. If the indexes aren't aligned, <code class="docutils literal notranslate"><span class="pre">align_indexes</span></code>
+takes care of it.</p>
 </section>
 </section>
 
@@ -422,23 +371,23 @@ in your strategy logic.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="data_sources.html">
+          <a class="next-page" href="analytics.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Loading data</div>
+                <div class="title">Trade analytics</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="commissions.html">
+          <a class="prev-page" href="plot.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Commissions and slippage</div>
+                <div class="title">解读 Bokeh 报告</div>
                 
               </div>
             </a>
@@ -472,17 +421,15 @@ in your strategy logic.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Reading the Bokeh report</a><ul>
-<li><a class="reference internal" href="#saving-to-file">Saving to file</a></li>
-<li><a class="reference internal" href="#single-asset-layout">Single-asset layout</a><ul>
-<li><a class="reference internal" href="#top-equity-panel">Top: Equity panel</a></li>
-<li><a class="reference internal" href="#middle-trade-returns">Middle: Trade returns</a></li>
-<li><a class="reference internal" href="#bottom-ohlc-volume-trade-boxes">Bottom: OHLC + volume + trade boxes</a></li>
+<li><a class="reference internal" href="#">Loading data</a><ul>
+<li><a class="reference internal" href="#us-markets-from-yfinance">US markets — <code class="docutils literal notranslate"><span class="pre">from_yfinance</span></code></a></li>
+<li><a class="reference internal" href="#chinese-markets-from-akshare">Chinese markets — <code class="docutils literal notranslate"><span class="pre">from_akshare_*</span></code></a><ul>
+<li><a class="reference internal" href="#a-shares">A-shares</a></li>
+<li><a class="reference internal" href="#futures-main-contract-continuous">Futures (main-contract continuous)</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#multi-asset-layout">Multi-asset layout</a></li>
-<li><a class="reference internal" href="#interactive-features">Interactive features</a></li>
-<li><a class="reference internal" href="#common-surprises">Common surprises</a></li>
+<li><a class="reference internal" href="#aligning-external-data">Aligning external data</a></li>
+<li><a class="reference internal" href="#other-data-sources">Other data sources</a></li>
 </ul>
 </li>
 </ul>
@@ -494,12 +441,13 @@ in your strategy logic.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=b9afe91b"></script>
+</div><script src="../_static/documentation_options.js?v=d5d9dfed"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/translations.js?v=beaddf03"></script>
     <script src="../_static/lang_switcher.js?v=f420260a"></script>
     </body>
 </html>

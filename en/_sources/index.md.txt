@@ -25,6 +25,9 @@ guide/multi_asset
 guide/walk_forward
 guide/commissions
 guide/plot
+guide/data_sources
+guide/analytics
+guide/reports
 guide/trading_environment
 guide/customize_environment
 ```
@@ -78,10 +81,12 @@ QTrade can be installed with [pip](https://pip.pypa.io):
 $ pip install qtrade-lib
 ```
 
-For RL evaluation utilities, install the optional `rl` extra (pulls in stable-baselines3):
+QTrade ships several optional extras for things you don't always need:
 
 ```bash
-$ pip install "qtrade-lib[rl]"
+$ pip install "qtrade-lib[rl]"     # RL training utilities (stable-baselines3)
+$ pip install "qtrade-lib[data]"   # yfinance loader for US tickers
+$ pip install "qtrade-lib[cn]"     # akshare loader for Chinese A-shares + futures
 ```
 
 Alternatively, you can obtain the latest source code from [GitHub](https://github.com/gguan/qtrade):

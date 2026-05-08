@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Loading data" href="data_sources.html"><link rel="prev" title="Commissions and slippage" href="commissions.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Gym Trading Environment" href="trading_environment.html"><link rel="prev" title="Trade analytics" href="analytics.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Reading the Bokeh report - QTrade</title>
+        <title>HTML reports &amp; optimization heatmaps - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -198,10 +198,10 @@
 <li class="toctree-l1"><a class="reference internal" href="multi_asset.html">Multi-asset / portfolio backtests</a></li>
 <li class="toctree-l1"><a class="reference internal" href="walk_forward.html">Walk-forward optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="commissions.html">Commissions and slippage</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Reading the Bokeh report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plot.html">Reading the Bokeh report</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_sources.html">Loading data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analytics.html">Trade analytics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports.html">HTML reports &amp; optimization heatmaps</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">HTML reports &amp; optimization heatmaps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym Trading Environment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customize_environment.html">Customizing Trading Environment</a></li>
 </ul>
@@ -249,7 +249,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/guide/plot.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/guide/reports.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -267,153 +267,117 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="reading-the-bokeh-report">
-<h1>Reading the Bokeh report<a class="headerlink" href="#reading-the-bokeh-report" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Backtest.plot()</span></code> (and <code class="docutils literal notranslate"><span class="pre">TradingEnv.plot()</span></code>) renders an interactive
-Bokeh report combining equity, trade returns, and per-asset OHLC
-panels. This page explains what each panel shows and how to interpret
-it.</p>
-<section id="saving-to-file">
-<h2>Saving to file<a class="headerlink" href="#saving-to-file" title="Link to this heading">¶</a></h2>
-<p>By default <code class="docutils literal notranslate"><span class="pre">plot()</span></code> calls <code class="docutils literal notranslate"><span class="pre">bokeh.io.show()</span></code> which opens the report in
-a browser. To save a self-contained HTML for sharing or archiving:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.plot_bokeh</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_with_bokeh</span>
-<span class="n">plot_with_bokeh</span><span class="p">(</span><span class="n">bt</span><span class="o">.</span><span class="n">broker</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;report.html&quot;</span><span class="p">)</span>
+          <section id="html-reports-optimization-heatmaps">
+<h1>HTML reports &amp; optimization heatmaps<a class="headerlink" href="#html-reports-optimization-heatmaps" title="Link to this heading">¶</a></h1>
+<p>Two visual outputs, both designed to be shareable as a single file you can
+email, attach to a Slack message, or commit to a results folder.</p>
+<section id="single-file-backtest-report">
+<h2>Single-file backtest report<a class="headerlink" href="#single-file-backtest-report" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bt</span> <span class="o">=</span> <span class="n">Backtest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">MyStrategy</span><span class="p">,</span> <span class="n">cash</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+<span class="n">bt</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">bt</span><span class="o">.</span><span class="n">export_report</span><span class="p">(</span><span class="s2">&quot;results/q1_run.html&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The HTML has all data inlined — no Bokeh server, no external assets.
-Email it, commit it, drop it in a wiki.</p>
-</section>
-<section id="single-asset-layout">
-<h2>Single-asset layout<a class="headerlink" href="#single-asset-layout" title="Link to this heading">¶</a></h2>
-<p>Three stacked panels with linked x-axes:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────┐
-│ ▒▓▒  Equity vs. Buy &amp; Hold (cumulative returns) │
-│                                                 │
-├─────────────────────────────────────────────────┤
-│ ▲ ▼ ▲       Trade returns (long / short)        │
-├─────────────────────────────────────────────────┤
-│       OHLC + volume + win/lose trade boxes      │
-│       + buy/sell markers                        │
-│                                                 │
-└─────────────────────────────────────────────────┘
+<p>The HTML file bundles:</p>
+<ol class="arabic simple">
+<li><p><strong>Header</strong> — strategy class, asset list, date range, starting cash,
+generation timestamp.</p></li>
+<li><p><strong>Performance table</strong> — every metric <code class="docutils literal notranslate"><span class="pre">calculate_stats</span></code> returns
+(Sharpe, Sortino, Max Drawdown, Profit Factor, etc.).</p></li>
+<li><p><strong>Charts</strong> — the same Bokeh layout <code class="docutils literal notranslate"><span class="pre">bt.plot()</span></code> produces (equity vs
+Buy &amp; Hold on top, trade-returns scatter, OHLC with entries/exits
+underneath; one OHLC panel per asset for multi-asset).</p></li>
+<li><p><strong>Per-asset stats</strong> — multi-asset only.</p></li>
+<li><p><strong>Trade analytics</strong> — hold-duration distribution and winners-vs-losers
+feature comparison from <code class="docutils literal notranslate"><span class="pre">qtrade.analytics</span></code>.</p></li>
+<li><p><strong>Trade history</strong> — first 200 rows, with <code class="docutils literal notranslate"><span class="pre">Profit</span></code> colored green/red.</p></li>
+</ol>
+<p>Bokeh JS is loaded from CDN so the HTML stays small (~50 KB regardless of
+how many trades). No internet needed to <em>generate</em> the file — only to
+<em>view</em> it.</p>
+<p>Custom title / strategy label:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bt</span><span class="o">.</span><span class="n">export_report</span><span class="p">(</span>
+    <span class="s2">&quot;results/q1_run.html&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Q1 2024 Mean-Reversion Backtest&quot;</span><span class="p">,</span>
+    <span class="n">strategy_name</span><span class="o">=</span><span class="s2">&quot;MeanRev v3.2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<section id="top-equity-panel">
-<h3>Top: Equity panel<a class="headerlink" href="#top-equity-panel" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p><strong>Solid blue line</strong>: portfolio equity (cumulative returns, normalized to
-1.0 at the start).</p></li>
-<li><p><strong>Gray dotted line</strong>: Buy &amp; Hold returns on the same scale.</p></li>
-<li><p><strong>Purple dot</strong>: peak equity point.</p></li>
-<li><p><strong>Blue dot</strong>: final equity point (legend shows the final pct).</p></li>
-<li><p><strong>Gray dot</strong>: final B&amp;H point.</p></li>
-<li><p><strong>Red dot</strong>: max drawdown trough.</p></li>
-<li><p><strong>Red shaded area</strong>: the drawdown region (gap between equity and its
-running max).</p></li>
-<li><p><strong>Red horizontal segment</strong>: the longest drawdown duration.</p></li>
-</ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Is the blue line above the gray? You’re beating Buy &amp; Hold.</p></li>
-<li><p>How “smooth” is the blue line vs gray? Smoother = lower volatility =
-better risk-adjusted return (the Sharpe story).</p></li>
-<li><p>Is the red shaded area concentrated in one period or spread out?
-Concentrated = strategy has one weak regime; spread out = systemic
-drag.</p></li>
-</ul>
 </section>
-<section id="middle-trade-returns">
-<h3>Middle: Trade returns<a class="headerlink" href="#middle-trade-returns" title="Link to this heading">¶</a></h3>
-<p>A scatter of every closed trade plotted at its exit time:</p>
-<ul class="simple">
-<li><p><strong>Green up-triangles</strong>: long trades. y-axis is <code class="docutils literal notranslate"><span class="pre">(exit/entry</span> <span class="pre">−</span> <span class="pre">1)</span></code>.</p></li>
-<li><p><strong>Red down-triangles</strong>: short trades. y-axis is the equivalent for shorts.</p></li>
-<li><p><strong>Marker size</strong>: scaled to position size (bigger = larger trade).</p></li>
-<li><p><strong>Dashed horizontal at 0</strong>: break-even line.</p></li>
-</ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Are most markers above the 0-line? That’s your win rate eyeballed.</p></li>
-<li><p>Is there a cluster of large-magnitude losses (way below 0)? That’s
-where stop-losses (or lack thereof) hurt.</p></li>
-<li><p>Are big winners and big losers symmetric around 0? Asymmetric is
-good — small losses + large gains is the trend-following sweet spot.</p></li>
-</ul>
-</section>
-<section id="bottom-ohlc-volume-trade-boxes">
-<h3>Bottom: OHLC + volume + trade boxes<a class="headerlink" href="#bottom-ohlc-volume-trade-boxes" title="Link to this heading">¶</a></h3>
-<p>The price action with overlays:</p>
-<ul class="simple">
-<li><p><strong>Black line</strong>: closing prices.</p></li>
-<li><p><strong>Bottom bars (faint green/red)</strong>: volume (right y-axis), color-coded
-by close ≥/&lt; open.</p></li>
-<li><p><strong>Translucent green rectangles</strong>: winning trades — left/right edges
-are entry/exit times, top/bottom are entry/exit prices.</p></li>
-<li><p><strong>Translucent red rectangles</strong>: losing trades, same convention.</p></li>
-<li><p><strong>Triangle markers</strong>: order fills. Up = buy; down = sell. Size scaled
-to order magnitude.</p></li>
-</ul>
-<p>What to look for:</p>
-<ul class="simple">
-<li><p>Trade boxes that span long horizontal stretches = you held through
-noise. Short stretches = quick in-out trades.</p></li>
-<li><p>Buy markers at local highs / sell markers at local lows = bad
-timing, possibly a sign of late signal generation.</p></li>
-<li><p>Boxes piling up densely = high turnover. Watch the
-<code class="docutils literal notranslate"><span class="pre">Total</span> <span class="pre">Commission</span> <span class="pre">Cost</span></code> metric in <code class="docutils literal notranslate"><span class="pre">show_stats()</span></code>.</p></li>
-</ul>
-</section>
-</section>
-<section id="multi-asset-layout">
-<h2>Multi-asset layout<a class="headerlink" href="#multi-asset-layout" title="Link to this heading">¶</a></h2>
-<p>The report adds one OHLC panel per asset, all stacked, all sharing the
-same x-axis:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────┐
-│  Portfolio equity vs equal-weighted Buy &amp; Hold  │
-├─────────────────────────────────────────────────┤
-│  Trade returns scatter (all assets combined)    │
-├─────────────────────────────────────────────────┤
-│  OHLC — AAPL                                    │
-├─────────────────────────────────────────────────┤
-│  OHLC — MSFT                                    │
-├─────────────────────────────────────────────────┤
-│  OHLC — NVDA                                    │
-└─────────────────────────────────────────────────┘
+<section id="optimization-heatmap">
+<h2>Optimization heatmap<a class="headerlink" href="#optimization-heatmap" title="Link to this heading">¶</a></h2>
+<p>After a 2D grid search, see <em>where</em> the parameter landscape is flat vs
+sharp — and whether the “best” point sits on a plateau (robust) or a
+spike (likely overfit):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">best_params</span><span class="p">,</span> <span class="n">best_stats</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+    <span class="n">maximize</span><span class="o">=</span><span class="s2">&quot;Sharpe Ratio&quot;</span><span class="p">,</span>
+    <span class="n">n1</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">n2</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">bt</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span>
+    <span class="n">results</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;Sharpe Ratio&quot;</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;results/sharpe_heatmap.html&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>Each per-asset OHLC panel shows trades and orders <strong>filtered to that
-asset only</strong>, so you can see exactly when the strategy moved in each
-name. The equity panel up top is portfolio-level (one curve, summing
-across all assets).</p>
-<p>The Buy &amp; Hold benchmark is the <strong>equal-weighted average</strong> of each
-asset’s first-to-last return — a fair “naive portfolio” comparison.</p>
-</section>
-<section id="interactive-features">
-<h2>Interactive features<a class="headerlink" href="#interactive-features" title="Link to this heading">¶</a></h2>
+<p>What you get: a Bokeh figure with categorical axes (parameter values as
+strings, so 5 / 10 / 15 line up evenly even when the grid isn’t uniform),
+a red→yellow→green color mapping (high = green, suitable for most
+metrics — flip the palette for “lower is better” metrics like Max
+Drawdown), and a hover tooltip that shows the exact value per cell.</p>
+<section id="reading-the-heatmap">
+<h3>Reading the heatmap<a class="headerlink" href="#reading-the-heatmap" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><strong>Drag the x-axis</strong> on any panel to pan; <strong>scroll</strong> to zoom.</p></li>
-<li><p><strong>Click a legend entry</strong> to toggle that series on/off.</p></li>
-<li><p><strong>Hover</strong> for tooltips: dates, prices, returns, profit per trade.</p></li>
-<li><p><strong>Auto-rescaling</strong>: zooming the x-axis triggers a JS callback that
-rescales the y-axes for the visible range only (single-asset layout).</p></li>
+<li><p><strong>Solid green region</strong> around the best point = robust. Small parameter
+drift won’t crater performance — your edge isn’t living on a knife.</p></li>
+<li><p><strong>Lone bright cell</strong> surrounded by red = almost certainly overfit. The
+exact (n1, n2) combination that won probably won’t generalize.</p></li>
+<li><p><strong>Diagonal stripes</strong> often indicate the metric depends on <code class="docutils literal notranslate"><span class="pre">n2</span> <span class="pre">−</span> <span class="pre">n1</span></code> (or
+some ratio) rather than each individually — consider re-parameterizing.</p></li>
 </ul>
 </section>
-<section id="common-surprises">
-<h2>Common surprises<a class="headerlink" href="#common-surprises" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><strong>Trade-return scatter looks empty</strong>: the strategy hasn’t closed any
-trades yet. SL/TP not triggered + no signal exits = no closed trades.</p></li>
-<li><p><strong>OHLC shows a gap at the end with no buy/sell</strong>: the
-<code class="docutils literal notranslate"><span class="pre">close_all_positions()</span></code> end-of-run sweep records exits at the last
-bar’s close, which can produce a flurry of markers right at the
-right edge.</p></li>
-<li><p><strong>Volume is missing</strong>: your input data didn’t have a <code class="docutils literal notranslate"><span class="pre">Volume</span></code> column.
-Add one (or accept volume bars don’t show).</p></li>
-<li><p><strong>Equity line drops sharply with no visible trade</strong>: you took a
-large mark-to-market loss without exiting. Check <code class="docutils literal notranslate"><span class="pre">unrealized_pnl</span></code>
-in your strategy logic.</p></li>
-</ul>
+<section id="different-metrics">
+<h3>Different metrics<a class="headerlink" href="#different-metrics" title="Link to this heading">¶</a></h3>
+<p>Color by anything in the <code class="docutils literal notranslate"><span class="pre">stats</span></code> dict:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bt</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;Total Return [%]&quot;</span><span class="p">)</span>
+<span class="n">bt</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;Max Drawdown [%]&quot;</span><span class="p">,</span>
+                <span class="n">palette</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="nb">__import__</span><span class="p">(</span><span class="s1">&#39;bokeh.palettes&#39;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;RdYlGn11&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">RdYlGn11</span><span class="p">)))</span>
+</pre></div>
+</div>
+<p>For drawdown / loss-style metrics where lower is better, reverse the
+palette so red marks the bad cells. Any Bokeh palette works.</p>
+</section>
+<section id="parameter-grids">
+<h3>3+ parameter grids<a class="headerlink" href="#parameter-grids" title="Link to this heading">¶</a></h3>
+<p>The heatmap is 2D. If you optimize over three parameters, choose two for
+the axes and let <code class="docutils literal notranslate"><span class="pre">aggfunc</span></code> (default <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>) marginalize over the third:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+    <span class="n">maximize</span><span class="o">=</span><span class="s2">&quot;Sharpe Ratio&quot;</span><span class="p">,</span>
+    <span class="n">n1</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">n2</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">bt</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;Sharpe Ratio&quot;</span><span class="p">,</span> <span class="n">aggfunc</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Or use <code class="docutils literal notranslate"><span class="pre">aggfunc=&quot;max&quot;</span></code> to see “the best Sharpe achievable at each (n1, n2)
+across any threshold” — a softer overfitting check.</p>
+</section>
+<section id="lower-level-access">
+<h3>Lower-level access<a class="headerlink" href="#lower-level-access" title="Link to this heading">¶</a></h3>
+<p>Both helpers live in <code class="docutils literal notranslate"><span class="pre">qtrade.utils</span></code> if you want to compose them yourself
+(e.g. embed the heatmap in a custom report):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.heatmap</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_optimization_heatmap</span><span class="p">,</span> <span class="n">results_to_dataframe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.report</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_html_report</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -422,23 +386,23 @@ in your strategy logic.</p></li>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="data_sources.html">
+          <a class="next-page" href="trading_environment.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Loading data</div>
+                <div class="title">Gym Trading Environment</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="commissions.html">
+          <a class="prev-page" href="analytics.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Commissions and slippage</div>
+                <div class="title">Trade analytics</div>
                 
               </div>
             </a>
@@ -472,17 +436,15 @@ in your strategy logic.</p></li>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Reading the Bokeh report</a><ul>
-<li><a class="reference internal" href="#saving-to-file">Saving to file</a></li>
-<li><a class="reference internal" href="#single-asset-layout">Single-asset layout</a><ul>
-<li><a class="reference internal" href="#top-equity-panel">Top: Equity panel</a></li>
-<li><a class="reference internal" href="#middle-trade-returns">Middle: Trade returns</a></li>
-<li><a class="reference internal" href="#bottom-ohlc-volume-trade-boxes">Bottom: OHLC + volume + trade boxes</a></li>
+<li><a class="reference internal" href="#">HTML reports &amp; optimization heatmaps</a><ul>
+<li><a class="reference internal" href="#single-file-backtest-report">Single-file backtest report</a></li>
+<li><a class="reference internal" href="#optimization-heatmap">Optimization heatmap</a><ul>
+<li><a class="reference internal" href="#reading-the-heatmap">Reading the heatmap</a></li>
+<li><a class="reference internal" href="#different-metrics">Different metrics</a></li>
+<li><a class="reference internal" href="#parameter-grids">3+ parameter grids</a></li>
+<li><a class="reference internal" href="#lower-level-access">Lower-level access</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#multi-asset-layout">Multi-asset layout</a></li>
-<li><a class="reference internal" href="#interactive-features">Interactive features</a></li>
-<li><a class="reference internal" href="#common-surprises">Common surprises</a></li>
 </ul>
 </li>
 </ul>

@@ -199,6 +199,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../guide/walk_forward.html">Walk-forward 优化</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/commissions.html">佣金与滑点</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/plot.html">解读 Bokeh 报告</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/data_sources.html">Loading data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/analytics.html">Trade analytics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/reports.html">HTML reports &amp; optimization heatmaps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/trading_environment.html">Gym 交易环境</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../guide/customize_environment.html">自定义交易环境</a></li>
 </ul>
@@ -308,6 +311,25 @@ close price; otherwise at the next bar's open.</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest.export_report">
+<span class="sig-name descname"><span class="pre">export_report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'QTrade</span> <span class="pre">Backtest</span> <span class="pre">Report'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.export_report"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.export_report" title="Link to this definition">¶</a></dt>
+<dd><p>Export a single-file HTML report (stats + charts + trades).</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_path</strong> -- Destination file path.</p></li>
+<li><p><strong>title</strong> -- Document title and main heading.</p></li>
+<li><p><strong>strategy_name</strong> -- Optional label shown in the header. Defaults to
+the strategy class name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Absolute path</strong> (<em>string</em>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="qtrade.backtest.Backtest.get_trade_history">
 <span class="sig-name descname"><span class="pre">get_trade_history</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.get_trade_history"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.get_trade_history" title="Link to this definition">¶</a></dt>
 <dd><p>Trade-by-trade DataFrame across all assets.</p>
@@ -335,6 +357,31 @@ close price; otherwise at the next bar's open.</p></li>
 <dt class="sig sig-object py" id="qtrade.backtest.Backtest.plot">
 <span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.plot"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.plot" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.backtest.Backtest.plot_heatmap">
+<span class="sig-name descname"><span class="pre">plot_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/qtrade/backtest/backtest.html#Backtest.plot_heatmap"><span class="viewcode-link"><span class="pre">[源代码]</span></span></a><a class="headerlink" href="#qtrade.backtest.Backtest.plot_heatmap" title="Link to this definition">¶</a></dt>
+<dd><p>Render a 2D heatmap of an optimization grid.</p>
+<p>Thin wrapper around
+<code class="xref py py-func docutils literal notranslate"><span class="pre">qtrade.utils.heatmap.plot_optimization_heatmap()</span></code> — pass the
+<code class="docutils literal notranslate"><span class="pre">all_results</span></code> returned by <a class="reference internal" href="#qtrade.backtest.Backtest.optimize" title="qtrade.backtest.Backtest.optimize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optimize()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">参数<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>results</strong> -- <code class="docutils literal notranslate"><span class="pre">all_results</span></code> list from <a class="reference internal" href="#qtrade.backtest.Backtest.optimize" title="qtrade.backtest.Backtest.optimize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optimize()</span></code></a>.</p></li>
+<li><p><strong>x</strong> -- Parameter names to lay out on the axes.</p></li>
+<li><p><strong>y</strong> -- Parameter names to lay out on the axes.</p></li>
+<li><p><strong>metric</strong> -- Stats key to color by (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;Sharpe</span> <span class="pre">Ratio&quot;</span></code>).</p></li>
+<li><p><strong>**kwargs</strong> -- Forwarded to <code class="docutils literal notranslate"><span class="pre">plot_optimization_heatmap</span></code>
+(<code class="docutils literal notranslate"><span class="pre">filename</span></code>, <code class="docutils literal notranslate"><span class="pre">palette</span></code>, <code class="docutils literal notranslate"><span class="pre">title</span></code>, <code class="docutils literal notranslate"><span class="pre">aggfunc</span></code>,
+<code class="docutils literal notranslate"><span class="pre">show_plot</span></code>, <code class="docutils literal notranslate"><span class="pre">width</span></code>, <code class="docutils literal notranslate"><span class="pre">height</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>The Bokeh ``figure`` object.</strong></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="qtrade.backtest.Backtest.run">
@@ -452,9 +499,11 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">test_wi
 <li><a class="reference internal" href="#">Backtest</a><ul>
 <li><a class="reference internal" href="#id1">Backtest</a><ul>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest"><code class="docutils literal notranslate"><span class="pre">Backtest</span></code></a><ul>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest.export_report"><code class="docutils literal notranslate"><span class="pre">Backtest.export_report()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.get_trade_history"><code class="docutils literal notranslate"><span class="pre">Backtest.get_trade_history()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.optimize"><code class="docutils literal notranslate"><span class="pre">Backtest.optimize()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.plot"><code class="docutils literal notranslate"><span class="pre">Backtest.plot()</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.backtest.Backtest.plot_heatmap"><code class="docutils literal notranslate"><span class="pre">Backtest.plot_heatmap()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.run"><code class="docutils literal notranslate"><span class="pre">Backtest.run()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.show_stats"><code class="docutils literal notranslate"><span class="pre">Backtest.show_stats()</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.backtest.Backtest.walk_forward_optimize"><code class="docutils literal notranslate"><span class="pre">Backtest.walk_forward_optimize()</span></code></a></li>
@@ -473,7 +522,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">test_wi
       
     </aside>
   </div>
-</div><script src="../../_static/documentation_options.js?v=c71fe3f7"></script>
+</div><script src="../../_static/documentation_options.js?v=d5d9dfed"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/scripts/furo.js?v=46bd48cc"></script>

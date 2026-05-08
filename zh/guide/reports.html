@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="FAQ" href="faq.html"><link rel="prev" title="自定义交易环境" href="customize_environment.html">
+<link rel="index" title="索引" href="../genindex.html"><link rel="search" title="搜索" href="../search.html"><link rel="next" title="Gym 交易环境" href="trading_environment.html"><link rel="prev" title="Trade analytics" href="analytics.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>统计指标词汇表 - QTrade</title>
+        <title>HTML reports &amp; optimization heatmaps - QTrade</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -192,7 +192,7 @@
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">快速开始</a></li>
 <li class="toctree-l1"><a class="reference internal" href="concepts.html">核心概念</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multi_asset.html">多资产 / 投资组合回测</a></li>
@@ -201,13 +201,13 @@
 <li class="toctree-l1"><a class="reference internal" href="plot.html">解读 Bokeh 报告</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_sources.html">Loading data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="analytics.html">Trade analytics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reports.html">HTML reports &amp; optimization heatmaps</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">HTML reports &amp; optimization heatmaps</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trading_environment.html">Gym 交易环境</a></li>
 <li class="toctree-l1"><a class="reference internal" href="customize_environment.html">自定义交易环境</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">参考</span></p>
-<ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">统计指标词汇表</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="stats_glossary.html">统计指标词汇表</a></li>
 <li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API</span></p>
@@ -249,7 +249,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/guide/stats_glossary.md.txt" title="View this page">
+  <a class="muted-link" href="../_sources/guide/reports.md.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -267,198 +267,117 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="stats-glossary">
-<h1>统计指标词汇表<a class="headerlink" href="#stats-glossary" title="Link to this heading">¶</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">Backtest.show_stats()</span></code> 和 <code class="docutils literal notranslate"><span class="pre">qtrade.utils.stats.calculate_stats()</span></code> 输出 ~25 个指标。本页解释每个指标的含义、计算方式以及粗略的判断标准。</p>
-<p>组合回测的按资产细分见 <code class="docutils literal notranslate"><span class="pre">calculate_stats_per_asset(broker)</span></code> —— 返回这些指标里交易级别那部分，以资产代码为键。</p>
-<section id="time-value">
-<h2>时间 / 净值<a class="headerlink" href="#time-value" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>指标</p></th>
-<th class="head"><p>含义</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>Start</strong></p></td>
-<td><p>首根 bar 的时间戳（取自 <code class="docutils literal notranslate"><span class="pre">equity_history.index[0]</span></code>）。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>End</strong></p></td>
-<td><p>最后一根处理过的 bar（<code class="docutils literal notranslate"><span class="pre">broker.current_time</span></code>）。</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Duration</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">End</span> <span class="pre">-</span> <span class="pre">Start</span></code>，类型为 <code class="docutils literal notranslate"><span class="pre">pd.Timedelta</span></code>。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Start Value</strong></p></td>
-<td><p>初始净值（通常等于起始现金）。</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>End Value</strong></p></td>
-<td><p>回测结束时的净值。</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="returns">
-<h2>收益<a class="headerlink" href="#returns" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>指标</p></th>
-<th class="head"><p>公式</p></th>
-<th class="head"><p>说明</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>Total Return [%]</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">(End</span> <span class="pre">-</span> <span class="pre">Start)</span> <span class="pre">/</span> <span class="pre">Start</span> <span class="pre">×</span> <span class="pre">100</span></code></p></td>
-<td><p>原始值，未年化。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Total Commission Cost[%]</strong></p></td>
-<td><p>整个回测中支付的所有佣金总和</p></td>
-<td><p>便于识别被手续费拖死的策略。</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Buy &amp; Hold Return [%]</strong></p></td>
-<td><p>单资产时为 <code class="docutils literal notranslate"><span class="pre">(close[-1]</span> <span class="pre">-</span> <span class="pre">close[0])</span> <span class="pre">/</span> <span class="pre">close[0]</span> <span class="pre">×</span> <span class="pre">100</span></code>；多资产时为各资产的<strong>等权平均</strong></p></td>
-<td><p>需要击败的基准。跑不赢 Buy &amp; Hold 的策略通常不如被动持有。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Return (Ann.) [%]</strong></p></td>
-<td><p>日收益率的几何平均，按 252（股票）或 365（加密 / 外汇）天年化</p></td>
-<td><p>复合年增长率（CAGR）。</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Volatility (Ann.) [%]</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">std(daily_returns)</span> <span class="pre">×</span> <span class="pre">√annual_days</span> <span class="pre">×</span> <span class="pre">100</span></code></p></td>
-<td><p>收益率的标准差，按年缩放。</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>252 / 365 年化因子自动检测：如果净值曲线把周末当作交易日（≥ 60% 的周末 bar 有数据），按 365 天年化；否则按 252。</p>
-</section>
-<section id="risk">
-<h2>风险<a class="headerlink" href="#risk" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>指标</p></th>
-<th class="head"><p>公式</p></th>
-<th class="head"><p>说明</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>Max Drawdown [%]</strong></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">min((equity</span> <span class="pre">-</span> <span class="pre">cummax(equity))</span> <span class="pre">/</span> <span class="pre">cummax(equity))</span> <span class="pre">×</span> <span class="pre">100</span></code></p></td>
-<td><p>最大峰谷跌幅，恒 ≤ 0。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Max Drawdown Duration</strong></p></td>
-<td><p>最长连续「在峰值之下」的时间段长度</p></td>
-<td><p>返回 <code class="docutils literal notranslate"><span class="pre">pd.Timedelta</span></code>。是恢复期最长的回撤，不是最深的那次。</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="trade-statistics">
-<h2>交易统计<a class="headerlink" href="#trade-statistics" title="Link to this heading">¶</a></h2>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p>指标</p></th>
-<th class="head"><p>说明</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><strong>Total Trades</strong></p></td>
-<td><p>所有资产已平仓交易总数。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Win Rate [%]</strong></p></td>
-<td><p>盈利交易占已平仓交易的百分比。</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Best Trade [%]</strong></p></td>
-<td><p>单笔最大盈利（账户币种，不是百分比）。标签写「[%]」是历史遗留 —— 实际是绝对盈亏值。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Worst Trade [%]</strong></p></td>
-<td><p>同上，但取最负盈亏。</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Avg Winning Trade [%]</strong></p></td>
-<td><p>盈利交易的平均盈利。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Avg Losing Trade [%]</strong></p></td>
-<td><p>亏损交易的平均盈亏（负值）。</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>Avg Winning Trade Duration</strong></p></td>
-<td><p>盈利交易的平均持仓时长。</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>Avg Losing Trade Duration</strong></p></td>
-<td><p>亏损交易的平均持仓时长。</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>如果「赢家持仓时间更长」，说明你有「让利润奔跑，及时止损」的模式。反过来则是过早砍掉赢家。</p>
-</section>
-<section id="performance-ratios">
-<h2>绩效比率<a class="headerlink" href="#performance-ratios" title="Link to this heading">¶</a></h2>
-<p>这些把收益和风险压缩成一个单一数字。不同比率惩罚的对象不一样。</p>
-<section id="profit-factor">
-<h3>Profit Factor（盈亏比）<a class="headerlink" href="#profit-factor" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">(</span><span class="n">wins</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="o">|</span><span class="n">losses</span><span class="o">|</span><span class="p">)</span>
+          <section id="html-reports-optimization-heatmaps">
+<h1>HTML reports &amp; optimization heatmaps<a class="headerlink" href="#html-reports-optimization-heatmaps" title="Link to this heading">¶</a></h1>
+<p>Two visual outputs, both designed to be shareable as a single file you can
+email, attach to a Slack message, or commit to a results folder.</p>
+<section id="single-file-backtest-report">
+<h2>Single-file backtest report<a class="headerlink" href="#single-file-backtest-report" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bt</span> <span class="o">=</span> <span class="n">Backtest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">MyStrategy</span><span class="p">,</span> <span class="n">cash</span><span class="o">=</span><span class="mi">100_000</span><span class="p">)</span>
+<span class="n">bt</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">bt</span><span class="o">.</span><span class="n">export_report</span><span class="p">(</span><span class="s2">&quot;results/q1_run.html&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>越高越好。&gt; 1 说明净盈利。&gt; 2 比较少见且优秀。无亏损交易时为 NaN。</p>
-</section>
-<section id="expectancy">
-<h3>Expectancy（期望值）<a class="headerlink" href="#expectancy" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">wins</span><span class="p">)</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="o">|</span><span class="n">losses</span><span class="o">|</span><span class="p">))</span> <span class="o">/</span> <span class="n">total_trades</span>
+<p>The HTML file bundles:</p>
+<ol class="arabic simple">
+<li><p><strong>Header</strong> — strategy class, asset list, date range, starting cash,
+generation timestamp.</p></li>
+<li><p><strong>Performance table</strong> — every metric <code class="docutils literal notranslate"><span class="pre">calculate_stats</span></code> returns
+(Sharpe, Sortino, Max Drawdown, Profit Factor, etc.).</p></li>
+<li><p><strong>Charts</strong> — the same Bokeh layout <code class="docutils literal notranslate"><span class="pre">bt.plot()</span></code> produces (equity vs
+Buy &amp; Hold on top, trade-returns scatter, OHLC with entries/exits
+underneath; one OHLC panel per asset for multi-asset).</p></li>
+<li><p><strong>Per-asset stats</strong> — multi-asset only.</p></li>
+<li><p><strong>Trade analytics</strong> — hold-duration distribution and winners-vs-losers
+feature comparison from <code class="docutils literal notranslate"><span class="pre">qtrade.analytics</span></code>.</p></li>
+<li><p><strong>Trade history</strong> — first 200 rows, with <code class="docutils literal notranslate"><span class="pre">Profit</span></code> colored green/red.</p></li>
+</ol>
+<p>Bokeh JS is loaded from CDN so the HTML stays small (~50 KB regardless of
+how many trades). No internet needed to <em>generate</em> the file — only to
+<em>view</em> it.</p>
+<p>Custom title / strategy label:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bt</span><span class="o">.</span><span class="n">export_report</span><span class="p">(</span>
+    <span class="s2">&quot;results/q1_run.html&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Q1 2024 Mean-Reversion Backtest&quot;</span><span class="p">,</span>
+    <span class="n">strategy_name</span><span class="o">=</span><span class="s2">&quot;MeanRev v3.2&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>每笔交易的平均盈亏（账户币种）。正期望值意味着平均而言每笔交易都值得做。</p>
 </section>
-<section id="sharpe-ratio">
-<h3>Sharpe Ratio（夏普比率）<a class="headerlink" href="#sharpe-ratio" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mean(daily_returns) / std(daily_returns) × √annual_days
+<section id="optimization-heatmap">
+<h2>Optimization heatmap<a class="headerlink" href="#optimization-heatmap" title="Link to this heading">¶</a></h2>
+<p>After a 2D grid search, see <em>where</em> the parameter landscape is flat vs
+sharp — and whether the &quot;best&quot; point sits on a plateau (robust) or a
+spike (likely overfit):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">best_params</span><span class="p">,</span> <span class="n">best_stats</span><span class="p">,</span> <span class="n">results</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+    <span class="n">maximize</span><span class="o">=</span><span class="s2">&quot;Sharpe Ratio&quot;</span><span class="p">,</span>
+    <span class="n">n1</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">n2</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">bt</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span>
+    <span class="n">results</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span>
+    <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;Sharpe Ratio&quot;</span><span class="p">,</span>
+    <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;results/sharpe_heatmap.html&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>无风险利率默认为 0（如需调整，编辑 <code class="docutils literal notranslate"><span class="pre">stats.py</span></code> 里的 <code class="docutils literal notranslate"><span class="pre">__calculate_performance_ratios</span></code>）。粗略判断：</p>
+<p>What you get: a Bokeh figure with categorical axes (parameter values as
+strings, so 5 / 10 / 15 line up evenly even when the grid isn't uniform),
+a red→yellow→green color mapping (high = green, suitable for most
+metrics — flip the palette for &quot;lower is better&quot; metrics like Max
+Drawdown), and a hover tooltip that shows the exact value per cell.</p>
+<section id="reading-the-heatmap">
+<h3>Reading the heatmap<a class="headerlink" href="#reading-the-heatmap" title="Link to this heading">¶</a></h3>
 <ul class="simple">
-<li><p><strong>&lt; 0</strong>：亏损策略。</p></li>
-<li><p><strong>0–1</strong>：勉强；可能只是样本内的噪声。</p></li>
-<li><p><strong>1–2</strong>：扎实。</p></li>
-<li><p><strong>&gt; 2</strong>：优秀（通常好得不像真的 —— 检查是否过拟合或未来函数）。</p></li>
+<li><p><strong>Solid green region</strong> around the best point = robust. Small parameter
+drift won't crater performance — your edge isn't living on a knife.</p></li>
+<li><p><strong>Lone bright cell</strong> surrounded by red = almost certainly overfit. The
+exact (n1, n2) combination that won probably won't generalize.</p></li>
+<li><p><strong>Diagonal stripes</strong> often indicate the metric depends on <code class="docutils literal notranslate"><span class="pre">n2</span> <span class="pre">−</span> <span class="pre">n1</span></code> (or
+some ratio) rather than each individually — consider re-parameterizing.</p></li>
 </ul>
 </section>
-<section id="sortino-ratio">
-<h3>Sortino Ratio（索提诺比率）<a class="headerlink" href="#sortino-ratio" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>mean(daily_returns) / std(daily_returns[&lt; 0]) × √annual_days
+<section id="different-metrics">
+<h3>Different metrics<a class="headerlink" href="#different-metrics" title="Link to this heading">¶</a></h3>
+<p>Color by anything in the <code class="docutils literal notranslate"><span class="pre">stats</span></code> dict:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bt</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;Total Return [%]&quot;</span><span class="p">)</span>
+<span class="n">bt</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;Max Drawdown [%]&quot;</span><span class="p">,</span>
+                <span class="n">palette</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="nb">__import__</span><span class="p">(</span><span class="s1">&#39;bokeh.palettes&#39;</span><span class="p">,</span> <span class="n">fromlist</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;RdYlGn11&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">RdYlGn11</span><span class="p">)))</span>
 </pre></div>
 </div>
-<p>和 Sharpe 类似，但只惩罚下行波动。收益分布非对称的策略（多数趋势跟随）在这里比 Sharpe 表现更好。</p>
+<p>For drawdown / loss-style metrics where lower is better, reverse the
+palette so red marks the bad cells. Any Bokeh palette works.</p>
 </section>
-<section id="calmar-ratio">
-<h3>Calmar Ratio（卡玛比率）<a class="headerlink" href="#calmar-ratio" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">abs</span><span class="p">(</span><span class="n">annualized_return</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">max_drawdown</span><span class="p">)</span>
+<section id="parameter-grids">
+<h3>3+ parameter grids<a class="headerlink" href="#parameter-grids" title="Link to this heading">¶</a></h3>
+<p>The heatmap is 2D. If you optimize over three parameters, choose two for
+the axes and let <code class="docutils literal notranslate"><span class="pre">aggfunc</span></code> (default <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>) marginalize over the third:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">bt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
+    <span class="n">maximize</span><span class="o">=</span><span class="s2">&quot;Sharpe Ratio&quot;</span><span class="p">,</span>
+    <span class="n">n1</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+    <span class="n">n2</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+    <span class="n">threshold</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">bt</span><span class="o">.</span><span class="n">plot_heatmap</span><span class="p">(</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;n1&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;n2&quot;</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="s2">&quot;Sharpe Ratio&quot;</span><span class="p">,</span> <span class="n">aggfunc</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>每单位最坏回撤换来多少年化收益。&gt; 1 算不错（年收益超过最大回撤）。</p>
+<p>Or use <code class="docutils literal notranslate"><span class="pre">aggfunc=&quot;max&quot;</span></code> to see &quot;the best Sharpe achievable at each (n1, n2)
+across any threshold&quot; — a softer overfitting check.</p>
 </section>
-<section id="omega-ratio">
-<h3>Omega Ratio（Omega 比率）<a class="headerlink" href="#omega-ratio" title="Link to this heading">¶</a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">sum</span><span class="p">(</span><span class="n">returns</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="o">|</span><span class="nb">sum</span><span class="p">(</span><span class="n">returns</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">)</span><span class="o">|</span>
+<section id="lower-level-access">
+<h3>Lower-level access<a class="headerlink" href="#lower-level-access" title="Link to this heading">¶</a></h3>
+<p>Both helpers live in <code class="docutils literal notranslate"><span class="pre">qtrade.utils</span></code> if you want to compose them yourself
+(e.g. embed the heatmap in a custom report):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.heatmap</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_optimization_heatmap</span><span class="p">,</span> <span class="n">results_to_dataframe</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils.report</span><span class="w"> </span><span class="kn">import</span> <span class="n">build_html_report</span>
 </pre></div>
 </div>
-<p>阈值为 0（即所有日收益样本中，盈利之和除以亏损之和）。捕捉收益的完整分布，而非均值 / 标准差摘要。&gt; 1 即为正。</p>
 </section>
-</section>
-<section id="sanity-checking-your-stats">
-<h2>对统计结果的合理性检查<a class="headerlink" href="#sanity-checking-your-stats" title="Link to this heading">¶</a></h2>
-<p>在为回测结果兴奋之前先验证几件事：</p>
-<ul class="simple">
-<li><p><strong>总交易数合理</strong> —— 个位数的交易数可能偶然产生 Sharpe = 5。你需要足够多的交易让指标在统计上有意义。</p></li>
-<li><p><strong>Total Return &gt; Buy &amp; Hold</strong> —— 跑赢 B&amp;H 是底线。纯多头策略输给 B&amp;H 说明你的择时帮倒忙。</p></li>
-<li><p><strong>胜率 × 均赢 &gt; (1 − 胜率) × |均亏|</strong> —— 基本期望值条件。不满足说明策略结构性亏损。</p></li>
-<li><p><strong>信任 <code class="docutils literal notranslate"><span class="pre">optimize</span></code> 结果前先跑 <code class="docutils literal notranslate"><span class="pre">walk_forward_optimize</span></code></strong> —— 样本内 Sharpe 基本都偏高。详见 <a class="reference internal" href="walk_forward.html"><span class="std std-doc">Walk-forward 优化</span></a>。</p></li>
-</ul>
 </section>
 </section>
 
@@ -467,23 +386,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="faq.html">
+          <a class="next-page" href="trading_environment.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">FAQ</div>
+                <div class="title">Gym 交易环境</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="customize_environment.html">
+          <a class="prev-page" href="analytics.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">自定义交易环境</div>
+                <div class="title">Trade analytics</div>
                 
               </div>
             </a>
@@ -517,21 +436,15 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">统计指标词汇表</a><ul>
-<li><a class="reference internal" href="#time-value">时间 / 净值</a></li>
-<li><a class="reference internal" href="#returns">收益</a></li>
-<li><a class="reference internal" href="#risk">风险</a></li>
-<li><a class="reference internal" href="#trade-statistics">交易统计</a></li>
-<li><a class="reference internal" href="#performance-ratios">绩效比率</a><ul>
-<li><a class="reference internal" href="#profit-factor">Profit Factor（盈亏比）</a></li>
-<li><a class="reference internal" href="#expectancy">Expectancy（期望值）</a></li>
-<li><a class="reference internal" href="#sharpe-ratio">Sharpe Ratio（夏普比率）</a></li>
-<li><a class="reference internal" href="#sortino-ratio">Sortino Ratio（索提诺比率）</a></li>
-<li><a class="reference internal" href="#calmar-ratio">Calmar Ratio（卡玛比率）</a></li>
-<li><a class="reference internal" href="#omega-ratio">Omega Ratio（Omega 比率）</a></li>
+<li><a class="reference internal" href="#">HTML reports &amp; optimization heatmaps</a><ul>
+<li><a class="reference internal" href="#single-file-backtest-report">Single-file backtest report</a></li>
+<li><a class="reference internal" href="#optimization-heatmap">Optimization heatmap</a><ul>
+<li><a class="reference internal" href="#reading-the-heatmap">Reading the heatmap</a></li>
+<li><a class="reference internal" href="#different-metrics">Different metrics</a></li>
+<li><a class="reference internal" href="#parameter-grids">3+ parameter grids</a></li>
+<li><a class="reference internal" href="#lower-level-access">Lower-level access</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#sanity-checking-your-stats">对统计结果的合理性检查</a></li>
 </ul>
 </li>
 </ul>
