@@ -18,7 +18,7 @@ sys.path.insert(0, root_path)
 project = 'QTrade'
 copyright = f'{time.localtime().tm_year}, Guan Guan'
 author = 'Guan Guan'
-release = '0.5.0'
+release = '0.6.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

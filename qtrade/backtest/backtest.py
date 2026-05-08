@@ -364,3 +364,53 @@ class Backtest:
 
     def plot(self):
         plot_with_bokeh(self.broker)
+
+    def plot_heatmap(self,
+                     results: list[dict[str, Any]],
+                     x: str,
+                     y: str,
+                     metric: str,
+                     **kwargs):
+        """Render a 2D heatmap of an optimization grid.
+
+        Thin wrapper around
+        :func:`qtrade.utils.heatmap.plot_optimization_heatmap` — pass the
+        ``all_results`` returned by :meth:`optimize`.
+
+        Args:
+            results: ``all_results`` list from :meth:`optimize`.
+            x, y: Parameter names to lay out on the axes.
+            metric: Stats key to color by (e.g. ``"Sharpe Ratio"``).
+            **kwargs: Forwarded to ``plot_optimization_heatmap``
+                (``filename``, ``palette``, ``title``, ``aggfunc``,
+                ``show_plot``, ``width``, ``height``).
+
+        Returns:
+            The Bokeh ``figure`` object.
+        """
+        from qtrade.utils.heatmap import plot_optimization_heatmap
+        return plot_optimization_heatmap(results, x=x, y=y, metric=metric, **kwargs)
+
+    def export_report(self,
+                      output_path: str,
+                      *,
+                      title: str = "QTrade Backtest Report",
+                      strategy_name: str | None = None) -> str:
+        """Export a single-file HTML report (stats + charts + trades).
+
+        Args:
+            output_path: Destination file path.
+            title: Document title and main heading.
+            strategy_name: Optional label shown in the header. Defaults to
+                the strategy class name.
+
+        Returns:
+            Absolute path (string) to the written file.
+        """
+        from qtrade.utils.report import build_html_report
+        return str(build_html_report(
+            self.broker,
+            output_path,
+            title=title,
+            strategy_name=strategy_name or self.strategy_class.__name__,
+        ))

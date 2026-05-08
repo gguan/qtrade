@@ -319,7 +319,8 @@ def plot_with_bokeh(broker: Broker, filename=None):
     return _plot_single_asset(broker, filename)
 
 
-def _plot_single_asset(broker: Broker, filename=None):
+def _plot_single_asset_layout(broker: Broker):
+    """Build the gridplot for a single-asset report (no show/save side effects)."""
     only_asset = next(iter(broker.data_by_asset))
     df = broker.data_by_asset[only_asset]
     plot_volume = 'Volume' in df.columns
@@ -441,11 +442,16 @@ def _plot_single_asset(broker: Broker, filename=None):
 
     figs = [fig_equity, fig_trade, fig_ohlc]
     _apply_styling(figs)
-    _render(figs, filename)
+    return _build_grid(figs)
 
 
-def _plot_multi_asset(broker: Broker, filename=None):
-    """Multi-asset report: portfolio equity + per-asset OHLC panels stacked."""
+def _plot_single_asset(broker: Broker, filename=None):
+    grid = _plot_single_asset_layout(broker)
+    _render(grid, filename)
+
+
+def _plot_multi_asset_layout(broker: Broker):
+    """Build the gridplot for a multi-asset report (no show/save side effects)."""
     equity_history = broker.equity_history.loc[:broker.current_time].copy(deep=True)
     equity_history.reset_index(drop=True, inplace=True)
     cumulative_returns = equity_history / equity_history.iloc[0]
@@ -492,7 +498,12 @@ def _plot_multi_asset(broker: Broker, filename=None):
 
     figs = [fig_equity, fig_trade, *asset_figs]
     _apply_styling(figs)
-    _render(figs, filename)
+    return _build_grid(figs)
+
+
+def _plot_multi_asset(broker: Broker, filename=None):
+    grid = _plot_multi_asset_layout(broker)
+    _render(grid, filename)
 
 
 def _apply_styling(figs):
@@ -519,8 +530,9 @@ def _apply_styling(figs):
         f.ygrid.grid_line_dash = "dotted"
 
 
-def _render(figs, filename):
-    grid = gridplot(
+def _build_grid(figs):
+    """Compose a list of figures into a Bokeh gridplot (single column)."""
+    return gridplot(
         figs,
         ncols=1,
         sizing_mode='stretch_width',
@@ -528,6 +540,9 @@ def _render(figs, filename):
         toolbar_options=dict(logo=None),
         toolbar_location='right',
     )
+
+
+def _render(grid, filename):
     show(grid)
     if filename:
         from bokeh.io import output_file, save
