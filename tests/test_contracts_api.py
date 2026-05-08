@@ -124,6 +124,24 @@ def test_partial_contracts_dict_fills_missing_with_stock_cash(mixed_data):
     assert bt.broker.multiplier_by_asset["ES=F"] == 50
 
 
+def test_contracts_dict_with_extra_keys_raises(mixed_data):
+    """Catching typos in asset symbols — silently dropping them produces
+    wrong-but-plausible backtests."""
+    with pytest.raises(ValueError, match=r"contracts dict has keys not in data"):
+        Backtest(mixed_data, _BuyOnce, cash=100_000, commission=NoCommission(),
+                 trade_on_close=True,
+                 contracts={'AAPL': STOCK_CASH, 'GC': GC_COMEX})  # typo: GC vs GC=F
+
+
+def test_contracts_dict_for_single_asset_must_use_default_key(stock_data):
+    """Single-asset data is keyed as 'default' internally; using a real ticker
+    name in the contracts dict is a typo, not a feature."""
+    with pytest.raises(ValueError, match=r"contracts dict has keys not in data"):
+        Backtest(stock_data, _BuyOnce, cash=10_000, commission=NoCommission(),
+                 trade_on_close=True,
+                 contracts={'AAPL': STOCK_CASH})  # should be contracts=STOCK_CASH
+
+
 def test_contracts_with_explicit_margin_raises(mixed_data):
     """Mixing the high-level and low-level APIs is rejected."""
     with pytest.raises(ValueError, match=r"either `contracts=` OR"):
