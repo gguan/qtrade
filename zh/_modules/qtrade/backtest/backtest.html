@@ -267,6 +267,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.backtest.strategy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.contracts</span><span class="w"> </span><span class="kn">import</span> <span class="n">STOCK_CASH</span><span class="p">,</span> <span class="n">Contract</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Broker</span><span class="p">,</span> <span class="n">Commission</span><span class="p">,</span> <span class="n">Order</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qtrade.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_stats</span><span class="p">,</span> <span class="n">plot_with_bokeh</span>
 
@@ -285,10 +286,11 @@
                  <span class="n">strategy_class</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Strategy</span><span class="p">],</span>
                  <span class="n">cash</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
                  <span class="n">commission</span><span class="p">:</span> <span class="n">Commission</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">margin_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">margin_ratio</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">trade_on_close</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                  <span class="n">contract_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">contracts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]</span> <span class="o">|</span> <span class="n">Contract</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
@@ -298,17 +300,21 @@
 <span class="sd">            strategy_class: Strategy class (subclass of Strategy) to instantiate.</span>
 <span class="sd">            cash: Starting cash.</span>
 <span class="sd">            commission: Commission calculator (None ⇒ no commission).</span>
-<span class="sd">            margin_ratio: Margin requirement. Pass a scalar in (0, 1] to apply</span>
-<span class="sd">                uniformly, or a dict keyed by asset for per-asset values</span>
-<span class="sd">                (e.g. ``{&quot;AAPL&quot;: 1.0, &quot;GC&quot;: 0.05}`` for a stock + futures portfolio).</span>
+<span class="sd">            contracts: **Preferred** way to specify per-asset multiplier and</span>
+<span class="sd">                margin. Pass a single :class:`~qtrade.contracts.Contract` to</span>
+<span class="sd">                apply to all assets, or a dict keyed by asset symbol — assets</span>
+<span class="sd">                you don&#39;t list resolve to :data:`~qtrade.contracts.STOCK_CASH`</span>
+<span class="sd">                (no leverage, multiplier 1.0). Built-in specs live in</span>
+<span class="sd">                :mod:`qtrade.contracts` (``STOCK_CASH``, ``GC_COMEX``,</span>
+<span class="sd">                ``ES_CME``, etc.); custom ``Contract(multiplier=…, margin_ratio=…)``</span>
+<span class="sd">                instances work the same way.</span>
+<span class="sd">            margin_ratio: Lower-level escape hatch (scalar or dict).</span>
+<span class="sd">                Mutually exclusive with ``contracts``.</span>
+<span class="sd">            contract_multiplier: Lower-level escape hatch (scalar or dict).</span>
+<span class="sd">                Mutually exclusive with ``contracts``.</span>
 <span class="sd">            trade_on_close: If True, market orders fill at the current bar&#39;s</span>
 <span class="sd">                close price; otherwise at the next bar&#39;s open.</span>
 <span class="sd">            verbose: Verbose logging.</span>
-<span class="sd">            contract_multiplier: Contract size for futures-style instruments —</span>
-<span class="sd">                the dollar P&amp;L per 1 unit of price movement per contract. ``100``</span>
-<span class="sd">                for COMEX gold (GC), ``50`` for E-mini S&amp;P (ES), ``1000`` for</span>
-<span class="sd">                crude (CL), ``1`` for stocks (the default). Pass a dict keyed by</span>
-<span class="sd">                asset for portfolios mixing stocks and futures across categories.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_is_multi_asset</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span>
 
@@ -327,6 +333,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_and_sort</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
+        <span class="c1"># Resolve the contracts API into the lower-level (margin_ratio,</span>
+        <span class="c1"># contract_multiplier) pair the Broker consumes. The two APIs are</span>
+        <span class="c1"># mutually exclusive — pass `contracts` OR the explicit dicts/scalars,</span>
+        <span class="c1"># not both.</span>
+        <span class="n">margin_ratio</span><span class="p">,</span> <span class="n">contract_multiplier</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resolve_contracts</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">contracts</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="p">,</span> <span class="n">contract_multiplier</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">broker</span> <span class="o">=</span> <span class="n">Broker</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">cash</span><span class="p">,</span> <span class="n">commission</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="p">,</span> <span class="n">trade_on_close</span><span class="p">,</span>
             <span class="n">contract_multiplier</span><span class="o">=</span><span class="n">contract_multiplier</span><span class="p">,</span>
@@ -338,12 +352,53 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span> <span class="o">=</span> <span class="n">margin_ratio</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span> <span class="o">=</span> <span class="n">trade_on_close</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">contract_multiplier</span> <span class="o">=</span> <span class="n">contract_multiplier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">contracts</span> <span class="o">=</span> <span class="n">contracts</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">order_history</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Order</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span> <span class="k">if</span> <span class="n">verbose</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_contracts</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">contracts</span><span class="p">,</span> <span class="n">margin_ratio</span><span class="p">,</span> <span class="n">contract_multiplier</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Map the user-facing ``contracts`` API onto Broker&#39;s (margin_ratio,</span>
+<span class="sd">        contract_multiplier) pair. Returns ``(margin_ratio, contract_multiplier)``.</span>
+
+<span class="sd">        Rules:</span>
+<span class="sd">        - If ``contracts`` is None: use the explicit args verbatim (or 1.0 default).</span>
+<span class="sd">        - If ``contracts`` is a Contract: applies uniformly to every asset.</span>
+<span class="sd">        - If ``contracts`` is a dict: per-asset; missing keys fall back to STOCK_CASH.</span>
+<span class="sd">        - Mixing ``contracts`` with ``margin_ratio`` / ``contract_multiplier`` raises.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">contracts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Legacy / lower-level path. Default scalar margin to 1.0 for stocks.</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">margin_ratio</span> <span class="k">if</span> <span class="n">margin_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">1.0</span><span class="p">,</span>
+                    <span class="n">contract_multiplier</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">margin_ratio</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">contract_multiplier</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Pass either `contracts=` OR (`margin_ratio=` / `contract_multiplier=`), &quot;</span>
+                <span class="s2">&quot;not both.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Determine the asset set from data (for both single- and multi-asset).</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="n">assets</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">assets</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contracts</span><span class="p">,</span> <span class="n">Contract</span><span class="p">):</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">contracts</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Per-asset dict: missing keys fall back to STOCK_CASH so that pure</span>
+            <span class="c1"># stock backtests need zero per-asset configuration.</span>
+            <span class="n">resolved</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">contracts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">STOCK_CASH</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">margin_ratio</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">resolved</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="p">{</span><span class="n">a</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">multiplier</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">resolved</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+        <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_validate_and_sort</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
@@ -511,7 +566,7 @@
                 <span class="n">margin_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span>
                 <span class="n">trade_on_close</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">,</span>
                 <span class="n">contract_multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contract_multiplier</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span>  <span class="c1"># contracts already resolved to margin_ratio/multiplier above</span>
             <span class="n">best_params</span><span class="p">,</span> <span class="n">train_stats</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">train_bt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span>
                 <span class="n">maximize</span><span class="o">=</span><span class="n">maximize</span><span class="p">,</span> <span class="n">constraint</span><span class="o">=</span><span class="n">constraint</span><span class="p">,</span> <span class="o">**</span><span class="n">params_grid</span><span class="p">,</span>
             <span class="p">)</span>
@@ -526,7 +581,7 @@
                 <span class="n">margin_ratio</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">margin_ratio</span><span class="p">,</span>
                 <span class="n">trade_on_close</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">trade_on_close</span><span class="p">,</span>
                 <span class="n">contract_multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">contract_multiplier</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="p">)</span>  <span class="c1"># contracts already resolved to margin_ratio/multiplier above</span>
             <span class="n">test_bt</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">**</span><span class="p">(</span><span class="n">best_params</span> <span class="ow">or</span> <span class="p">{}))</span>
             <span class="n">test_stats</span> <span class="o">=</span> <span class="n">calculate_stats</span><span class="p">(</span><span class="n">test_bt</span><span class="o">.</span><span class="n">broker</span><span class="p">)</span>
 
