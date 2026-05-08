@@ -7,6 +7,12 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 
 ## [Unreleased]
 
+## [0.5.0]
+
+The big v0.5 theme: **futures support**. Run portfolios that mix
+stocks (no leverage) with multi-category futures (each with its own
+contract multiplier and margin requirement) in one backtest.
+
 ### Added
 - **High-level `contracts=` API** on `Backtest`. Pass a single
   `Contract` (applies uniformly) or a dict keyed by asset symbol
@@ -44,6 +50,19 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 - `examples/mixed_portfolio.py` — realistic stock + multi-category
   futures portfolio (AAPL + ES + GC + CL) with different multipliers
   and margins per asset.
+
+### Fixed
+- `equity_history` is now NaN for un-processed future bars instead of
+  pre-filled with the starting cash. Reading mid-backtest no longer
+  shows a misleading flat-cash line.
+- Pure stop orders (`Order(stop=...)` with no limit) now fill at the
+  trigger price (or the bar's open if the market gapped past the stop)
+  instead of the bar's close. SL/TP attached to a Trade was already
+  correct.
+- `contracts=` dict now validates that every key matches a real asset.
+  Previously a typo (`"GC"` instead of `"GC=F"`) was silently dropped
+  and the asset fell back to `STOCK_CASH`, producing a wrong-but-
+  plausible backtest with no warning.
 
 ## [0.4.1]
 
@@ -151,7 +170,8 @@ Initial development versions: single-asset Broker / Strategy / Backtest,
 basic Gymnasium TradingEnv, Bokeh plotting, stats calculation. See git
 history for details.
 
-[Unreleased]: https://github.com/gguan/qtrade/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/gguan/qtrade/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/gguan/qtrade/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/gguan/qtrade/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/gguan/qtrade/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/gguan/qtrade/compare/v0.2.0...v0.3.0
