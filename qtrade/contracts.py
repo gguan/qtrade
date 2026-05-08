@@ -54,8 +54,22 @@ class Contract:
 # ---------------------------------------------------------------------------
 # Built-in specs for common instruments.
 #
-# These are conventional values — use them as starting points and override
-# per-broker if your account specifics differ.
+# ⚠️  These are CONVENTIONAL values, not authoritative ones. ``multiplier``
+#     is fixed by the contract spec (and rarely changes — check the exchange
+#     page if in doubt), but ``margin_ratio`` is set by your broker and the
+#     exchange's SPAN parameters and floats over time (typically 4-12% for
+#     index futures, 5-10% for metals, 8-15% for energy/ag during volatile
+#     periods). Treat the values below as templates — verify against your
+#     own account before trusting backtest leverage numbers.
+#
+# Override is just one line:
+#
+#     from dataclasses import replace
+#     MY_GC = replace(GC_COMEX, margin_ratio=0.07)
+#
+# Or define from scratch:
+#
+#     MY_GC = Contract(multiplier=100, margin_ratio=0.07, name="My GC")
 # ---------------------------------------------------------------------------
 
 # Stocks

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 
+import numpy as np
 import pandas as pd
 
 from .trade import Trade
@@ -128,7 +129,13 @@ class Broker:
         self._filled_orders: list[Order] = []
         self._closed_orders: list[Order] = []  # Rejected and canceled orders
 
-        self._equity_history = pd.Series(data=self.cash, index=first_index).astype('float64')
+        # Initialize equity_history with NaN — process_bar fills each entry as
+        # the simulation advances. The starting bar gets cash so consumers
+        # like calculate_stats can use iloc[0] as the initial value. Reading
+        # equity_history mid-backtest (e.g. from inside a strategy) sees NaN
+        # for un-processed future bars instead of a misleading flat-cash line.
+        self._equity_history = pd.Series(data=np.nan, index=first_index, dtype='float64')
+        self._equity_history.iloc[0] = self.cash
 
     @staticmethod
     def _normalize_per_asset(
@@ -387,8 +394,13 @@ class Broker:
         orders_to_remove = []
         for order in self._pending_orders:
             df = self._data_by_asset[order.asset]
+            bar_open = df.loc[self.current_time, 'Open']
             high = df.loc[self.current_time, 'High']
             low = df.loc[self.current_time, 'Low']
+
+            # Remember the stop level before we clear it — used as the fill
+            # price for pure-stop orders that just triggered.
+            stop_price = order._stop
 
             # Check stop conditions
             if order._stop:
@@ -409,13 +421,24 @@ class Broker:
                 else:
                     continue  # Limit not triggered, skip to next order
             else:
-                # Market order
+                # Pure stop order just triggered (no limit). Conservatively
+                # fill at the trigger price — but if the market gapped past
+                # the stop on the open, use the open price so the simulation
+                # reflects the worse fill that real execution would see:
+                #   long stop  → max(stop, open) (higher = pays more)
+                #   short stop → min(stop, open) (lower  = receives less)
+                # Add a SlippageCommission on top to model further slippage.
                 if self.trade_on_close:
                     fill_date = self.current_time
-                    fill_price = df.loc[fill_date, 'Close']
+                    if order.is_long:
+                        fill_price = max(stop_price, bar_open)
+                    else:
+                        fill_price = min(stop_price, bar_open)
                     self.__process_order(order, fill_price, fill_date)
                     orders_to_remove.append(order)
                 else:
+                    # trade_on_close=False — defer to next bar's open like a
+                    # plain market order.
                     self._executing_orders.append(order)
 
         for order in orders_to_remove:

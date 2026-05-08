@@ -700,6 +700,76 @@ def test_short_sl_synthetic_order_records_buy_direction(broker_no_commission):
     assert sl_orders[0].is_short is False
 
 
+# ---------------------------------------------------------------------------
+# Regression tests for fixes #5 (equity_history NaN init) and #6 (stop fill price)
+# ---------------------------------------------------------------------------
+
+
+def test_equity_history_unprocessed_bars_are_nan(broker_no_commission):
+    """Bars that haven't been process_bar'd yet should be NaN, not a fake
+    flat-cash line. The starting bar is the only one initialized to cash."""
+    eq = broker_no_commission.equity_history
+    assert eq.iloc[0] == 10000.0  # initial point
+    # The remaining bars are NaN until the simulation gets to them.
+    assert eq.iloc[1:].isna().all()
+
+
+def test_equity_history_fills_in_as_simulation_advances(broker_no_commission):
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    eq = broker_no_commission.equity_history
+    assert not pd.isna(eq.loc['2024-01-02'])           # filled
+    assert pd.isna(eq.loc['2024-01-05'])               # still future
+
+
+def test_long_stop_fills_at_trigger_price_no_gap(broker_no_commission):
+    """Long stop=110 triggers when bar high crosses 110 — fill at 110, not close."""
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.place_orders(Order(size=5, stop=110.0))
+    # Day 4: open=106, high=111, close=108. Stop triggers; no gap so fill = 110.
+    for ts in ['2024-01-02', '2024-01-03', '2024-01-04']:
+        broker_no_commission.process_bar(pd.Timestamp(ts))
+    fills = [o for o in broker_no_commission.filled_orders if o._stop is None]
+    assert len(fills) == 1
+    assert fills[0].fill_price == 110.0
+
+
+def test_long_stop_fills_at_open_when_market_gaps_above_stop(sample_data):
+    """If the bar opens past the long stop level (gap up), fill at the open
+    price — that's where the order would actually execute, not at the stop."""
+    # Custom data with a clean gap-up scenario
+    data = pd.DataFrame({
+        'open':  [100, 102, 115, 116],   # day 3 gaps up to 115
+        'high':  [105, 107, 117, 118],
+        'low':   [ 96,  97, 113, 114],
+        'close': [102, 104, 116, 117],
+    }, index=pd.to_datetime(['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04']))
+    broker = Broker(data, cash=10000.0, commission=NoCommission(),
+                    margin_ratio=0.1, trade_on_close=True)
+    broker.process_bar(pd.Timestamp('2024-01-01'))
+    broker.place_orders(Order(size=5, stop=110.0))
+    broker.process_bar(pd.Timestamp('2024-01-02'))    # not triggered
+    broker.process_bar(pd.Timestamp('2024-01-03'))    # gap up to 115; triggered
+    fills = [o for o in broker.filled_orders if o._stop is None]
+    assert len(fills) == 1
+    assert fills[0].fill_price == 115.0   # bar open, not stop level (110)
+
+
+def test_short_stop_fills_at_trigger_price_no_gap(broker_no_commission):
+    """Short stop = sell-on-break-down. With low <= stop, fill at the stop."""
+    # Open a long first so we can place a short stop to flatten
+    broker_no_commission._open_trade(
+        entry_price=104.0, entry_date=pd.Timestamp('2024-01-01'), size=10,
+    )
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-01'))
+    broker_no_commission.place_orders(Order(size=-10, stop=98.0))
+    # Day 2: low=97 <= 98, no gap (open=102), so fill = 98 (trigger)
+    broker_no_commission.process_bar(pd.Timestamp('2024-01-02'))
+    fills = [o for o in broker_no_commission.filled_orders
+             if o._stop is None and o.size == -10]
+    assert len(fills) == 1
+    assert fills[0].fill_price == 98.0
+
+
 def test_pending_stop_executes_on_next_open_when_trade_on_close_false(broker_no_commission_trade_on_open):
     """Stop order triggered with trade_on_close=False queues to _executing_orders."""
     b = broker_no_commission_trade_on_open
