@@ -195,6 +195,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/concepts.html">Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/multi_asset.html">Multi-asset / portfolio backtests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/stops.html">Stops: SL, TP, and trailing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/walk_forward.html">Walk-forward optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/commissions.html">Commissions and slippage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/plot.html">Reading the Bokeh report</a></li>
@@ -638,6 +639,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__remove_closed_orders</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__process_executing_orders</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__check_sl_tp</span><span class="p">()</span>
+        <span class="c1"># Trail update happens AFTER SL/TP check so the tightened stop takes</span>
+        <span class="c1"># effect on the NEXT bar. Within a single OHLC bar we don&#39;t know</span>
+        <span class="c1"># whether the low (long) / high (short) came before or after the</span>
+        <span class="c1"># extreme — assuming the unfavorable extreme came first is the</span>
+        <span class="c1"># conservative choice (matches the bar-level convention used</span>
+        <span class="c1"># elsewhere in the engine).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__update_trailing_stops</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__process_pending_orders</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__update_account_value_history</span><span class="p">()</span></div>
 
@@ -770,6 +778,8 @@
                 <span class="n">size</span><span class="o">=</span><span class="n">remaining_order_size</span><span class="p">,</span>
                 <span class="n">sl</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">_sl</span><span class="p">,</span>
                 <span class="n">tp</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">_tp</span><span class="p">,</span>
+                <span class="n">trail_percent</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">_trail_percent</span><span class="p">,</span>
+                <span class="n">trail_amount</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">_trail_amount</span><span class="p">,</span>
                 <span class="n">tag</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span>
                 <span class="n">asset</span><span class="o">=</span><span class="n">order</span><span class="o">.</span><span class="n">asset</span><span class="p">,</span>
             <span class="p">)</span>
@@ -806,6 +816,15 @@
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">account_value</span> <span class="o">&gt;=</span> <span class="n">new_margin</span> <span class="o">+</span> <span class="n">other_used_margin</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__update_trailing_stops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bump trailing-stop SLs for every open trade based on this bar&#39;s range.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_positions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">]</span>
+            <span class="n">high</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;High&#39;</span><span class="p">]</span>
+            <span class="n">low</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;Low&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">trade</span> <span class="ow">in</span> <span class="n">position</span><span class="o">.</span><span class="n">active_trades</span><span class="p">:</span>
+                <span class="n">trade</span><span class="o">.</span><span class="n">_update_trailing_stop</span><span class="p">(</span><span class="n">high</span><span class="p">,</span> <span class="n">low</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__check_sl_tp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check and apply stop loss / take profit conditions across every asset.&quot;&quot;&quot;</span>
@@ -883,6 +902,8 @@
             <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
             <span class="n">sl</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">tp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">trail_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">trail_amount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">tag</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">asset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -895,6 +916,8 @@
             <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
             <span class="n">sl</span><span class="o">=</span><span class="n">sl</span><span class="p">,</span>
             <span class="n">tp</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span>
+            <span class="n">trail_percent</span><span class="o">=</span><span class="n">trail_percent</span><span class="p">,</span>
+            <span class="n">trail_amount</span><span class="o">=</span><span class="n">trail_amount</span><span class="p">,</span>
             <span class="n">tag</span><span class="o">=</span><span class="n">tag</span><span class="p">,</span>
             <span class="n">asset</span><span class="o">=</span><span class="n">asset</span><span class="p">,</span>
             <span class="n">multiplier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_multiplier_by_asset</span><span class="p">[</span><span class="n">asset</span><span class="p">],</span>
@@ -953,7 +976,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=b9afe91b"></script>
+</div><script src="../../../_static/documentation_options.js?v=8e576371"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

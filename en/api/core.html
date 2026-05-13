@@ -196,6 +196,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../guide/getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/concepts.html">Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/multi_asset.html">Multi-asset / portfolio backtests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guide/stops.html">Stops: SL, TP, and trailing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/walk_forward.html">Walk-forward optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/commissions.html">Commissions and slippage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../guide/plot.html">Reading the Bokeh report</a></li>
@@ -545,7 +546,7 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 
 <dl class="py class">
 <dt class="sig sig-object py" id="qtrade.core.Order">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/order.html#Order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Order" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trail_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trail_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/order.html#Order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Order" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a trading order with optional limit, stop, stop loss, and take profit prices.</p>
 <dl class="field-list simple">
@@ -570,13 +571,24 @@ Defaults to <code class="docutils literal notranslate"><span class="pre">None</s
 <li><p><strong>stop</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Stop price for stop orders. Defaults to None.</p></li>
 <li><p><strong>sl</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Stop loss price. Defaults to None.</p></li>
 <li><p><strong>tp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Take profit price. Defaults to None.</p></li>
+<li><p><strong>trail_percent</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Trailing-stop distance as a
+fraction of the high-water mark (e.g. <code class="docutils literal notranslate"><span class="pre">0.05</span></code> = 5%). Mutually
+exclusive with <code class="docutils literal notranslate"><span class="pre">trail_amount</span></code>. The Broker auto-bumps the SL
+each bar so it ratchets in the trade’s favor only.</p></li>
+<li><p><strong>trail_amount</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Trailing-stop distance as
+an absolute price gap (account currency). Mutually exclusive
+with <code class="docutils literal notranslate"><span class="pre">trail_percent</span></code>.</p></li>
 <li><p><strong>tag</strong> (<em>Optional</em><em>[</em><em>object</em><em>]</em><em>, </em><em>optional</em>) – Tag for identification. Defaults to None.</p></li>
 <li><p><strong>asset</strong> (<em>str</em><em>, </em><em>optional</em>) – Asset symbol this order targets. Defaults to “default” for
 single-asset backtests. Multi-asset support is layered on this field.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>AssertionError</strong> – If the order size is zero.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>AssertionError</strong> – If the order size is zero.</p></li>
+<li><p><strong>ValueError</strong> – If both <code class="docutils literal notranslate"><span class="pre">trail_percent</span></code> and <code class="docutils literal notranslate"><span class="pre">trail_amount</span></code> are set,
+    or either is non-positive.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py property">
@@ -728,6 +740,28 @@ single-asset backtests. Multi-asset support is layered on this field.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.trail_amount">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trail_amount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.trail_amount" title="Link to this definition">¶</a></dt>
+<dd><p>Trailing-stop absolute distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Order.trail_percent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trail_percent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Order.trail_percent" title="Link to this definition">¶</a></dt>
+<dd><p>Trailing-stop fraction (e.g. 0.05 for 5%).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -832,7 +866,7 @@ single-asset backtests. Multi-asset support is layered on this field.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="qtrade.core.Trade">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Trade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/trade.html#Trade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Trade" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">qtrade.core.</span></span><span class="sig-name descname"><span class="pre">Trade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entry_price</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_date</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'default'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trail_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trail_amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/qtrade/core/trade.html#Trade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Trade" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents an individual trade with entry and exit details, profit calculations, and trade status.</p>
 <dl class="field-list simple">
@@ -843,6 +877,10 @@ single-asset backtests. Multi-asset support is layered on this field.</p></li>
 <li><p><strong>_entry_date</strong> (<em>pd.Timestamp</em>) – Date when the trade was entered.</p></li>
 <li><p><strong>_sl</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Stop loss price.</p></li>
 <li><p><strong>_tp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Take profit price.</p></li>
+<li><p><strong>_trail_percent</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Trailing-stop fraction (e.g. 0.05 for 5%).</p></li>
+<li><p><strong>_trail_amount</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Trailing-stop absolute distance.</p></li>
+<li><p><strong>_trail_high</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – High-water mark for long trailing stops.</p></li>
+<li><p><strong>_trail_low</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Low-water mark for short trailing stops.</p></li>
 <li><p><strong>_tag</strong> (<em>Optional</em><em>[</em><em>object</em><em>]</em>) – Tag for identifying the trade.</p></li>
 <li><p><strong>_exit_price</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em>) – Price at which the trade was exited.</p></li>
 <li><p><strong>_exit_date</strong> (<em>Optional</em><em>[</em><em>pd.Timestamp</em><em>]</em>) – Date when the trade was exited.</p></li>
@@ -857,6 +895,12 @@ single-asset backtests. Multi-asset support is layered on this field.</p></li>
 <li><p><strong>size</strong> (<em>int</em>) – Trade size (positive for long, negative for short).</p></li>
 <li><p><strong>sl</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Stop loss price. Defaults to None.</p></li>
 <li><p><strong>tp</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Take profit price. Defaults to None.</p></li>
+<li><p><strong>trail_percent</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Trailing-stop distance as a
+fraction of the current high-water mark (e.g. <code class="docutils literal notranslate"><span class="pre">0.05</span></code> = 5%).
+Mutually exclusive with <code class="docutils literal notranslate"><span class="pre">trail_amount</span></code>. Defaults to None.</p></li>
+<li><p><strong>trail_amount</strong> (<em>Optional</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Trailing-stop distance as an
+absolute price gap (in account currency). Mutually exclusive with
+<code class="docutils literal notranslate"><span class="pre">trail_percent</span></code>. Defaults to None.</p></li>
 <li><p><strong>tag</strong> (<em>Optional</em><em>[</em><em>object</em><em>]</em><em>, </em><em>optional</em>) – Tag for identifying the trade. Defaults to None.</p></li>
 <li><p><strong>asset</strong> (<em>str</em><em>, </em><em>optional</em>) – Asset symbol this trade is on. Defaults to “default” for
 single-asset backtests. Multi-asset support is layered on this field.</p></li>
@@ -866,7 +910,8 @@ stocks. Profit and margin both scale with this. Defaults to 1.0.</p></li>
 </ul>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ValueError</strong> – If the trade size is zero.</p>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the trade size is zero, or both trail_percent and trail_amount
+    are set, or either trail value is non-positive.</p>
 </dd>
 </dl>
 <dl class="py property">
@@ -1054,7 +1099,7 @@ stocks. Profit and margin both scale with this. Defaults to 1.0.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="qtrade.core.Trade.sl">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sl</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.sl" title="Link to this definition">¶</a></dt>
-<dd><p>Stop loss price.</p>
+<dd><p>Stop loss price (modifiable).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[float]</p>
@@ -1076,12 +1121,79 @@ stocks. Profit and margin both scale with this. Defaults to 1.0.</p></li>
 <dl class="py property">
 <dt class="sig sig-object py" id="qtrade.core.Trade.tp">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.tp" title="Link to this definition">¶</a></dt>
-<dd><p>Take profit price.</p>
+<dd><p>Take profit price (modifiable).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Optional[float]</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.trail_amount">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trail_amount</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.trail_amount" title="Link to this definition">¶</a></dt>
+<dd><p>Trailing-stop absolute distance, or None if not trailing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.trail_high">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trail_high</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.trail_high" title="Link to this definition">¶</a></dt>
+<dd><p>High-water mark for long trailing stop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.trail_low">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trail_low</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.trail_low" title="Link to this definition">¶</a></dt>
+<dd><p>Low-water mark for short trailing stop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="qtrade.core.Trade.trail_percent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trail_percent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#qtrade.core.Trade.trail_percent" title="Link to this definition">¶</a></dt>
+<dd><p>Trailing-stop fraction, or None if not trailing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Optional[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="qtrade.core.Trade.update_exit_levels">
+<span class="sig-name descname"><span class="pre">update_exit_levels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_UNSET</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_UNSET</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/qtrade/core/trade.html#Trade.update_exit_levels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qtrade.core.Trade.update_exit_levels" title="Link to this definition">¶</a></dt>
+<dd><p>Modify SL / TP on an open trade.</p>
+<p>Pass <code class="docutils literal notranslate"><span class="pre">None</span></code> to <em>clear</em> a level; omit a parameter to leave it
+unchanged. Useful for hand-rolled trailing logic, ratcheting up
+a stop after a profit threshold, or moving TP further out.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sl</strong> – New stop-loss price. Pass <code class="docutils literal notranslate"><span class="pre">None</span></code> to clear the existing SL.</p></li>
+<li><p><strong>tp</strong> – New take-profit price. Pass <code class="docutils literal notranslate"><span class="pre">None</span></code> to clear the existing TP.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">trade</span><span class="o">.</span><span class="n">update_exit_levels</span><span class="p">(</span><span class="n">sl</span><span class="o">=</span><span class="mi">110</span><span class="p">)</span>        <span class="c1"># set/move SL only</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trade</span><span class="o">.</span><span class="n">update_exit_levels</span><span class="p">(</span><span class="n">tp</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>       <span class="c1"># clear TP</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">trade</span><span class="o">.</span><span class="n">update_exit_levels</span><span class="p">(</span><span class="n">sl</span><span class="o">=</span><span class="mi">110</span><span class="p">,</span> <span class="n">tp</span><span class="o">=</span><span class="mi">130</span><span class="p">)</span>  <span class="c1"># both at once</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -1196,6 +1308,8 @@ stocks. Profit and margin both scale with this. Defaults to 1.0.</p></li>
 <li><a class="reference internal" href="#qtrade.core.Order.stop"><code class="docutils literal notranslate"><span class="pre">Order.stop</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Order.tag"><code class="docutils literal notranslate"><span class="pre">Order.tag</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Order.tp"><code class="docutils literal notranslate"><span class="pre">Order.tp</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.trail_amount"><code class="docutils literal notranslate"><span class="pre">Order.trail_amount</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Order.trail_percent"><code class="docutils literal notranslate"><span class="pre">Order.trail_percent</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#qtrade.core.PercentageCommission"><code class="docutils literal notranslate"><span class="pre">PercentageCommission</span></code></a><ul>
@@ -1231,6 +1345,11 @@ stocks. Profit and margin both scale with this. Defaults to 1.0.</p></li>
 <li><a class="reference internal" href="#qtrade.core.Trade.sl"><code class="docutils literal notranslate"><span class="pre">Trade.sl</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Trade.tag"><code class="docutils literal notranslate"><span class="pre">Trade.tag</span></code></a></li>
 <li><a class="reference internal" href="#qtrade.core.Trade.tp"><code class="docutils literal notranslate"><span class="pre">Trade.tp</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.trail_amount"><code class="docutils literal notranslate"><span class="pre">Trade.trail_amount</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.trail_high"><code class="docutils literal notranslate"><span class="pre">Trade.trail_high</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.trail_low"><code class="docutils literal notranslate"><span class="pre">Trade.trail_low</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.trail_percent"><code class="docutils literal notranslate"><span class="pre">Trade.trail_percent</span></code></a></li>
+<li><a class="reference internal" href="#qtrade.core.Trade.update_exit_levels"><code class="docutils literal notranslate"><span class="pre">Trade.update_exit_levels()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1244,7 +1363,7 @@ stocks. Profit and margin both scale with this. Defaults to 1.0.</p></li>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=b9afe91b"></script>
+</div><script src="../_static/documentation_options.js?v=8e576371"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>

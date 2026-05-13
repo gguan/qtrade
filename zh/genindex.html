@@ -194,6 +194,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/getting_started.html">快速开始</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/concepts.html">核心概念</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/stops.html">Stops: SL, TP, and trailing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/walk_forward.html">Walk-forward 优化</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/commissions.html">佣金与滑点</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/plot.html">解读 Bokeh 报告</a></li>
@@ -646,13 +647,25 @@
 </li>
         <li><a href="api/core.html#qtrade.core.Order.tp">tp（qtrade.core.Order 属性）</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/core.html#qtrade.core.Trade.tp">tp（qtrade.core.Trade 属性）</a>
 </li>
         <li><a href="api/core.html#qtrade.core.Trade">Trade（qtrade.core 中的类）</a>
 </li>
         <li><a href="api/env.html#qtrade.env.TradingEnv">TradingEnv（qtrade.env 中的类）</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Order.trail_amount">trail_amount（qtrade.core.Order 属性）</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.trail_amount">trail_amount（qtrade.core.Trade 属性）</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.trail_high">trail_high（qtrade.core.Trade 属性）</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.trail_low">trail_low（qtrade.core.Trade 属性）</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Order.trail_percent">trail_percent（qtrade.core.Order 属性）</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.trail_percent">trail_percent（qtrade.core.Trade 属性）</a>
 </li>
     </ul></td>
   </tr></table>
@@ -667,6 +680,8 @@
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/core.html#qtrade.core.Broker.unrealized_pnl">unrealized_pnl（qtrade.core.Broker 属性）</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.update_exit_levels">update_exit_levels() （qtrade.core.Trade 方法）</a>
 </li>
     </ul></td>
   </tr></table>
@@ -714,7 +729,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=d5d9dfed"></script>
+</div><script src="_static/documentation_options.js?v=e2939bc3"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

@@ -195,6 +195,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/getting_started.html">快速开始</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/concepts.html">核心概念</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/multi_asset.html">多资产 / 投资组合回测</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/stops.html">Stops: SL, TP, and trailing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/walk_forward.html">Walk-forward 优化</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/commissions.html">佣金与滑点</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/plot.html">解读 Bokeh 报告</a></li>
@@ -294,6 +295,9 @@
         <span class="n">tp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tag</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">asset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">trail_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trail_amount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize an Order instance.</span>
@@ -304,20 +308,38 @@
 <span class="sd">            stop (Optional[float], optional): Stop price for stop orders. Defaults to None.</span>
 <span class="sd">            sl (Optional[float], optional): Stop loss price. Defaults to None.</span>
 <span class="sd">            tp (Optional[float], optional): Take profit price. Defaults to None.</span>
+<span class="sd">            trail_percent (Optional[float], optional): Trailing-stop distance as a</span>
+<span class="sd">                fraction of the high-water mark (e.g. ``0.05`` = 5%). Mutually</span>
+<span class="sd">                exclusive with ``trail_amount``. The Broker auto-bumps the SL</span>
+<span class="sd">                each bar so it ratchets in the trade&#39;s favor only.</span>
+<span class="sd">            trail_amount (Optional[float], optional): Trailing-stop distance as</span>
+<span class="sd">                an absolute price gap (account currency). Mutually exclusive</span>
+<span class="sd">                with ``trail_percent``.</span>
 <span class="sd">            tag (Optional[object], optional): Tag for identification. Defaults to None.</span>
 <span class="sd">            asset (str, optional): Asset symbol this order targets. Defaults to &quot;default&quot; for</span>
 <span class="sd">                single-asset backtests. Multi-asset support is layered on this field.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            AssertionError: If the order size is zero.</span>
+<span class="sd">            ValueError: If both ``trail_percent`` and ``trail_amount`` are set,</span>
+<span class="sd">                or either is non-positive.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Order size cannot be zero.&#39;</span>
+
+        <span class="k">if</span> <span class="n">trail_percent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trail_amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;trail_percent and trail_amount are mutually exclusive.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trail_percent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trail_percent</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;trail_percent must be &gt; 0, got </span><span class="si">{</span><span class="n">trail_percent</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trail_amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trail_amount</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;trail_amount must be &gt; 0, got </span><span class="si">{</span><span class="n">trail_amount</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_limit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">limit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">stop</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">sl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">tp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">trail_percent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">trail_amount</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">tag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_asset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">asset</span>
 
@@ -393,6 +415,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tp</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trail_percent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Trailing-stop fraction (e.g. 0.05 for 5%).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trail_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Trailing-stop absolute distance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span>
+
+    <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[object]: Order tag.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span>
@@ -439,6 +471,8 @@
             <span class="p">(</span><span class="s1">&#39;Stop&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;Sl&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;Tp&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tp</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;TrailPct&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;TrailAmt&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;Tag&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">param_str</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">=</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
@@ -476,7 +510,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=d5d9dfed"></script>
+</div><script src="../../../_static/documentation_options.js?v=e2939bc3"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>

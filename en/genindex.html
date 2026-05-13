@@ -194,6 +194,7 @@
 <li class="toctree-l1"><a class="reference internal" href="guide/getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/concepts.html">Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/multi_asset.html">Multi-asset / portfolio backtests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="guide/stops.html">Stops: SL, TP, and trailing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/walk_forward.html">Walk-forward optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/commissions.html">Commissions and slippage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="guide/plot.html">Reading the Bokeh report</a></li>
@@ -684,12 +685,28 @@
           <li><a href="api/core.html#qtrade.core.Trade.tp">(qtrade.core.Trade property)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/core.html#qtrade.core.Trade">Trade (class in qtrade.core)</a>
 </li>
         <li><a href="api/env.html#qtrade.env.TradingEnv">TradingEnv (class in qtrade.env)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/core.html#qtrade.core.Order.trail_amount">trail_amount (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.trail_amount">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
+        <li><a href="api/core.html#qtrade.core.Trade.trail_high">trail_high (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.trail_low">trail_low (qtrade.core.Trade property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Order.trail_percent">trail_percent (qtrade.core.Order property)</a>
+
+        <ul>
+          <li><a href="api/core.html#qtrade.core.Trade.trail_percent">(qtrade.core.Trade property)</a>
+</li>
+        </ul></li>
     </ul></td>
   </tr></table>
 </section>
@@ -703,6 +720,8 @@
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/core.html#qtrade.core.Broker.unrealized_pnl_pct">unrealized_pnl_pct (qtrade.core.Broker property)</a>
+</li>
+        <li><a href="api/core.html#qtrade.core.Trade.update_exit_levels">update_exit_levels() (qtrade.core.Trade method)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -750,7 +769,7 @@
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=b9afe91b"></script>
+</div><script src="_static/documentation_options.js?v=8e576371"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>

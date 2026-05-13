@@ -195,6 +195,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/concepts.html">Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/multi_asset.html">Multi-asset / portfolio backtests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../guide/stops.html">Stops: SL, TP, and trailing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/walk_forward.html">Walk-forward optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/commissions.html">Commissions and slippage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../guide/plot.html">Reading the Bokeh report</a></li>
@@ -265,6 +266,10 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
+<span class="c1"># Sentinel for &quot;argument not provided&quot; — distinguishes &quot;leave alone&quot; from</span>
+<span class="c1"># &quot;set to None&quot; (= clear the level) in update_exit_levels().</span>
+<span class="n">_UNSET</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="nb">object</span><span class="p">()</span>
+
 
 <div class="viewcode-block" id="Trade">
 <a class="viewcode-back" href="../../../api/core.html#qtrade.core.Trade">[docs]</a>
@@ -278,6 +283,10 @@
 <span class="sd">        _entry_date (pd.Timestamp): Date when the trade was entered.</span>
 <span class="sd">        _sl (Optional[float]): Stop loss price.</span>
 <span class="sd">        _tp (Optional[float]): Take profit price.</span>
+<span class="sd">        _trail_percent (Optional[float]): Trailing-stop fraction (e.g. 0.05 for 5%).</span>
+<span class="sd">        _trail_amount (Optional[float]): Trailing-stop absolute distance.</span>
+<span class="sd">        _trail_high (Optional[float]): High-water mark for long trailing stops.</span>
+<span class="sd">        _trail_low (Optional[float]): Low-water mark for short trailing stops.</span>
 <span class="sd">        _tag (Optional[object]): Tag for identifying the trade.</span>
 <span class="sd">        _exit_price (Optional[float]): Price at which the trade was exited.</span>
 <span class="sd">        _exit_date (Optional[pd.Timestamp]): Date when the trade was exited.</span>
@@ -296,6 +305,9 @@
         <span class="n">tag</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">asset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">,</span>
         <span class="n">multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">trail_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">trail_amount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a Trade instance.</span>
@@ -306,6 +318,12 @@
 <span class="sd">            size (int): Trade size (positive for long, negative for short).</span>
 <span class="sd">            sl (Optional[float], optional): Stop loss price. Defaults to None.</span>
 <span class="sd">            tp (Optional[float], optional): Take profit price. Defaults to None.</span>
+<span class="sd">            trail_percent (Optional[float], optional): Trailing-stop distance as a</span>
+<span class="sd">                fraction of the current high-water mark (e.g. ``0.05`` = 5%).</span>
+<span class="sd">                Mutually exclusive with ``trail_amount``. Defaults to None.</span>
+<span class="sd">            trail_amount (Optional[float], optional): Trailing-stop distance as an</span>
+<span class="sd">                absolute price gap (in account currency). Mutually exclusive with</span>
+<span class="sd">                ``trail_percent``. Defaults to None.</span>
 <span class="sd">            tag (Optional[object], optional): Tag for identifying the trade. Defaults to None.</span>
 <span class="sd">            asset (str, optional): Asset symbol this trade is on. Defaults to &quot;default&quot; for</span>
 <span class="sd">                single-asset backtests. Multi-asset support is layered on this field.</span>
@@ -314,9 +332,17 @@
 <span class="sd">                stocks. Profit and margin both scale with this. Defaults to 1.0.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            ValueError: If the trade size is zero.</span>
+<span class="sd">            ValueError: If the trade size is zero, or both trail_percent and trail_amount</span>
+<span class="sd">                are set, or either trail value is non-positive.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Trade size cannot be zero.&#39;</span>
+
+        <span class="k">if</span> <span class="n">trail_percent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trail_amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;trail_percent and trail_amount are mutually exclusive.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trail_percent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trail_percent</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;trail_percent must be &gt; 0, got </span><span class="si">{</span><span class="n">trail_percent</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trail_amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">trail_amount</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;trail_amount must be &gt; 0, got </span><span class="si">{</span><span class="n">trail_amount</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_entry_price</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">entry_price</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_entry_date</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">=</span> <span class="n">entry_date</span>
@@ -324,6 +350,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">sl</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">tp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">trail_percent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">trail_amount</span>
+        <span class="c1"># Seed the high/low-water mark with the entry price so the first bar</span>
+        <span class="c1"># after open already has a baseline trail-implied SL.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">entry_price</span> <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trail_percent</span> <span class="ow">or</span> <span class="n">trail_amount</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">entry_price</span> <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">trail_percent</span> <span class="ow">or</span> <span class="n">trail_amount</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span><span class="p">:</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">tag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_asset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">asset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_multiplier</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">multiplier</span>
@@ -333,6 +365,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_exit_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_profit</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exit_reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># &#39;signal&#39;, &#39;sl&#39;, &#39;tp&#39;, &#39;end&#39;</span>
+
+        <span class="c1"># Apply the initial trail-implied SL so it&#39;s already in effect on bar</span>
+        <span class="c1"># 1, even before the first __update_trailing_stops pass runs.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_recompute_trail_sl</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Trade.close">
 <a class="viewcode-back" href="../../../api/core.html#qtrade.core.Trade.close">[docs]</a>
@@ -386,12 +423,93 @@
         <span class="n">closed_trade</span><span class="o">.</span><span class="n">_exit_index</span> <span class="o">=</span> <span class="n">exit_index</span>
         <span class="n">closed_trade</span><span class="o">.</span><span class="n">_profit</span> <span class="o">=</span> <span class="n">profit</span>
         <span class="n">closed_trade</span><span class="o">.</span><span class="n">_exit_reason</span> <span class="o">=</span> <span class="n">exit_reason</span>
+        <span class="c1"># Preserve trail metadata on the closed-trade record so post-run</span>
+        <span class="c1"># analysis can tell which trades were trailing-stopped.</span>
+        <span class="n">closed_trade</span><span class="o">.</span><span class="n">_trail_percent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span>
+        <span class="n">closed_trade</span><span class="o">.</span><span class="n">_trail_amount</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span>
+        <span class="n">closed_trade</span><span class="o">.</span><span class="n">_trail_high</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span>
+        <span class="n">closed_trade</span><span class="o">.</span><span class="n">_trail_low</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span>
 
         <span class="c1"># Update the original Trade object&#39;s size</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_size</span> <span class="o">-=</span> <span class="n">size_to_close</span>
 
         <span class="k">return</span> <span class="n">closed_trade</span></div>
 
+
+    <span class="c1"># ------------------------------------------------------------------</span>
+    <span class="c1"># Mutators — change SL/TP after a trade is open.</span>
+    <span class="c1"># ------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Trade.update_exit_levels">
+<a class="viewcode-back" href="../../../api/core.html#qtrade.core.Trade.update_exit_levels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_exit_levels</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sl</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">,</span>  <span class="c1"># type: ignore[assignment]</span>
+        <span class="n">tp</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">_UNSET</span><span class="p">,</span>  <span class="c1"># type: ignore[assignment]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Modify SL / TP on an open trade.</span>
+
+<span class="sd">        Pass ``None`` to *clear* a level; omit a parameter to leave it</span>
+<span class="sd">        unchanged. Useful for hand-rolled trailing logic, ratcheting up</span>
+<span class="sd">        a stop after a profit threshold, or moving TP further out.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            sl: New stop-loss price. Pass ``None`` to clear the existing SL.</span>
+<span class="sd">            tp: New take-profit price. Pass ``None`` to clear the existing TP.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; trade.update_exit_levels(sl=110)        # set/move SL only</span>
+<span class="sd">            &gt;&gt;&gt; trade.update_exit_levels(tp=None)       # clear TP</span>
+<span class="sd">            &gt;&gt;&gt; trade.update_exit_levels(sl=110, tp=130)  # both at once</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sl</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_UNSET</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span> <span class="o">=</span> <span class="n">sl</span>
+        <span class="k">if</span> <span class="n">tp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_UNSET</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tp</span> <span class="o">=</span> <span class="n">tp</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_trailing_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bar_high</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">bar_low</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Bump the trailing SL toward the favorable side based on the bar.</span>
+
+<span class="sd">        Long: ratchet ``_trail_high = max(_trail_high, bar_high)``, then</span>
+<span class="sd">        recompute ``_sl`` so it never moves away from price.</span>
+<span class="sd">        Short: symmetric using ``_trail_low`` and ``bar_low``.</span>
+
+<span class="sd">        Called by Broker once per bar; no-op if neither trail_percent nor</span>
+<span class="sd">        trail_amount was set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_long</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bar_high</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span> <span class="o">=</span> <span class="n">bar_high</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bar_low</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span> <span class="o">=</span> <span class="n">bar_low</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_recompute_trail_sl</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_recompute_trail_sl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recompute SL from the current trail high/low water mark.</span>
+
+<span class="sd">        Only ratchets — the SL never moves against the trader. Coexists with</span>
+<span class="sd">        an explicit SL: whichever is tighter (better for the trader) wins.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_long</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_sl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_sl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span>  <span class="c1"># type: ignore[operator]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_sl</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span> <span class="o">=</span> <span class="n">new_sl</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_short</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">new_sl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">new_sl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span>  <span class="c1"># type: ignore[operator]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">new_sl</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span> <span class="o">=</span> <span class="n">new_sl</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_long</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -417,7 +535,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">entry_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;pd.Timestamp: Date when the trade was entered.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_entry_date</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">entry_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;int: Index when the trade was entered.&quot;&quot;&quot;</span>
@@ -435,19 +553,49 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sl</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Stop loss price.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Stop loss price (modifiable).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span>
+
+    <span class="nd">@sl</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set / clear the stop-loss price on an open trade.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sl</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Take profit price.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Take profit price (modifiable).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tp</span>
+
+    <span class="nd">@tp</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set / clear the take-profit price on an open trade.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tp</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trail_percent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Trailing-stop fraction, or None if not trailing.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_percent</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trail_amount</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Trailing-stop absolute distance, or None if not trailing.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_amount</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trail_high</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: High-water mark for long trailing stop.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_high</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">trail_low</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Low-water mark for short trailing stop.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trail_low</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">tag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[object]: Tag for identifying the trade.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tag</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">exit_price</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[float]: Price at which the trade was exited.&quot;&quot;&quot;</span>
@@ -457,7 +605,7 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">exit_date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[pd.Timestamp]: Date when the trade was exited.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exit_date</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">exit_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Optional[int]: Index when the trade was exited.&quot;&quot;&quot;</span>
@@ -527,7 +675,7 @@
       
     </aside>
   </div>
-</div><script src="../../../_static/documentation_options.js?v=b9afe91b"></script>
+</div><script src="../../../_static/documentation_options.js?v=8e576371"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
