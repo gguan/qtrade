@@ -64,9 +64,10 @@ queues and either fill or get rejected (typically for insufficient margin).
 
 A *filled* position. Each Order that fills opens (or partially closes)
 a Trade. While open, the Trade has `entry_price`, `entry_date`, `size`,
-optional `sl` / `tp`. When the Trade is closed (by an opposite-side
-order, an SL/TP trigger, or end-of-backtest), it gets `exit_price`,
-`exit_date`, `profit`, and an `exit_reason`.
+optional `sl` / `tp` (modifiable mid-trade — see [Stops](stops.md)),
+and optional trailing-stop state. When the Trade is closed (by an
+opposite-side order, an SL/TP trigger, or end-of-backtest), it gets
+`exit_price`, `exit_date`, `profit`, and an `exit_reason`.
 
 ### Position
 

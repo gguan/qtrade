@@ -22,6 +22,7 @@ With features ranging from traditional signal-based strategies to reinforcement 
 guide/getting_started
 guide/concepts
 guide/multi_asset
+guide/stops
 guide/walk_forward
 guide/commissions
 guide/plot

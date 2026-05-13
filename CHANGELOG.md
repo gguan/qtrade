@@ -7,6 +7,40 @@ project adheres to [Semantic Versioning](https://semver.org/) — though as a
 
 ## [Unreleased]
 
+## [0.5.2]
+
+Mid-trade SL/TP modification and trailing stops — long-requested for any
+strategy that wants to ratchet stops as a position moves into profit.
+
+### Added
+- **`Trade.sl` / `Trade.tp` are now settable.** You can mutate the level on
+  an open trade and it takes effect on the next bar's SL/TP check.
+- **`Trade.update_exit_levels(sl=..., tp=...)`** — convenience method that
+  uses a sentinel to distinguish "leave alone" from "clear":
+  ```python
+  trade.update_exit_levels(sl=110)        # bump SL only, TP unchanged
+  trade.update_exit_levels(tp=None)       # explicitly clear TP
+  ```
+- **Trailing-stop orders** via `trail_percent=` (fraction) or
+  `trail_amount=` (absolute) on `Strategy.buy()` / `Strategy.sell()`:
+  ```python
+  self.buy(size=10, trail_percent=0.05)   # 5% trailing stop, ratchets up
+  self.sell(size=10, trail_amount=2.0)    # $2 trailing stop on a short
+  ```
+  The Broker auto-bumps the SL each bar based on the per-asset high-water
+  mark (long) or low-water mark (short). Coexists with explicit `sl=` —
+  whichever is tighter (better for the trader) wins. Trail metadata
+  (`trail_percent`, `trail_amount`, `trail_high`, `trail_low`) is preserved
+  on the closed-trade record for post-run analysis.
+
+### Changed
+- `Trade.__init__` and `Order.__init__` now have `trail_percent` /
+  `trail_amount` as **keyword-only** parameters (after a `*`). Existing
+  positional calls keep working.
+- `Broker.process_bar` calls `__update_trailing_stops` after `__check_sl_tp`
+  so the tightened stop takes effect on the *next* bar — conservative
+  bar-level semantics consistent with the rest of the engine.
+
 ## [0.5.1]
 
 Additive release — new data adapters for the Chinese market, post-run
@@ -221,7 +255,8 @@ Initial development versions: single-asset Broker / Strategy / Backtest,
 basic Gymnasium TradingEnv, Bokeh plotting, stats calculation. See git
 history for details.
 
-[Unreleased]: https://github.com/gguan/qtrade/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/gguan/qtrade/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/gguan/qtrade/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/gguan/qtrade/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/gguan/qtrade/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/gguan/qtrade/compare/v0.4.0...v0.4.1
