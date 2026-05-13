@@ -59,6 +59,8 @@ class Strategy(ABC):
             stop: float | None = None,
             sl: float | None = None,
             tp: float | None = None,
+            trail_percent: float | None = None,
+            trail_amount: float | None = None,
             tag: object = None):
         """
         Place a buy order.
@@ -69,13 +71,21 @@ class Strategy(ABC):
             size: Order size. If omitted, defaults to the maximum size that
                 fits in current available margin at the most recent close.
             limit / stop / sl / tp / tag: standard order fields.
+            trail_percent: Trailing-stop distance as a fraction (e.g. ``0.05``
+                for 5%). The Broker auto-bumps the SL each bar so it ratchets
+                up only — never moves against the trade. Mutually exclusive
+                with ``trail_amount``.
+            trail_amount: Trailing-stop distance as an absolute price gap.
+                Mutually exclusive with ``trail_percent``.
         """
         asset = self._resolve_asset(asset)
         if size is None:
             size = self._broker.available_margin // self._data[asset]['Close'].loc[self._broker.current_time]
         else:
             size = abs(size)  # buy() always opens long, treat user-provided size as magnitude
-        order = Order(size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag, asset=asset)
+        order = Order(size, limit=limit, stop=stop, sl=sl, tp=tp,
+                      trail_percent=trail_percent, trail_amount=trail_amount,
+                      tag=tag, asset=asset)
         self._broker.place_orders(order)
 
     def sell(self,
@@ -86,6 +96,8 @@ class Strategy(ABC):
              stop: float | None = None,
              sl: float | None = None,
              tp: float | None = None,
+             trail_percent: float | None = None,
+             trail_amount: float | None = None,
              tag: object = None):
         """
         Place a sell order.
@@ -96,13 +108,17 @@ class Strategy(ABC):
             size: Order size. If omitted, defaults to the current position
                 size on that asset (used for closing longs).
             limit / stop / sl / tp / tag: standard order fields.
+            trail_percent / trail_amount: see :meth:`buy`. For shorts, the
+                trailing stop ratchets *down* as price falls.
         """
         asset = self._resolve_asset(asset)
         if size is None:
             size = self._broker.positions[asset].size
         else:
             size = abs(size)  # sell() always opens short, treat user-provided size as magnitude
-        order = Order(-size, limit=limit, stop=stop, sl=sl, tp=tp, tag=tag, asset=asset)
+        order = Order(-size, limit=limit, stop=stop, sl=sl, tp=tp,
+                      trail_percent=trail_percent, trail_amount=trail_amount,
+                      tag=tag, asset=asset)
         self._broker.place_orders(order)
 
     def close(self, asset: str | None = None):

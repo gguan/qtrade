@@ -29,6 +29,9 @@ class Order:
         tp: float | None = None,
         tag: object | None = None,
         asset: str = "default",
+        *,
+        trail_percent: float | None = None,
+        trail_amount: float | None = None,
     ):
         """
         Initialize an Order instance.
@@ -39,20 +42,38 @@ class Order:
             stop (Optional[float], optional): Stop price for stop orders. Defaults to None.
             sl (Optional[float], optional): Stop loss price. Defaults to None.
             tp (Optional[float], optional): Take profit price. Defaults to None.
+            trail_percent (Optional[float], optional): Trailing-stop distance as a
+                fraction of the high-water mark (e.g. ``0.05`` = 5%). Mutually
+                exclusive with ``trail_amount``. The Broker auto-bumps the SL
+                each bar so it ratchets in the trade's favor only.
+            trail_amount (Optional[float], optional): Trailing-stop distance as
+                an absolute price gap (account currency). Mutually exclusive
+                with ``trail_percent``.
             tag (Optional[object], optional): Tag for identification. Defaults to None.
             asset (str, optional): Asset symbol this order targets. Defaults to "default" for
                 single-asset backtests. Multi-asset support is layered on this field.
 
         Raises:
             AssertionError: If the order size is zero.
+            ValueError: If both ``trail_percent`` and ``trail_amount`` are set,
+                or either is non-positive.
         """
         assert size != 0, 'Order size cannot be zero.'
+
+        if trail_percent is not None and trail_amount is not None:
+            raise ValueError("trail_percent and trail_amount are mutually exclusive.")
+        if trail_percent is not None and trail_percent <= 0:
+            raise ValueError(f"trail_percent must be > 0, got {trail_percent}.")
+        if trail_amount is not None and trail_amount <= 0:
+            raise ValueError(f"trail_amount must be > 0, got {trail_amount}.")
 
         self._size: int = size
         self._limit: float | None = limit
         self._stop: float | None = stop
         self._sl: float | None = sl
         self._tp: float | None = tp
+        self._trail_percent: float | None = trail_percent
+        self._trail_amount: float | None = trail_amount
         self._tag: object | None = tag
         self._asset: str = asset
 
@@ -125,6 +146,16 @@ class Order:
         return self._tp
 
     @property
+    def trail_percent(self) -> float | None:
+        """Optional[float]: Trailing-stop fraction (e.g. 0.05 for 5%)."""
+        return self._trail_percent
+
+    @property
+    def trail_amount(self) -> float | None:
+        """Optional[float]: Trailing-stop absolute distance."""
+        return self._trail_amount
+
+    @property
     def tag(self) -> object | None:
         """Optional[object]: Order tag."""
         return self._tag
@@ -171,6 +202,8 @@ class Order:
             ('Stop', self._stop),
             ('Sl', self._sl),
             ('Tp', self._tp),
+            ('TrailPct', self._trail_percent),
+            ('TrailAmt', self._trail_amount),
             ('Tag', self.tag),
         )
         param_str = ', '.join(f'{name}={value}' for name, value in params if value is not None)

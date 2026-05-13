@@ -365,6 +365,13 @@ class Broker:
         self.__remove_closed_orders()
         self.__process_executing_orders()
         self.__check_sl_tp()
+        # Trail update happens AFTER SL/TP check so the tightened stop takes
+        # effect on the NEXT bar. Within a single OHLC bar we don't know
+        # whether the low (long) / high (short) came before or after the
+        # extreme — assuming the unfavorable extreme came first is the
+        # conservative choice (matches the bar-level convention used
+        # elsewhere in the engine).
+        self.__update_trailing_stops()
         self.__process_pending_orders()
         self.__update_account_value_history()
 
@@ -496,6 +503,8 @@ class Broker:
                 size=remaining_order_size,
                 sl=order._sl,
                 tp=order._tp,
+                trail_percent=order._trail_percent,
+                trail_amount=order._trail_amount,
                 tag=order.tag,
                 asset=order.asset,
             )
@@ -532,6 +541,15 @@ class Broker:
             )
 
         return account_value >= new_margin + other_used_margin
+
+    def __update_trailing_stops(self) -> None:
+        """Bump trailing-stop SLs for every open trade based on this bar's range."""
+        for asset, position in self._positions.items():
+            df = self._data_by_asset[asset]
+            high = df.loc[self.current_time, 'High']
+            low = df.loc[self.current_time, 'Low']
+            for trade in position.active_trades:
+                trade._update_trailing_stop(high, low)
 
     def __check_sl_tp(self) -> None:
         """Check and apply stop loss / take profit conditions across every asset."""
@@ -606,6 +624,8 @@ class Broker:
             size: int,
             sl: float | None = None,
             tp: float | None = None,
+            trail_percent: float | None = None,
+            trail_amount: float | None = None,
             tag: object | None = None,
             asset: str = "default",
         ) -> None:
@@ -618,6 +638,8 @@ class Broker:
             size=size,
             sl=sl,
             tp=tp,
+            trail_percent=trail_percent,
+            trail_amount=trail_amount,
             tag=tag,
             asset=asset,
             multiplier=self._multiplier_by_asset[asset],
